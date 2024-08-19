@@ -1,10 +1,3 @@
-//
-//  StockAPI.swift
-//  UV
-//
-//  Created by Nathan Egbuna on 7/19/24.
-//
-
 import Foundation
 
 struct StockResponse: Decodable {
