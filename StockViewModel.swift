@@ -21,7 +21,6 @@ class StockViewModel: ObservableObject {
         let page = 1
         let pageSize = 100
         
-        // Call the global fetchStocks function
         UV.fetchStocks(page: page, pageSize: pageSize) { [weak self] (stocks, error) in
             DispatchQueue.main.async {
                 if let error = error {
