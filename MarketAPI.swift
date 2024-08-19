@@ -14,9 +14,7 @@ struct Market: Decodable {
     let name: String
 }
 
-// Define the fetchMarkets function
 func fetchMarkets(completion: @escaping ([Market]?, Error?) -> Void) {
-    // Load API key from Config.plist
     guard let path = Bundle.main.path(forResource: "Config", ofType: "plist"),
           let config = NSDictionary(contentsOfFile: path),
           let apiKey = config["API_KEY"] as? String else {
@@ -25,19 +23,15 @@ func fetchMarkets(completion: @escaping ([Market]?, Error?) -> Void) {
         return
     }
     
-    // Set up headers
     let headers = ["Authorization": "apikey \(apiKey)"]
     
-    // Create URL request
     let url = URL(string: "https://api.finazon.io/latest/datasets?page_size=1000")!
     var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10.0)
     request.httpMethod = "GET"
     request.allHTTPHeaderFields = headers
     
-    // Create URL session
     let session = URLSession.shared
     
-    // Create data task
     let dataTask = session.dataTask(with: request) { (data, response, error) in
         if let error = error {
             print("Error: \(error)")
@@ -58,7 +52,7 @@ func fetchMarkets(completion: @escaping ([Market]?, Error?) -> Void) {
         }
         
         do {
-            // Decode JSON response into Market objects
+            // json > markets
             let marketResponse = try JSONDecoder().decode([String: [Market]].self, from: data)
             if let markets = marketResponse["data"] {
                 completion(markets, nil)
@@ -71,6 +65,5 @@ func fetchMarkets(completion: @escaping ([Market]?, Error?) -> Void) {
         }
     }
     
-    // Resume data task
     dataTask.resume()
 }
