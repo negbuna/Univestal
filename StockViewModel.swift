@@ -1,10 +1,3 @@
-//
-//  StockViewModel.swift
-//  UV
-//
-//  Created by Nathan Egbuna on 7/20/24.
-//
-
 import Foundation
 import Combine
 
