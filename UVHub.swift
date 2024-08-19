@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct UVHub: View {
-    @State private var newsArticles: [NewsArticle] = [] // Assume this is populated with API data
+    @State private var newsArticles: [NewsArticle] = [] // will have api data
     
     var body: some View {
         NavigationStack {
@@ -23,7 +23,6 @@ struct UVHub: View {
 
                 ScrollView {
                     LazyVStack {
-                        // Replace the placeholder rectangles with the NewsArticleViews
                         Text("Recommended")
                             .foregroundStyle(.primary)
                             .font(.headline)
