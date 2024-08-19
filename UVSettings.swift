@@ -17,7 +17,7 @@ struct UVSettings: View {
     
     @State private var showAlertSignout: Bool = false
     @State private var showAlertDelete: Bool = false
-    @State private var shouldShowIntroView: Bool = false // Control navigation
+    @State private var shouldShowIntroView: Bool = false // control navigation
     
     var body: some View {
         
@@ -71,11 +71,11 @@ struct UVSettings: View {
                             )
                         }
                     } // end section header
-                } // end list
+                }
                 .navigationTitle("Settings")
             }
-        } // end nav stack
-    } // end body
+        }
+    }
     
     private func signOut() {
         currentUsername = nil
@@ -89,7 +89,6 @@ struct UVSettings: View {
         currentUserSignedIn = false
         storedHashedPassword = nil
 
-        // Additional local data cleanup if necessary
     }
 }
 
