@@ -1,10 +1,3 @@
-//
-//  UVHub.swift
-//  UV
-//
-//  Created by Nathan Egbuna on 7/17/24.
-//
-
 import SwiftUI
 
 struct UVHub: View {
