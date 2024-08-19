@@ -1,10 +1,3 @@
-//
-//  NewsAPI.swift
-//  UV
-//
-//  Created by Nathan Egbuna on 8/8/24.
-//
-
 import Foundation
 
 struct NewsArticle: Identifiable {
