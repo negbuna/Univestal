@@ -88,7 +88,7 @@ struct NewsAPIResponse: Codable {
         let source: String
         let url: String
         let image_url: String?
-        let published_at: String // Updated field name
+        let published_at: String 
         let author: String?
     }
 }
