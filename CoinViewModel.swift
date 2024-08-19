@@ -1,10 +1,3 @@
-//
-//  CoinViewModel.swift
-//  UV
-//
-//  Created by Nathan Egbuna on 8/1/24.
-//
-
 import Foundation
 import Combine
 
