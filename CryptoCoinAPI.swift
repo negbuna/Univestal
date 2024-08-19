@@ -1,10 +1,3 @@
-//
-//  CryptoCoinAPI.swift
-//  UV
-//
-//  Created by Nathan Egbuna on 7/31/24.
-//
-
 import Foundation
 
 func fetchCoins() async throws {
