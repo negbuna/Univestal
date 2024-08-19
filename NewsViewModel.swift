@@ -1,10 +1,3 @@
-//
-//  NewsViewModel.swift
-//  UV
-//
-//  Created by Nathan Egbuna on 8/9/24.
-//
-
 import SwiftUI
 
 struct NewsArticleView: View {
