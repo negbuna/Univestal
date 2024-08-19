@@ -16,8 +16,8 @@ struct NewsArticleView: View {
                 AsyncImage(url: url) { image in
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fit) // Changed to fit aspect ratio
-                        .frame(width: 100, height: 100) // Ensure width and height fit within the screen
+                        .aspectRatio(contentMode: .fit) 
+                        .frame(width: 100, height: 100) 
                         .cornerRadius(10)
                         .clipped()
                 } placeholder: {
@@ -35,7 +35,7 @@ struct NewsArticleView: View {
                 
                 Text(article.title)
                     .font(.headline)
-                    .lineLimit(2) // Limit title to 2 lines
+                    .lineLimit(2) 
                     .foregroundColor(.primary)
                 
                 Text("\(article.author) · \(article.published_at)")
