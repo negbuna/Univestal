@@ -29,7 +29,7 @@ struct Pagination: Decodable {
 }
 
 func fetchStocks(page: Int, pageSize: Int, completion: @escaping ([Stock]?, Error?) -> Void) {
-    // Load API key from Config.plist
+    
     guard let path = Bundle.main.path(forResource: "Config", ofType: "plist"),
           let config = NSDictionary(contentsOfFile: path),
           let apiKey = config["API_KEY"] as? String else {
@@ -38,10 +38,8 @@ func fetchStocks(page: Int, pageSize: Int, completion: @escaping ([Stock]?, Erro
         return
     }
     
-    // Set up headers
     let headers = ["Authorization": "apikey \(apiKey)"]
     
-    // Create URL request with pagination parameters
     let urlString = "https://api.finazon.io/latest/datasets?page=\(page)&page_size=\(pageSize)"
     print("Request URL: \(urlString)")
     
@@ -54,10 +52,8 @@ func fetchStocks(page: Int, pageSize: Int, completion: @escaping ([Stock]?, Erro
     request.httpMethod = "GET"
     request.allHTTPHeaderFields = headers
     
-    // Create URL session
     let session = URLSession.shared
     
-    // Create data task
     let dataTask = session.dataTask(with: request) { (data, response, error) in
         if let error = error {
             print("Error: \(error)")
@@ -77,13 +73,13 @@ func fetchStocks(page: Int, pageSize: Int, completion: @escaping ([Stock]?, Erro
             return
         }
         
-        // Debug: Print raw data
+        // raw data for debugging
         if let jsonString = String(data: data, encoding: .utf8) {
             print("Raw JSON Response: \(jsonString)")
         }
         
         do {
-            // Decode JSON response into StockResponse objects
+            // json > stockresponse
             let stockResponse = try JSONDecoder().decode(StockResponse.self, from: data)
             let stocks = stockResponse.data
             completion(stocks, nil)
@@ -93,6 +89,5 @@ func fetchStocks(page: Int, pageSize: Int, completion: @escaping ([Stock]?, Erro
         }
     }
     
-    // Resume data task
     dataTask.resume()
 }
