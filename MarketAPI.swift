@@ -1,10 +1,3 @@
-//
-//  MarketAPI.swift
-//  UV
-//
-//  Created by Nathan Egbuna on 7/18/24.
-//
-
 import Foundation
 
 // Define the Market struct
