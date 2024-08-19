@@ -1,10 +1,3 @@
-//
-//  DetailedCoinView.swift
-//  UV
-//
-//  Created by Nathan Egbuna on 8/2/24.
-//
-
 import SwiftUI
 
 struct DetailedCoinView: View {
