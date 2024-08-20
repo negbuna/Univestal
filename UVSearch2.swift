@@ -1,10 +1,3 @@
-//
-//  UVSearch2.swift
-//  UV
-//
-//  Created by Nathan Egbuna on 8/1/24.
-//
-
 import SwiftUI
 
 struct UVSearch2: View {
