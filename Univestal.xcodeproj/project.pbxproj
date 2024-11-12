@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5E11F64A2CE28AF3000E6DB9 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6492CE28AEC000E6DB9 /* Functions.swift */; };
 		5E11F64C2CE28AFA000E6DB9 /* Buttons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F64B2CE28AF8000E6DB9 /* Buttons.swift */; };
+		5E11F64E2CE2D1F9000E6DB9 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 5E11F64D2CE2D1F1000E6DB9 /* .gitignore */; };
 		5E1242DF2C221BFA0042B089 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1242DE2C221BFA0042B089 /* App.swift */; };
 		5E1242E12C221BFA0042B089 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1242E02C221BFA0042B089 /* ContentView.swift */; };
 		5E1242E32C221BFA0042B089 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1242E22C221BFA0042B089 /* Item.swift */; };
@@ -53,6 +54,7 @@
 /* Begin PBXFileReference section */
 		5E11F6492CE28AEC000E6DB9 /* Functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
 		5E11F64B2CE28AF8000E6DB9 /* Buttons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Buttons.swift; sourceTree = "<group>"; };
+		5E11F64D2CE2D1F1000E6DB9 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		5E1242DB2C221BFA0042B089 /* Univestal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Univestal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E1242DE2C221BFA0042B089 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		5E1242E02C221BFA0042B089 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -130,6 +132,8 @@
 				5EE807892C38D2500070D8E9 /* Onboarding */,
 				5EA1CDE22C3AF1AE00CE5AAA /* Home */,
 				5E1242E42C221BFC0042B089 /* Assets.xcassets */,
+				5E11F64D2CE2D1F1000E6DB9 /* .gitignore */,
+				5E9AD44D2C41A46A00C55741 /* Config.plist */,
 				5E1242E62C221BFC0042B089 /* Preview Content */,
 			);
 			path = Univestal;
@@ -169,7 +173,6 @@
 				5E9AD4492C407F7B00C55741 /* NetworkManager.swift */,
 				5E9AD44B2C4095CD00C55741 /* NetworkManagerView.swift */,
 				5E9AD44F2C41A53E00C55741 /* Config.swift */,
-				5E9AD44D2C41A46A00C55741 /* Config.plist */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -302,6 +305,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5E11F64E2CE2D1F9000E6DB9 /* .gitignore in Resources */,
 				5E1242E82C221BFC0042B089 /* Preview Assets.xcassets in Resources */,
 				5E1242E52C221BFC0042B089 /* Assets.xcassets in Resources */,
 				5E9AD44E2C41A46A00C55741 /* Config.plist in Resources */,
