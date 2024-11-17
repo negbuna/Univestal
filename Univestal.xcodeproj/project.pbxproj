@@ -10,6 +10,8 @@
 		5E11F64A2CE28AF3000E6DB9 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6492CE28AEC000E6DB9 /* Functions.swift */; };
 		5E11F64C2CE28AFA000E6DB9 /* Buttons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F64B2CE28AF8000E6DB9 /* Buttons.swift */; };
 		5E11F64E2CE2D1F9000E6DB9 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 5E11F64D2CE2D1F1000E6DB9 /* .gitignore */; };
+		5E11F6502CE2DA6A000E6DB9 /* Pages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F64F2CE2DA68000E6DB9 /* Pages.swift */; };
+		5E11F6522CE673CE000E6DB9 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6512CE673CB000E6DB9 /* AppData.swift */; };
 		5E1242DF2C221BFA0042B089 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1242DE2C221BFA0042B089 /* App.swift */; };
 		5E1242E12C221BFA0042B089 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1242E02C221BFA0042B089 /* ContentView.swift */; };
 		5E1242E32C221BFA0042B089 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1242E22C221BFA0042B089 /* Item.swift */; };
@@ -55,6 +57,8 @@
 		5E11F6492CE28AEC000E6DB9 /* Functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
 		5E11F64B2CE28AF8000E6DB9 /* Buttons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Buttons.swift; sourceTree = "<group>"; };
 		5E11F64D2CE2D1F1000E6DB9 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		5E11F64F2CE2DA68000E6DB9 /* Pages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pages.swift; sourceTree = "<group>"; };
+		5E11F6512CE673CB000E6DB9 /* AppData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppData.swift; sourceTree = "<group>"; };
 		5E1242DB2C221BFA0042B089 /* Univestal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Univestal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E1242DE2C221BFA0042B089 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		5E1242E02C221BFA0042B089 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -110,6 +114,7 @@
 				5E1242F02C221BFC0042B089 /* UnivestalTests */,
 				5E1242FA2C221BFC0042B089 /* UnivestalUITests */,
 				5E1242DC2C221BFA0042B089 /* Products */,
+				CA69E66F20C31690C294A399 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -127,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				5E1242DE2C221BFA0042B089 /* App.swift */,
+				5E11F6512CE673CB000E6DB9 /* AppData.swift */,
 				5E1242E02C221BFA0042B089 /* ContentView.swift */,
 				5E1242E22C221BFA0042B089 /* Item.swift */,
 				5EE807892C38D2500070D8E9 /* Onboarding */,
@@ -167,6 +173,7 @@
 		5EA1CDE22C3AF1AE00CE5AAA /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				5EE8078E2C3A200A0070D8E9 /* Homepage.swift */,
 				5EA1CDE32C3AF1DD00CE5AAA /* Hub.swift */,
 				5EA1CDE52C3AFD4C00CE5AAA /* Settings.swift */,
 				5E9AD4472C3C993100C55741 /* Profile.swift */,
@@ -180,13 +187,20 @@
 		5EE807892C38D2500070D8E9 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				5EE8078C2C39F4B90070D8E9 /* Intro.swift */,
+				5EE8078A2C38D2730070D8E9 /* Onboarding.swift */,
+				5E11F64F2CE2DA68000E6DB9 /* Pages.swift */,
 				5E11F6492CE28AEC000E6DB9 /* Functions.swift */,
 				5E11F64B2CE28AF8000E6DB9 /* Buttons.swift */,
-				5EE8078A2C38D2730070D8E9 /* Onboarding.swift */,
-				5EE8078C2C39F4B90070D8E9 /* Intro.swift */,
-				5EE8078E2C3A200A0070D8E9 /* Homepage.swift */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		CA69E66F20C31690C294A399 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -196,19 +210,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5E1243012C221BFC0042B089 /* Build configuration list for PBXNativeTarget "Univestal" */;
 			buildPhases = (
-				EC09FAA6BBF924DDB7FD11E5 /* [CP] Check Pods Manifest.lock */,
 				5E1242D72C221BFA0042B089 /* Sources */,
 				5E1242D82C221BFA0042B089 /* Frameworks */,
 				5E1242D92C221BFA0042B089 /* Resources */,
-				EC818582E09C6C7634AAF205 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Univestal;
-			packageProductDependencies = (
-			);
 			productName = Univestal;
 			productReference = 5E1242DB2C221BFA0042B089 /* Univestal.app */;
 			productType = "com.apple.product-type.application";
@@ -217,7 +227,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5E1243042C221BFC0042B089 /* Build configuration list for PBXNativeTarget "UnivestalTests" */;
 			buildPhases = (
-				3C6FC215E332C6949DDA2EA8 /* [CP] Check Pods Manifest.lock */,
 				5E1242E92C221BFC0042B089 /* Sources */,
 				5E1242EA2C221BFC0042B089 /* Frameworks */,
 				5E1242EB2C221BFC0042B089 /* Resources */,
@@ -228,8 +237,6 @@
 				5E1242EF2C221BFC0042B089 /* PBXTargetDependency */,
 			);
 			name = UnivestalTests;
-			packageProductDependencies = (
-			);
 			productName = UnivestalTests;
 			productReference = 5E1242ED2C221BFC0042B089 /* UnivestalTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -238,7 +245,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5E1243072C221BFC0042B089 /* Build configuration list for PBXNativeTarget "UnivestalUITests" */;
 			buildPhases = (
-				555F70FEA624A1A7E5A889F7 /* [CP] Check Pods Manifest.lock */,
 				5E1242F32C221BFC0042B089 /* Sources */,
 				5E1242F42C221BFC0042B089 /* Frameworks */,
 				5E1242F52C221BFC0042B089 /* Resources */,
@@ -249,8 +255,6 @@
 				5E1242F92C221BFC0042B089 /* PBXTargetDependency */,
 			);
 			name = UnivestalUITests;
-			packageProductDependencies = (
-			);
 			productName = UnivestalUITests;
 			productReference = 5E1242F72C221BFC0042B089 /* UnivestalUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -287,8 +291,6 @@
 				Base,
 			);
 			mainGroup = 5E1242D22C221BFA0042B089;
-			packageReferences = (
-			);
 			productRefGroup = 5E1242DC2C221BFA0042B089 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -330,92 +332,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		3C6FC215E332C6949DDA2EA8 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-UnivestalTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		555F70FEA624A1A7E5A889F7 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-UnivestalUITests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		EC09FAA6BBF924DDB7FD11E5 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Univestal-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		EC818582E09C6C7634AAF205 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Univestal/Pods-Univestal-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Univestal/Pods-Univestal-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Univestal/Pods-Univestal-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		5E1242D72C221BFA0042B089 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -424,6 +340,7 @@
 				5EE8078F2C3A200A0070D8E9 /* Homepage.swift in Sources */,
 				5E1242E12C221BFA0042B089 /* ContentView.swift in Sources */,
 				5E9AD44A2C407F7B00C55741 /* NetworkManager.swift in Sources */,
+				5E11F6522CE673CE000E6DB9 /* AppData.swift in Sources */,
 				5E1242E32C221BFA0042B089 /* Item.swift in Sources */,
 				5EA1CDE42C3AF1DD00CE5AAA /* Hub.swift in Sources */,
 				5E11F64A2CE28AF3000E6DB9 /* Functions.swift in Sources */,
@@ -433,6 +350,7 @@
 				5E9AD4482C3C993100C55741 /* Profile.swift in Sources */,
 				5EE8078B2C38D2730070D8E9 /* Onboarding.swift in Sources */,
 				5EE8078D2C39F4B90070D8E9 /* Intro.swift in Sources */,
+				5E11F6502CE2DA6A000E6DB9 /* Pages.swift in Sources */,
 				5EA1CDE62C3AFD4C00CE5AAA /* Settings.swift in Sources */,
 				5E1242DF2C221BFA0042B089 /* App.swift in Sources */,
 			);
@@ -602,19 +520,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Univestal/Preview Content\"";
 				DEVELOPMENT_TEAM = WM4543PAN6;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)/**",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/Alamofire\"",
-					"$(PODS_ROOT)/**/**",
-				);
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)/**",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/Alamofire/Alamofire.framework/Headers\"",
-					"$(PODS_ROOT)/Headers/Public/**",
-					"$(PODS_ROOT)/Headers/Private/**",
-				);
-				INFOPLIST_KEY_CFBundleDisplayName = "Old App 2";
+				INFOPLIST_KEY_CFBundleDisplayName = Univestal;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -625,21 +532,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)/**",
-					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
-					/usr/lib/swift,
-					"$(PODS_ROOT)/**/**",
-				);
+				LIBRARY_SEARCH_PATHS = "";
 				MARKETING_VERSION = 1.0;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-framework",
-					"\"Alamofire\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-ObjC",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.negbuna.Univestal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -658,19 +552,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Univestal/Preview Content\"";
 				DEVELOPMENT_TEAM = WM4543PAN6;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)/**",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/Alamofire\"",
-					"$(PODS_ROOT)/**/**",
-				);
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)/**",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/Alamofire/Alamofire.framework/Headers\"",
-					"$(PODS_ROOT)/Headers/Public/**",
-					"$(PODS_ROOT)/Headers/Private/**",
-				);
-				INFOPLIST_KEY_CFBundleDisplayName = "Old App 2";
+				INFOPLIST_KEY_CFBundleDisplayName = Univestal;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -681,21 +564,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)/**",
-					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
-					/usr/lib/swift,
-					"$(PODS_ROOT)/**/**",
-				);
+				LIBRARY_SEARCH_PATHS = "";
 				MARKETING_VERSION = 1.0;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-framework",
-					"\"Alamofire\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-ObjC",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.negbuna.Univestal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

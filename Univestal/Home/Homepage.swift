@@ -7,42 +7,38 @@
 
 import SwiftUI
 
-struct ColorManager {
-    static var bkgColor: Color = Color(UIColor.systemBackground)
-    // Add more static variables as needed
-}
-
 struct HomepageView: View {
     
-    //MARK: STATE VARS
+    @StateObject var appData: AppData
     
     @State private var isAnimating: Bool = false
-    @State var appState: Int = 0
-    @State var lastPage: Int = 0
+    @State private var appState: Int = 0
+    @State private var lastPage: Int = 0
     let transition: AnyTransition = .asymmetric(
         insertion: .move(edge: .trailing),
         removal: .move(edge: .leading))
     
     var body: some View {
-        switch appState {
-        case 0:
-            welcomeSec2
-                .transition(transition)
-        case 1:
-            homepage
-                .transition(transition)
-        default:
-            welcomeSec2
-                .transition(transition)
+        VStack {
+            switch appState {
+            case 0:
+                welcomeSec2
+                    .transition(transition)
+            case 1:
+                homepage
+                    .transition(transition)
+            default:
+                welcomeSec2
+                    .transition(transition)
+            }
         }
-        
-        
-        
+        .ignoresSafeArea()
     }
 }
 
 #Preview {
-    HomepageView()
+    HomepageView(appData: AppData()) // Create a new AppData instance for preview
+        .environmentObject(AppData()) // Inject AppData environment object
 }
 
 
@@ -52,7 +48,7 @@ extension HomepageView {
         
         GeometryReader { geometry in
             VStack {
-                Text("Univestal")
+                Text("Welcome")
                     .foregroundStyle(.primary)
                     .font(.largeTitle)
                     .fontWeight(.semibold)

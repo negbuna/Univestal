@@ -8,6 +8,8 @@
 import SwiftUI
 import CryptoKit
 
+
+
 // MARK: STATE VARS
 
 func hashPassword(_ password: String) -> String {
@@ -17,6 +19,8 @@ func hashPassword(_ password: String) -> String {
 }
 
 struct UVOnboardingViews: View {
+    
+    @EnvironmentObject var appData: AppData
     
     // Onboarding states
     /*
@@ -55,7 +59,6 @@ struct UVOnboardingViews: View {
     
     //MARK: user vars
     @State var name: String = ""
-    @State var age: Double = 14
     @State var password: String = ""
     @State var confirmPassword: String = ""
     @State private var univestalUsers: Set<String> = []
@@ -83,11 +86,8 @@ struct UVOnboardingViews: View {
                 case 2:
                     addPasswordSec
                         .transition(transition)
-                case 3:
-                    addAgeSec
-                        .transition(transition)
                 case 4:
-                    HomepageView()
+                    HomepageView(appData: appData)
                 case 5:
                     loginSec
                 default:
@@ -413,43 +413,43 @@ extension UVOnboardingViews {
             }
         }
     
-    private var addAgeSec: some View {
-        VStack(alignment: .leading) {
-            Text("What's your age?")
-                .font(.largeTitle)
-                .fontWeight(.semibold)
-                .foregroundStyle(.primary)
-            Text("It's never too late to start investing.")
-                .font(.caption)
-                .foregroundStyle(.primary)
-            Slider(value: $age, in: 14...100, step: 1)
-            Text("\(String(format: "%.0f", age))")
-                .font(.largeTitle)
-                .foregroundStyle(.primary)
-                
-        }
-        .padding()
-        .onAppear {
-            withAnimation(.easeOut(duration: 2)) {
-                isAnimating = true
-                showLoginButton = false
-                showButton = false
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                showNextButton3 = true
-            }
-        }
-        .overlay(alignment: .topLeading) {
-            if onboardingState == 2 {
-                Image(systemName: "globe")
-                    .foregroundStyle(.primary)
-                    .opacity(0.07)
-                    .font(.system(size: 800))
-                    .offset(x: 20, y: 2)
-                    .ignoresSafeArea()
-            }
-        }
-    }
+//    private var addAgeSec: some View {
+//        VStack(alignment: .leading) {
+//            Text("What's your age?")
+//                .font(.largeTitle)
+//                .fontWeight(.semibold)
+//                .foregroundStyle(.primary)
+//            Text("It's never too late to start investing.")
+//                .font(.caption)
+//                .foregroundStyle(.primary)
+//            Slider(value: $age, in: 14...100, step: 1)
+//            Text("\(String(format: "%.0f", age))")
+//                .font(.largeTitle)
+//                .foregroundStyle(.primary)
+//                
+//        }
+//        .padding()
+//        .onAppear {
+//            withAnimation(.easeOut(duration: 2)) {
+//                isAnimating = true
+//                showLoginButton = false
+//                showButton = false
+//            }
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//                showNextButton3 = true
+//            }
+//        }
+//        .overlay(alignment: .topLeading) {
+//            if onboardingState == 2 {
+//                Image(systemName: "globe")
+//                    .foregroundStyle(.primary)
+//                    .opacity(0.07)
+//                    .font(.system(size: 800))
+//                    .offset(x: 20, y: 2)
+//                    .ignoresSafeArea()
+//            }
+//        }
+//    }
     
     //MARK: LOGIN SECTION
     
@@ -518,7 +518,6 @@ extension UVOnboardingViews {
         usernames.append(name)
         storedUsernamesData = encodeUsernames(usernames)
         currentUsername = name
-        currentUserAge = Int(age)
         storedHashedPassword = hashPassword(password)
         currentUserSignedIn = true
         let dateFormatter = DateFormatter()
@@ -566,7 +565,6 @@ extension UVOnboardingViews {
     
     func signIn() {
         currentUsername = name
-        currentUserAge = Int(age)
         currentUserSignedIn = true
         addUser()
     }
