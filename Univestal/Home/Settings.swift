@@ -9,15 +9,17 @@ import SwiftUI
 
 struct UVSettingsView: View {
     
-    //state vars
+    @ObservedObject var appData = AppData()
+    
     @AppStorage("username") var currentUsername: String?
-    @AppStorage("age") var currentUserAge: Int?
     @AppStorage("signed_in") var currentUserSignedIn: Bool = false
     @AppStorage("hashed_password") var storedHashedPassword: String?
     
     @State private var showAlertSignout: Bool = false
     @State private var showAlertDelete: Bool = false
     @State private var shouldShowIntroView: Bool = false // Control navigation
+    
+    @StateObject private var uvf = UVFunctions(appData: AppData())
     
     var body: some View {
         
@@ -66,6 +68,7 @@ struct UVSettingsView: View {
                                 primaryButton: .cancel(Text("No")),
                                 secondaryButton: .destructive(Text("Delete Account")) {
                                     deleteAccount()
+                                    uvf.removeUser(currentUsername!) // Force unwrapped since you can't be in this view without being logged in
                                     currentUserSignedIn = false
                                 }
                             )
@@ -79,13 +82,11 @@ struct UVSettingsView: View {
     
     private func signOut() {
         currentUsername = nil
-        currentUserAge = nil
         currentUserSignedIn = false
     }
     
     private func deleteAccount() {
         currentUsername = nil
-        currentUserAge = nil
         currentUserSignedIn = false
         storedHashedPassword = nil
 
@@ -94,11 +95,8 @@ struct UVSettingsView: View {
 }
 
 
-struct UVSettingsView_Previews: PreviewProvider {
-    
-    static var previews: some View {
-        UVSettingsView()
-    }
+#Preview {
+    UVSettingsView()
 }
 
 struct PrivacyPolicyView: View {

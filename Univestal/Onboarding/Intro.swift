@@ -8,23 +8,26 @@
 import SwiftUI
 
 struct UVIntroView: View {
-    
     @AppStorage("signed_in") var isLoggedIn: Bool = false
+    
+    @EnvironmentObject var appData: AppData
     
     var body: some View {
         
-        
         ZStack {
-            
             if isLoggedIn {
-                HomepageView()
+                HomepageView(appData: appData)
             } else {
-                UVOnboardingViews()
+                PageViews(appData: appData)
             }
         } // end zstack
     }
 }
 
 #Preview {
+    @Previewable @EnvironmentObject var appData: AppData
+    
     UVIntroView()
+        .environmentObject(appData)
+
 }

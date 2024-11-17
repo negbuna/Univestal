@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-//import Alamofire
 
 class AlpacaModel: ObservableObject {
     @Published var stocks: [Stock] = []
