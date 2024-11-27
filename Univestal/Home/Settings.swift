@@ -71,7 +71,6 @@ struct UVSettingsView: View {
     } // end body
 }
 
-
 #Preview {
     UVSettingsView(appData: AppData())
 }

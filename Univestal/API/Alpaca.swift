@@ -8,34 +8,13 @@
 import Foundation
 import Combine
 
-// Model for Stock Data
-
-struct Stock: Hashable, Codable {
-    let symbol: String
-    let price: Double
-}
-
-struct Account: Hashable, Codable {
-    let id: String
-    let cash: String
-    let portfolioValue: String
-}
-
-struct Order: Hashable, Codable {
-    let id: String
-    let symbol: String
-    let qty: Int
-    let filledQty: Int
-    let status: String
-}
-
-class NetworkManager: ObservableObject {
+class Alpaca: ObservableObject {
     @Published var stocks: [Stock] = []
     @Published var account: Account?
     @Published var orders: [Order] = []
 
-    private let apiKey = Config.apiKey
-    private let secretKey = Config.secretKey
+    private let apiKey = Config.alpacaKey
+    private let secretKey = Config.alpacaSecret
     private let baseURL = "https://paper-api.alpaca.markets"
 
     private func createRequest(endpoint: String) -> URLRequest {

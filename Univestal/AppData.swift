@@ -22,7 +22,8 @@ class AppData: ObservableObject {
     @Published var showLoginButton: Bool = false
     @Published var isButtonDisabled: Bool = true
     @Published var hasAttemptedLogin: Bool = false
-    
+    @Published var watchlist: Set<String> = [] // Store coin IDs in a Set for easy lookup
+
     @AppStorage("username") var currentUsername: String = "" // The active user
     @AppStorage("joindate") var storedJoinDateString: String?
     @AppStorage("signed_in") var currentUserSignedIn: Bool = false
@@ -177,6 +178,16 @@ class AppData: ObservableObject {
             // Password section: disable by default until password criteria is met
             isButtonDisabled = password.count < 6 || password.isEmpty || password != confirmPassword
             print("Checking password. Stored: \(password), Input Hashed: \(hashPassword(password))")
+        }
+    }
+    
+    // MARK: Crypto
+    
+    func toggleWatchlist(for id: String) {
+        if watchlist.contains(id) {
+            watchlist.remove(id)
+        } else {
+            watchlist.insert(id)
         }
     }
 }

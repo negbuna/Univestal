@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PageViews: View {
     @ObservedObject var appData: AppData
+    @ObservedObject var crypto: Crypto
     
     @State var showPrimary: Bool = false
     @State var showContinue: Bool = false
@@ -146,7 +147,7 @@ struct PageViews: View {
                 addPasswordSec
             case 3:
                 // Confirmation screen
-                HomepageView(appData: appData)
+                HomepageView(appData: appData, crypto: crypto)
             case 4:
                 loginSec
             default:
@@ -167,7 +168,7 @@ struct PageViews: View {
 }
 
 #Preview {
-    PageViews(appData: AppData())
+    PageViews(appData: AppData(), crypto: Crypto())
 }
 
 // Trying overlay as a var in a differet way

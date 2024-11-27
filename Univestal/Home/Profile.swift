@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// Issue: after pfp is changed, goes back to hub and not profile section
 struct UVProfileView: View {
     @ObservedObject var appData: AppData
     
@@ -74,7 +73,7 @@ struct UVProfileView: View {
                 }
             }
             .sheet(isPresented: $showImagePicker) {
-                ImagePicker(image: $image, isPresented: $showImagePicker)
+                ImagePicker(selectedImage: $image)
             }
         }
     }

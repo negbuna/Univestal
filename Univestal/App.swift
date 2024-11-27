@@ -10,7 +10,10 @@ import SwiftData
 
 @main
 struct UnivestalApp: App {
-    @StateObject var appData = AppData() // Initialization for AppData
+    @StateObject var appData = AppData()
+    @StateObject var crypto = Crypto()
+    @StateObject var alpacaModel = AlpacaModel()
+
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Item.self])
@@ -25,7 +28,7 @@ struct UnivestalApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Stage(appData: appData) // Pass to Stage
+            Stage(appData: appData, crypto: crypto)
         }
         .modelContainer(sharedModelContainer)
     }

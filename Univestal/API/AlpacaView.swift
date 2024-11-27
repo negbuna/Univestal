@@ -7,96 +7,8 @@
 
 import SwiftUI
 
-class AlpacaModel: ObservableObject {
-    @Published var stocks: [Stock] = []
-    @Published var account: Account?
-    @Published var orders: [Order] = []
-    
-    func fetchStocks() {
-        guard let url = URL(string: "https://paper-api.alpaca.markets/v2/stocks") else {
-            return
-        }
-        
-        let task = URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
-            guard let data = data, error == nil else {
-                print("Failed to fetch stocks: \(error?.localizedDescription ?? "Unknown error")")
-                return
-            }
-            
-            if let jsonString = String(data: data, encoding: .utf8) {
-                print("JSON Response: \(jsonString)")
-            }
-
-            
-            // Converting to JSON
-            do {
-                let stocks = try JSONDecoder().decode([Stock].self, from: data)
-                DispatchQueue.main.async {
-                    self?.stocks = stocks
-                    print("Fetched stocks: \(stocks)")
-                }
-            } catch {
-                print("Failed to decode stocks: \(error)")
-            }
-        }
-        task.resume()
-    }
-    
-    func fetchAccount() {
-        guard let url = URL(string: "https://paper-api.alpaca.markets/v2/account") else {
-            return
-        }
-        
-        let task = URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
-            guard let data = data, error == nil else {
-                print("Failed to fetch account: \(error?.localizedDescription ?? "Unknown error")")
-                return
-            }
-            
-            // Converting to JSON
-            do {
-                let account = try JSONDecoder().decode(Account.self, from: data)
-                DispatchQueue.main.async {
-                    self?.account = account
-                    print("Fetched account: \(account)")
-                }
-            } catch {
-                print("Failed to decode account: \(error)")
-            }
-        }
-        task.resume()
-    }
-    
-    func fetchOrders() {
-        guard let url = URL(string: "https://paper-api.alpaca.markets/v2/orders") else {
-            return
-        }
-        
-        let task = URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
-            guard let data = data, error == nil else {
-                print("Failed to fetch orders: \(error?.localizedDescription ?? "Unknown error")")
-                return
-            }
-            
-            // Converting to JSON
-            do {
-                let orders = try JSONDecoder().decode([Order].self, from: data)
-                DispatchQueue.main.async {
-                    self?.orders = orders
-                    print("Fetched orders: \(orders)")
-                }
-            } catch {
-                print("Failed to decode orders: \(error)")
-            }
-        }
-        task.resume()
-    }
-}
-
-
-
-struct NetworkManagerView: View {
-    @StateObject var alpacaModel = AlpacaModel()
+struct AlpacaView: View {
+    @ObservedObject var alpacaModel: AlpacaModel
     
     var body: some View {
         NavigationView {
@@ -133,7 +45,7 @@ struct NetworkManagerView: View {
                         }
                         .padding()
                     } else {
-                        Text("No account info available.")
+                        Text("No account information available.")
                             .padding()
                     }
                     
@@ -160,7 +72,7 @@ struct NetworkManagerView: View {
                 }
                 .padding()
             }
-            .navigationTitle("API Integration Example")
+            .navigationTitle("Alpaca")
             .onAppear {
                 // Fetch data when view appears
                 alpacaModel.fetchStocks()
@@ -171,8 +83,6 @@ struct NetworkManagerView: View {
     }
 }
 
-struct NetworkManagerView_Previews: PreviewProvider {
-    static var previews: some View {
-        NetworkManagerView()
-    }
+#Preview {
+    AlpacaView(alpacaModel: AlpacaModel())
 }

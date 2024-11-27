@@ -9,10 +9,11 @@ import SwiftUI
 
 struct HomepageView: View {
     @ObservedObject var appData: AppData
+    @ObservedObject var crypto: Crypto
     
-    @State private var isAnimating: Bool = false
-    @State private var appState: Int = 0
-    @State private var lastPage: Int = 0
+    @State var isAnimating: Bool = false
+    @State var appState: Int = 0 // REMEMBER TO CHANGE THIS BACK TO 0 WHEN SIMULATING
+    @State var page: Int = 0
     let transition: AnyTransition = .asymmetric(
         insertion: .move(edge: .trailing),
         removal: .move(edge: .leading))
@@ -36,7 +37,7 @@ struct HomepageView: View {
 }
 
 #Preview {
-    HomepageView(appData: AppData())
+    HomepageView(appData: AppData(), crypto: Crypto())
 }
 
 extension HomepageView {
@@ -59,7 +60,7 @@ extension HomepageView {
                 withAnimation(.easeOut(duration: 2)) {
                     isAnimating = true
                 }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     withAnimation {
                         appState = 1
                     }
@@ -69,32 +70,32 @@ extension HomepageView {
     }
     
     private var homepage: some View {
-        TabView(selection: $lastPage) {
+        TabView(selection: $page) {
             UVHubView(appData: appData)
                 .tabItem {
                     Label("Hub", systemImage: "globe")
-                        .tag(0)
                 }
-            Text("Search View")
+                .tag(0)
+            Search(appData: appData, crypto: crypto)
                 .tabItem {
-                    Label("Search", systemImage: "magnifyingglass")
-                        .tag(1)
+                    Label("Coins", systemImage: "magnifyingglass")
                 }
-            Text("Watchlist View")
-                .tabItem {
-                    Label("Watchlist", systemImage: "star")
-                        .tag(2)
-                }
+                .tag(1)
             Text("Trading View")
                 .tabItem {
-                    Label("Trade", systemImage: "chart.line.uptrend.xyaxis")
-                        .tag(3)
+                    Label("Trade", systemImage: "chart.bar")
                 }
+                .tag(2)
+            Text("Learn View")
+                .tabItem {
+                    Label("Learn", systemImage: "puzzlepiece")
+                }
+                .tag(3)
             UVProfileView(appData: appData)
                 .tabItem {
                     Label("Me", systemImage: "person")
-                        .tag(4)
                 }
+                .tag(4)
         }
         .tabViewStyle(DefaultTabViewStyle())
         .edgesIgnoringSafeArea(.bottom)
