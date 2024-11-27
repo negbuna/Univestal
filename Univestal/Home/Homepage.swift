@@ -83,12 +83,12 @@ extension HomepageView {
                 .tag(1)
             Text("Trading View")
                 .tabItem {
-                    Label("Trade", systemImage: "chart.bar")
+                    Label("Trade", systemImage: "chart.line.uptrend.xyaxis")
                 }
                 .tag(2)
             Text("Learn View")
                 .tabItem {
-                    Label("Learn", systemImage: "puzzlepiece")
+                    Label("Learn", systemImage: "puzzlepiece.extension")
                 }
                 .tag(3)
             UVProfileView(appData: appData)
