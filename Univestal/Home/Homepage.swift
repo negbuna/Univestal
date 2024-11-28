@@ -14,22 +14,19 @@ struct HomepageView: View {
     @State var isAnimating: Bool = false
     @State var appState: Int = 0 // REMEMBER TO CHANGE THIS BACK TO 0 WHEN SIMULATING
     @State var page: Int = 0
-    let transition: AnyTransition = .asymmetric(
-        insertion: .move(edge: .trailing),
-        removal: .move(edge: .leading))
     
     var body: some View {
         VStack {
             switch appState {
             case 0:
                 welcomeSec2
-                    .transition(transition)
+                    .transition(appData.transition)
             case 1:
                 homepage
-                    .transition(transition)
+                    .transition(appData.transition)
             default:
                 welcomeSec2
-                    .transition(transition)
+                    .transition(appData.transition)
             }
         }
         .ignoresSafeArea()
@@ -86,7 +83,7 @@ extension HomepageView {
                     Label("Trade", systemImage: "chart.line.uptrend.xyaxis")
                 }
                 .tag(2)
-            Text("Learn View")
+            Learn()
                 .tabItem {
                     Label("Learn", systemImage: "puzzlepiece.extension")
                 }

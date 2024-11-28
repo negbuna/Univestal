@@ -29,24 +29,35 @@ struct Search: View {
         NavigationStack {
             List(filteredCoins) { coin in
                 HStack {
-                    VStack(alignment: .leading) {
-                        Text(coin.name)
-                            .font(.headline)
-                        Text(coin.symbol.uppercased())
-                            .font(.subheadline)
-                    }
-
-                    Spacer()
-
-                    // Star button to add/remove from watchlist
                     Button(action: {
                         appData.toggleWatchlist(for: coin.id)
                     }) {
                         Image(systemName: appData.watchlist.contains(coin.id) ? "star.fill" : "star")
                             .foregroundColor(appData.watchlist.contains(coin.id) ? .yellow : .gray)
                     }
+                    .buttonStyle(BorderlessButtonStyle()) // So button taps are not intercepted
+                    
+                    VStack(alignment: .leading) {
+                        Text(coin.name)
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        Text(coin.symbol.uppercased())
+                            .font(.subheadline)
+                            .foregroundColor(.primary)
+                    }
+                    
+                    Spacer()
+                    
+                    VStack {
+                        Text(String(format: "%.2f", coin.current_price))
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        Text(String(format: "%.2f", coin.price_change_percentage_24h ?? 0.00))
+                            .font(.subheadline)
+                            .foregroundColor(appData.percentColor(coin.price_change_percentage_24h ?? 0))
+                    }
                 }
-                .contentShape(Rectangle()) // Makes the whole row tappable
+                .contentShape(Rectangle()) // Keeps row tappable for gestures
                 .onTapGesture {
                     selectedCoinID = coin.id
                 }
@@ -70,7 +81,7 @@ struct Search: View {
             }
             .navigationDestination(isPresented: .constant(selectedCoinID != nil)) {
                 if let coin = selectedCoin {
-                    CoinDetailView(coin: coin)
+                    CoinDetailView(appData: appData, coin: coin)
                 }
             }
         }

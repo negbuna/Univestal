@@ -8,34 +8,36 @@
 import SwiftUI
 
 struct CoinDetailView: View {
+    @ObservedObject var appData: AppData
     let coin: Coin
-
+     
     var body: some View {
         ScrollView {
             ZStack {
-                RoundedRectangle(cornerRadius: 20)
-                    .foregroundColor(.primary)
                 VStack(alignment: .leading, spacing: 16) {
-
                     Text("Symbol: \(coin.symbol.uppercased())")
                         .font(.headline)
                     Text("Current Price: \(coin.current_price, specifier: "%.2f") USD")
-                    Text("Market Cap: \(coin.market_cap, specifier: "%.0f") USD")
-                    Text("24h Volume: \(coin.total_volume, specifier: "%.0f") USD")
+                    Text("Market Cap: \(appData.formatLargeNumber(coin.market_cap)) USD")
+                    Text("24h Volume: \(appData.formatLargeNumber(coin.total_volume)) USD")
                     Text("24h High: \(coin.high_24h ?? 0, specifier: "%.2f") USD")
                     Text("24h Low: \(coin.low_24h ?? 0, specifier: "%.2f") USD")
                     Text("24h Price Change: \(coin.price_change_24h ?? 0, specifier: "%.2f") USD")
 
                     if let sparkline = coin.sparkline_in_7d?.price {
-                        // Visualize sparkline or use it as needed
+                        // Visualize sparkline
                         Text("Sparkline available (\(sparkline.count) points)")
                     } else {
-                        Text("No sparkline data available.")
+                        Text("Sparkline data is currently unavailable")
                     }
-                } // end v
-                
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                    .foregroundStyle(.primary)
+                    .opacity(0.07)
+                )
             }
-            .padding()
         }
         .navigationTitle(coin.name)
     }

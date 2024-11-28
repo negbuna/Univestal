@@ -28,7 +28,11 @@ class AppData: ObservableObject {
     @AppStorage("joindate") var storedJoinDateString: String?
     @AppStorage("signed_in") var currentUserSignedIn: Bool = false
     @AppStorage("storedUserCredentials") var storedUserCredentialsData: String = "" // JSON string for user credentials in AppStorage
-
+    
+    let transition: AnyTransition = .asymmetric(
+        insertion: .move(edge: .trailing),
+        removal: .move(edge: .leading))
+    
     // MARK: User Credentials
 
     var userCredentials: [String: String] {
@@ -188,6 +192,32 @@ class AppData: ObservableObject {
             watchlist.remove(id)
         } else {
             watchlist.insert(id)
+        }
+    }
+    
+    func formatLargeNumber(_ number: Double) -> String {
+        let absNumber = abs(number) // Ensure positive values for formatting
+        switch absNumber {
+        case 1_000_000_000_000...:
+            return String(format: "%.2fT", number / 1_000_000_000_000) // Trillions
+        case 1_000_000_000...:
+            return String(format: "%.2fB", number / 1_000_000_000) // Billions
+        case 1_000_000...:
+            return String(format: "%.2fM", number / 1_000_000) // Millions
+        case 1_000...:
+            return String(format: "%.0f", number) // Thousands without decimal
+        default:
+            return String(format: "%.2f", number) // Below 1,000
+        }
+    }
+    
+    func percentColor(_ number: Double) -> Color {
+        if number > 0 {
+            return .green // Positive change
+        } else if number < 0 {
+            return .red // Negative change
+        } else {
+            return .white // No change
         }
     }
 }

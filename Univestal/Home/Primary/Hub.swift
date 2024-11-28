@@ -11,12 +11,9 @@ struct UVHubView: View {
     @ObservedObject var appData: AppData
     
     var body: some View {
-        
         NavigationStack {
-            
             ScrollView {
                 ZStack {
-                    
                     ColorManager.bkgColor
                         .ignoresSafeArea()
                     
@@ -52,29 +49,23 @@ struct UVHubView: View {
                             .frame(width: 300, height:200)
                             .foregroundStyle(Color(UIColor.systemBackground))
                             .shadow(color: .primary.opacity(1), radius: 10)
-                        
-                        
                     } // end vstack
-                    
                 } // end zstack
-                
             } // end scrollview
             .navigationTitle("Hub")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(destination: UVSettingsView(appData: appData)) {
                                 Image(systemName: "gearshape.fill")
-                            }
+                    }
                 }
             }
         }
     }
 }
 
-struct UVHubView_Previews: PreviewProvider {
-    @State static private var currentPage = 0 // Example state for preview
-    
-    static var previews: some View {
-        UVHubView(appData: AppData())
-    }
+
+#Preview {
+    UVHubView(appData: AppData())
 }
+
