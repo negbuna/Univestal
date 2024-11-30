@@ -10,6 +10,7 @@ import SwiftUI
 struct HomepageView: View {
     @ObservedObject var appData: AppData
     @ObservedObject var crypto: Crypto
+    @ObservedObject var news: News
     
     @State var isAnimating: Bool = false
     @State var appState: Int = 0 // REMEMBER TO CHANGE THIS BACK TO 0 WHEN SIMULATING
@@ -34,7 +35,7 @@ struct HomepageView: View {
 }
 
 #Preview {
-    HomepageView(appData: AppData(), crypto: Crypto())
+    HomepageView(appData: AppData(), crypto: Crypto(), news: News())
 }
 
 extension HomepageView {
@@ -68,7 +69,7 @@ extension HomepageView {
     
     private var homepage: some View {
         TabView(selection: $page) {
-            UVHubView(appData: appData)
+            UVHubView(appData: appData, news: news)
                 .tabItem {
                     Label("Hub", systemImage: "globe")
                 }

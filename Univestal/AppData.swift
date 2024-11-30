@@ -5,13 +5,10 @@
 //  Created by Nathan Egbuna on 11/14/24.
 //
 
-import SwiftUI
-import Combine
-import CryptoKit
-
 // Shared state model
 import Foundation
 import CryptoKit
+import Combine
 import SwiftUI
 
 class AppData: ObservableObject {

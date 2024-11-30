@@ -12,6 +12,7 @@ import SwiftData
 struct UnivestalApp: App {
     @StateObject var appData = AppData()
     @StateObject var crypto = Crypto()
+    @StateObject var news = News()
     @StateObject var alpacaModel = AlpacaModel()
 
     
@@ -28,7 +29,7 @@ struct UnivestalApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Stage(appData: appData, crypto: crypto)
+            Stage(appData: appData, crypto: crypto, news: news)
         }
         .modelContainer(sharedModelContainer)
     }

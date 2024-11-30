@@ -34,4 +34,13 @@ struct Config {
         }
         return key
     }
+    
+    static var newsKey: String {
+        guard let path = Bundle.main.path(forResource: "Config", ofType: "plist"),
+              let config = NSDictionary(contentsOfFile: path),
+              let key = config["NEWS-API"] as? String else {
+            fatalError("CoinGecko API key not found in Config.plist")
+        }
+        return key
+    }
 }

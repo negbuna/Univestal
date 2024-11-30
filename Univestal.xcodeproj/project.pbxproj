@@ -21,6 +21,8 @@
 		5E11F6772CF559F8000E6DB9 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6762CF559F8000E6DB9 /* ImagePicker.swift */; };
 		5E11F6792CF7A4CA000E6DB9 /* CoinDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6782CF7A4CA000E6DB9 /* CoinDetailView.swift */; };
 		5E11F67D2CF8E0E6000E6DB9 /* Learn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F67C2CF8E0E4000E6DB9 /* Learn.swift */; };
+		5E11F6812CF91389000E6DB9 /* NewsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6802CF91384000E6DB9 /* NewsModels.swift */; };
+		5E11F6832CF913BE000E6DB9 /* News.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6822CF913BC000E6DB9 /* News.swift */; };
 		5E1242DF2C221BFA0042B089 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1242DE2C221BFA0042B089 /* App.swift */; };
 		5E1242E12C221BFA0042B089 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1242E02C221BFA0042B089 /* ContentView.swift */; };
 		5E1242E32C221BFA0042B089 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1242E22C221BFA0042B089 /* Item.swift */; };
@@ -76,6 +78,8 @@
 		5E11F6762CF559F8000E6DB9 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		5E11F6782CF7A4CA000E6DB9 /* CoinDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinDetailView.swift; sourceTree = "<group>"; };
 		5E11F67C2CF8E0E4000E6DB9 /* Learn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Learn.swift; sourceTree = "<group>"; };
+		5E11F6802CF91384000E6DB9 /* NewsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsModels.swift; sourceTree = "<group>"; };
+		5E11F6822CF913BC000E6DB9 /* News.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = News.swift; sourceTree = "<group>"; };
 		5E1242DB2C221BFA0042B089 /* Univestal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Univestal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E1242DE2C221BFA0042B089 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		5E1242E02C221BFA0042B089 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -129,6 +133,8 @@
 				5E9AD44F2C41A53E00C55741 /* Config.swift */,
 				5E11F66C2CF54E71000E6DB9 /* CoinModels.swift */,
 				5E11F66A2CF54C9A000E6DB9 /* Crypto.swift */,
+				5E11F6802CF91384000E6DB9 /* NewsModels.swift */,
+				5E11F6822CF913BC000E6DB9 /* News.swift */,
 				5E11F66E2CF54E9F000E6DB9 /* AlpacaModels.swift */,
 				5E9AD4492C407F7B00C55741 /* Alpaca.swift */,
 				5E9AD44B2C4095CD00C55741 /* AlpacaView.swift */,
@@ -388,6 +394,7 @@
 				5E11F67D2CF8E0E6000E6DB9 /* Learn.swift in Sources */,
 				5E11F65F2CF470F2000E6DB9 /* PrivacyPolicy.swift in Sources */,
 				5E9AD4522C41E01700C55741 /* Config.swift in Sources */,
+				5E11F6812CF91389000E6DB9 /* NewsModels.swift in Sources */,
 				5E11F6752CF55378000E6DB9 /* Search.swift in Sources */,
 				5E11F64C2CE28AFA000E6DB9 /* Buttons.swift in Sources */,
 				5E11F6612CF47127000E6DB9 /* Review.swift in Sources */,
@@ -400,6 +407,7 @@
 				5E11F6502CE2DA6A000E6DB9 /* Pages.swift in Sources */,
 				5EA1CDE62C3AFD4C00CE5AAA /* Settings.swift in Sources */,
 				5E1242DF2C221BFA0042B089 /* App.swift in Sources */,
+				5E11F6832CF913BE000E6DB9 /* News.swift in Sources */,
 				5E11F6732CF551D1000E6DB9 /* Watchlist.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
