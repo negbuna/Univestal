@@ -48,11 +48,11 @@ struct Search: View {
                     
                     Spacer()
                     
-                    VStack {
+                    VStack(alignment: .trailing) {
                         Text(String(format: "%.2f", coin.current_price))
                             .font(.headline)
                             .foregroundColor(.primary)
-                        Text(String(format: "%.2f", coin.price_change_percentage_24h ?? 0.00))
+                        Text(String(format: "%.2f%%", coin.price_change_percentage_24h ?? 0.00))
                             .font(.subheadline)
                             .foregroundColor(appData.percentColor(coin.price_change_percentage_24h ?? 0))
                     }
@@ -71,11 +71,6 @@ struct Search: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     NavigationLink(destination: Watchlist(appData: appData, crypto: crypto)) {
                         Text("Watchlist")
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: UVSettingsView(appData: appData)) {
-                        Image(systemName: "gearshape.fill")
                     }
                 }
             }

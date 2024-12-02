@@ -34,6 +34,8 @@ struct LearnDetailView: View {
 }
 
 struct Learn: View {
+    @State var text: String = ""
+    
     var topics = [
         ("What is investing?",
          "Investing is putting your money into something with the hope that it will grow over time. For example, you might invest in stocks or cryptocurrencies. Think of it as planting a tree that grows and gives you fruit later. Univestal helps by offering a trading simulator where you can practice investing with fake money to see how your decisions play out."),
@@ -63,15 +65,24 @@ struct Learn: View {
         "There are four main types of orders:\n\n1. **Market Orders**: Buy or sell instantly at the current price.\n2. **Limit Orders**: Set a specific price to buy or sell.\n3. **Stop-Limit Orders**: Automatically trade when a target price is reached.\n4. **Bracket Orders**: Lock in profits or cut losses with a pre-set plan.\n\nUnivestal’s trading simulator lets you try all these orders to learn how they work in real markets.")
     ]
     
+    var filteredTopics: [(String, String)] {
+        if text.isEmpty {
+            return topics
+        } else {
+            return topics.filter { $0.0.localizedCaseInsensitiveContains(text) }
+        }
+    }
+    
     var body: some View {
         NavigationStack {
-            List(topics, id: \.0) { topic in
+            List(filteredTopics, id: \.0) { topic in
                 NavigationLink(destination: LearnDetailView(title: topic.0, content: topic.1)) {
                     Text(topic.0)
                         .padding()
                 }
             }
             .navigationTitle("Learn")
+            .searchable(text: $text, prompt: "Search")
         }
     }
 }

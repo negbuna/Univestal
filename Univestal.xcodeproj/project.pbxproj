@@ -131,13 +131,9 @@
 			isa = PBXGroup;
 			children = (
 				5E9AD44F2C41A53E00C55741 /* Config.swift */,
-				5E11F66C2CF54E71000E6DB9 /* CoinModels.swift */,
-				5E11F66A2CF54C9A000E6DB9 /* Crypto.swift */,
-				5E11F6802CF91384000E6DB9 /* NewsModels.swift */,
-				5E11F6822CF913BC000E6DB9 /* News.swift */,
-				5E11F66E2CF54E9F000E6DB9 /* AlpacaModels.swift */,
-				5E9AD4492C407F7B00C55741 /* Alpaca.swift */,
-				5E9AD44B2C4095CD00C55741 /* AlpacaView.swift */,
+				5E11F68C2CFD48C0000E6DB9 /* Alpaca */,
+				5E11F68A2CFD41D4000E6DB9 /* Crypto */,
+				5E11F68B2CFD48AE000E6DB9 /* News */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -156,14 +152,42 @@
 		5E11F67B2CF80222000E6DB9 /* Primary */ = {
 			isa = PBXGroup;
 			children = (
-				5E11F67C2CF8E0E4000E6DB9 /* Learn.swift */,
 				5EA1CDE32C3AF1DD00CE5AAA /* Hub.swift */,
 				5E11F6742CF55376000E6DB9 /* Search.swift */,
+				5E11F67C2CF8E0E4000E6DB9 /* Learn.swift */,
 				5E11F6722CF551CF000E6DB9 /* Watchlist.swift */,
 				5EA1CDE52C3AFD4C00CE5AAA /* Settings.swift */,
 				5E9AD4472C3C993100C55741 /* Profile.swift */,
 			);
 			path = Primary;
+			sourceTree = "<group>";
+		};
+		5E11F68A2CFD41D4000E6DB9 /* Crypto */ = {
+			isa = PBXGroup;
+			children = (
+				5E11F66C2CF54E71000E6DB9 /* CoinModels.swift */,
+				5E11F66A2CF54C9A000E6DB9 /* Crypto.swift */,
+			);
+			path = Crypto;
+			sourceTree = "<group>";
+		};
+		5E11F68B2CFD48AE000E6DB9 /* News */ = {
+			isa = PBXGroup;
+			children = (
+				5E11F6802CF91384000E6DB9 /* NewsModels.swift */,
+				5E11F6822CF913BC000E6DB9 /* News.swift */,
+			);
+			path = News;
+			sourceTree = "<group>";
+		};
+		5E11F68C2CFD48C0000E6DB9 /* Alpaca */ = {
+			isa = PBXGroup;
+			children = (
+				5E11F66E2CF54E9F000E6DB9 /* AlpacaModels.swift */,
+				5E9AD4492C407F7B00C55741 /* Alpaca.swift */,
+				5E9AD44B2C4095CD00C55741 /* AlpacaView.swift */,
+			);
+			path = Alpaca;
 			sourceTree = "<group>";
 		};
 		5E1242D22C221BFA0042B089 = {

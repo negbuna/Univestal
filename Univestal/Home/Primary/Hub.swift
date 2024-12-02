@@ -7,62 +7,48 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct UVHubView: View {
     @ObservedObject var appData: AppData
     @ObservedObject var news: News
-    @State var searchQuery: String = "".lowercased() // Default query
+    @State var searchQuery: String = "" // Default query
     @State private var debounceTimer: Timer?
     @State private var showAlert: Bool = false
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                ZStack {
-                    ColorManager.bkgColor
-                        .ignoresSafeArea()
+            ZStack {
+                ColorManager.bkgColor
+                    .ignoresSafeArea()
 
-                    VStack {
-                        if news.articles.isEmpty {
-                            // Show alert if no articles are found
-                            Text("No articles found.")
-                                .foregroundColor(.gray)
-                                .font(.headline)
-                                .padding()
-                        } else {
-                            // Display articles in a list
-                            List(news.articles) { article in
-                                NavigationLink(destination: ArticleDetailView(article: article)) {
-                                    ArticleCard(article: article)
-                                }
+                VStack {
+                    if news.articles.isEmpty { // Show alert if no articles are found
+                        Text("No articles found.")
+                            .foregroundColor(.gray)
+                            .font(.headline)
+                    } else {
+                        List(news.articles) { article in
+                            NavigationLink(destination: ArticleDetailView(article: article)) {
+                                ArticleCard(article: article)
                             }
-                            .padding()
                         }
                     }
                 }
+                //Text("Displaying articles: \(news.articles.count)")  // Add this line for debugging
             }
             .onAppear {
-                news.fetchArticles(query: "cryptocurrency") // Default query
+                news.loadMockData()
+                news.fetchArticles(query: "crypto news")
             }
             .searchable(text: $searchQuery, prompt: "Search")
-            .onChange(of: searchQuery) { // To prevent rapid successive calls
+            .onChange(of: searchQuery) {
                 debounceTimer?.invalidate()
-                debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                    news.fetchArticles(query: searchQuery)
-                    if news.articles.isEmpty {
-                        showAlert = true
+                debounceTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
+                    if !searchQuery.isEmpty {
+                        news.fetchArticles(query: searchQuery)
                     }
                 }
             }
             .navigationTitle("Top Stories")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: UVSettingsView(appData: appData)) {
-                        Image(systemName: "gearshape.fill")
-                    }
-                }
-            }
             .alert(isPresented: $showAlert) {
                 Alert(title: Text("No Results"), message: Text("No articles were found matching your search."), dismissButton: .default(Text("OK")))
             }
@@ -80,7 +66,7 @@ struct ArticleCard: View {
     var body: some View {
         VStack {
             // Upper half: Article image
-            if let imageUrl = article.imageUrl, let url = URL(string: imageUrl) {
+            if let imageUrl = article.image_url, let url = URL(string: imageUrl) {
                 AsyncImage(url: url) { image in
                     image
                         .resizable()
@@ -93,8 +79,7 @@ struct ArticleCard: View {
                         .frame(height: 200)
                         .cornerRadius(16)
                 }
-            } else {
-                // Fallback view if there is no image URL
+            } else { // Fallback view if there is no image URL
                 Rectangle()
                     .fill(Color.gray.opacity(0.3))
                     .frame(height: 200)
@@ -105,43 +90,29 @@ struct ArticleCard: View {
                             .foregroundColor(.gray)
                     )
             }
+            
             // Lower half: Article details
             VStack(alignment: .leading, spacing: 8) {
-                // News source/company
-                Text(article.source)
+                Text(article.source) // News source/company
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
-                // Title
                 Text(article.title)
                     .font(.headline)
                     .lineLimit(2)
 
                 Divider()
 
-                // Bottom: Date and author
-                HStack {
-                    if let publishedAt = article.publishedAt {
-                        Text(publishedAt, style: .date)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    } else {
-                        Text("Unknown Date")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-//                    Spacer() // Authors aren't included in the API
-//                    Text(article.author ?? "Unknown")
-//                        .font(.subheadline)
-//                        .foregroundColor(.secondary)
+                HStack { // Bottom: Date and author
+                    Text(article.published_at, style: .date)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
             }
             .padding([.top, .bottom], 8)
             .padding(.horizontal)
-
-        } // end VStack
+        } // End VStack
         .background(RoundedRectangle(cornerRadius: 16).fill(Color(.secondarySystemBackground)))
-        .shadow(color: .gray.opacity(0.3), radius: 4, x: 0, y: 2)
     }
 }
 
@@ -153,13 +124,28 @@ struct ArticleDetailView: View {
             Text(article.title)
                 .font(.largeTitle)
                 .bold()
+            if let imageUrl = article.image_url, let url = URL(string: imageUrl) {
+                AsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 200)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                } placeholder: {
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(height: 200)
+                        .cornerRadius(16)
+                }
+            }
+            Text(article.snippet)
 
             if let url = URL(string: article.url) {
                 Link("Read full article on \(article.source)", destination: url)
                     .font(.callout)
                     .foregroundColor(.blue)
             }
-
+            
             Spacer()
         }
         .padding()

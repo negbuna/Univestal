@@ -86,7 +86,7 @@ extension HomepageView {
                 .tag(2)
             Learn()
                 .tabItem {
-                    Label("Learn", systemImage: "puzzlepiece.extension")
+                    Label("Learn", systemImage: "puzzlepiece")
                 }
                 .tag(3)
             UVProfileView(appData: appData)
