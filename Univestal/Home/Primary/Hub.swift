@@ -12,17 +12,24 @@ struct UVHubView: View {
     @ObservedObject var news: News
     @State var searchQuery: String = "" // Default query
     @State private var debounceTimer: Timer?
-    @State private var showAlert: Bool = false
-
+    @State private var isLoading: Bool = false
+    
     var body: some View {
+        
         NavigationStack {
             ZStack {
                 ColorManager.bkgColor
                     .ignoresSafeArea()
 
                 VStack {
-                    if news.articles.isEmpty { // Show alert if no articles are found
+                    if (news.articles.isEmpty && isLoading == false) { // Show alert if no articles are found
                         Text("No articles found.")
+                            .foregroundColor(.gray)
+                            .font(.headline)
+                    } else if isLoading {
+                        ProgressView("Loading articles...")
+                            .progressViewStyle(CircularProgressViewStyle())
+                            .padding()
                             .foregroundColor(.gray)
                             .font(.headline)
                     } else {
@@ -37,20 +44,28 @@ struct UVHubView: View {
             }
             .onAppear {
                 news.loadMockData()
-                news.fetchArticles(query: "crypto news")
+                news.fetchArticles(query: "crypto")
+                print(news.articles)
             }
             .searchable(text: $searchQuery, prompt: "Search")
             .onChange(of: searchQuery) {
                 debounceTimer?.invalidate()
-                debounceTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
+                news.showAlert = false
+                isLoading = true
+                debounceTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false) { _ in
                     if !searchQuery.isEmpty {
-                        news.fetchArticles(query: searchQuery)
+                        news.fetchArticles(query: searchQuery.lowercased())
                     }
+                    isLoading = false
                 }
             }
             .navigationTitle("Top Stories")
-            .alert(isPresented: $showAlert) {
-                Alert(title: Text("No Results"), message: Text("No articles were found matching your search."), dismissButton: .default(Text("OK")))
+            .alert(isPresented: .constant(news.showAlert && !searchQuery.isEmpty)) {
+                Alert(
+                    title: Text("No Results"),
+                    message: Text(news.alertMessage),
+                    dismissButton: .default(Text("OK"))
+                )
             }
         }
     }
@@ -66,11 +81,11 @@ struct ArticleCard: View {
     var body: some View {
         VStack {
             // Upper half: Article image
-            if let imageUrl = article.image_url, let url = URL(string: imageUrl) {
+            if let imageUrl = article.imageUrl, let url = URL(string: imageUrl) {
                 AsyncImage(url: url) { image in
                     image
                         .resizable()
-                        .scaledToFill()
+                        .scaledToFit()
                         .frame(height: 200)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                 } placeholder: {
@@ -103,10 +118,11 @@ struct ArticleCard: View {
 
                 Divider()
 
-                HStack { // Bottom: Date and author
-                    Text(article.published_at, style: .date)
+                HStack() { // Bottom: Date and author
+                    Text(article.publishedAt, style: .date)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                        
                 }
             }
             .padding([.top, .bottom], 8)
@@ -124,7 +140,7 @@ struct ArticleDetailView: View {
             Text(article.title)
                 .font(.largeTitle)
                 .bold()
-            if let imageUrl = article.image_url, let url = URL(string: imageUrl) {
+            if let imageUrl = article.imageUrl, let url = URL(string: imageUrl) {
                 AsyncImage(url: url) { image in
                     image
                         .resizable()
@@ -138,7 +154,12 @@ struct ArticleDetailView: View {
                         .cornerRadius(16)
                 }
             }
-            Text(article.snippet)
+            if let snippet = article.snippet {
+                Text(snippet)
+            } else {
+                Text("No article snippet available.")
+                    .font(.caption)
+            }
 
             if let url = URL(string: article.url) {
                 Link("Read full article on \(article.source)", destination: url)
