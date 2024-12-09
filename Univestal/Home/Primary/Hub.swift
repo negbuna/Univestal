@@ -10,53 +10,53 @@ import SwiftUI
 struct UVHubView: View {
     @ObservedObject var appData: AppData
     @ObservedObject var news: News
-    @State var searchQuery: String = "" // Default query
+    @State var searchQuery: String = ""
     @State private var debounceTimer: Timer?
-    @State private var isLoading: Bool = false
     
     var body: some View {
-        
         NavigationStack {
             ZStack {
                 ColorManager.bkgColor
                     .ignoresSafeArea()
 
-                VStack {
-                    if (news.articles.isEmpty && isLoading == false) { // Show alert if no articles are found
-                        Text("No articles found.")
-                            .foregroundColor(.gray)
-                            .font(.headline)
-                    } else if isLoading {
-                        ProgressView("Loading articles...")
-                            .progressViewStyle(CircularProgressViewStyle())
-                            .padding()
-                            .foregroundColor(.gray)
-                            .font(.headline)
-                    } else {
-                        List(news.articles) { article in
+                ScrollView {
+                    LazyVStack {
+                        ForEach(news.articles.indices, id: \.self) { index in
+                            let article = news.articles[index]
                             NavigationLink(destination: ArticleDetailView(article: article)) {
                                 ArticleCard(article: article)
                             }
+                            // Trigger loading more articles when reaching the last article
+                            .onAppear {
+                                news.loadMoreArticlesIfNeeded(currentArticle: article, query: searchQuery)
+                            }
+                        }
+                        
+                        // Loading indicator
+                        if news.isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                                .padding()
                         }
                     }
+                    .padding()
                 }
-                //Text("Displaying articles: \(news.articles.count)")  // Add this line for debugging
+                .refreshable {
+                    // Pull to refresh
+                    news.fetchArticles(query: searchQuery)
+                }
             }
             .onAppear {
-                news.loadMockData()
                 news.fetchArticles(query: "crypto")
-                print(news.articles)
             }
             .searchable(text: $searchQuery, prompt: "Search")
             .onChange(of: searchQuery) {
                 debounceTimer?.invalidate()
                 news.showAlert = false
-                isLoading = true
                 debounceTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false) { _ in
                     if !searchQuery.isEmpty {
                         news.fetchArticles(query: searchQuery.lowercased())
                     }
-                    isLoading = false
                 }
             }
             .navigationTitle("Top Stories")

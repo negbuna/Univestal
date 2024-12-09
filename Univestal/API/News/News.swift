@@ -13,32 +13,37 @@ class News: ObservableObject {
     @Published var articles: [Article] = []
     @Published var showAlert: Bool = false
     @Published var alertMessage: String = ""
-
+    @Published var isLoading = false
+    @Published var currentPage = 1
+    @Published var totalArticlesFound = 0
+    
     let baseUrl = "https://api.thenewsapi.com/v1/news/all"
     let apiKey = Config.newsKey
+    let articlesPerPage = 3 // Match the API's default limit
 
-    func fetchArticles(query: String) {
-        // Encode the query to make it URL-safe
-        let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? {
-            print("Warning: Query string could not be encoded properly.")
-            return ""
-        }()
+    func fetchArticles(query: String, page: Int = 1) {
+        // Prevent multiple simultaneous requests
+        guard !isLoading else { return }
         
-        guard let url = URL(string: "\(baseUrl)?api_token=\(apiKey)&search=\(queryEncoded)&categories=business,general&published_after=\(oneWeekBack())&language=en") else {
-                print("Invalid URL")
-                DispatchQueue.main.async {
-                    self.showAlert = true
-                    self.alertMessage = "Invalid URL constructed"
-                }
+        isLoading = true
+        
+        let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        
+        guard let url = URL(string: "\(baseUrl)?api_token=\(apiKey)&search=\(queryEncoded)&categories=business,general&published_after=\(oneWeekBack())&language=en&page=\(page)&limit=\(articlesPerPage)") else {
+            print("Invalid URL")
+            isLoading = false
             return
         }
         
-        print()
-        print()
-        print("Generated URL: \(url)") // Debugging
-        
-        // Start the data task
-        URLSession.shared.dataTask(with: url) { data, response, error in
+        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            guard let self = self else { return }
+            
+            defer {
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                }
+            }
+            
             if let error = error {
                 DispatchQueue.main.async {
                     self.showAlert = true
@@ -55,36 +60,14 @@ class News: ObservableObject {
                 return
             }
 
-            if let jsonString = String(data: data, encoding: .utf8) {
-                print()
-                print()
-                print("Raw JSON Response: \(jsonString)")
-            } else {
-                print("Failed to convert data to string.")
-            }
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                    print("HTTP Status Code: \(httpResponse.statusCode)")
-                    
-                    // Check for unsuccessful status codes
-                    guard (200...299).contains(httpResponse.statusCode) else {
-                        DispatchQueue.main.async {
-                            self.showAlert = true
-                            self.alertMessage = "Server returned an error: HTTP \(httpResponse.statusCode)"
-                        }
-                        return
-                    }
-                }
-
-
-            // Decoding the JSON response
             do {
                 let decoder = JSONDecoder()
+                let formatter = ISO8601DateFormatter()
+                formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
                 decoder.dateDecodingStrategy = .custom { decoder -> Date in
                     let container = try decoder.singleValueContainer()
                     let dateString = try container.decode(String.self)
                     
-                    // Use a local formatter instance inside the closure
                     let formatter = ISO8601DateFormatter()
                     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
                     
@@ -95,52 +78,42 @@ class News: ObservableObject {
                     throw DecodingError.dataCorruptedError(in: container, debugDescription: "Cannot decode date string: \(dateString)")
                 }
                 
-                // Print raw JSON for debugging
-                if let jsonString = String(data: data, encoding: .utf8) {
-                    print("Raw JSON Response: \(jsonString)")
-                }
-                
                 let decodedResponse = try decoder.decode(NewsResponse.self, from: data)
                 
-                print("Meta Information:")
-                print("Found articles: \(decodedResponse.meta.found)")
-                print("Articles returned: \(decodedResponse.meta.returned)")
-                print("Decoded articles: \(decodedResponse.data.count)")
-                
                 DispatchQueue.main.async {
-                    self.articles = decodedResponse.data
+                    // If it's the first page, replace articles
+                    // If it's a subsequent page, append articles
+                    if page == 1 {
+                        self.articles = decodedResponse.data
+                    } else {
+                        self.articles.append(contentsOf: decodedResponse.data)
+                    }
+                    
+                    self.totalArticlesFound = decodedResponse.meta.found
+                    self.currentPage = page
                     
                     if decodedResponse.data.isEmpty {
                         self.showAlert = true
-                        self.alertMessage = "No articles found matching your search."
+                        self.alertMessage = "No more articles found."
                     }
                 }
             } catch {
-                print("Decoding Error Details:")
-                print("Error Description: \(error.localizedDescription)")
-                
-                // If it's a decoding error, print more details
-                if let decodingError = error as? DecodingError {
-                    switch decodingError {
-                    case .dataCorrupted(let context):
-                        print("Data Corrupted: \(context)")
-                    case .keyNotFound(let key, let context):
-                        print("Key Not Found: \(key), Context: \(context)")
-                    case .typeMismatch(let type, let context):
-                        print("Type Mismatch: \(type), Context: \(context)")
-                    case .valueNotFound(let type, let context):
-                        print("Value Not Found: \(type), Context: \(context)")
-                    @unknown default:
-                        print("Unknown decoding error")
-                    }
-                }
-                
                 DispatchQueue.main.async {
                     self.showAlert = true
-                    self.alertMessage = "Error decoding articles: \(error.localizedDescription)"
+                    self.alertMessage = "Decoding error: \(error.localizedDescription)"
                 }
             }
         }.resume()
+    }
+    
+    func loadMoreArticlesIfNeeded(currentArticle article: Article, query: String) {
+        // Check if the current article is the last one and there are more articles to load
+        guard let article = articles.last, articles.count < totalArticlesFound else {
+            return
+        }
+        
+        // Load next page
+        fetchArticles(query: query, page: currentPage + 1)
     }
     
     private func oneWeekBack() -> String {
