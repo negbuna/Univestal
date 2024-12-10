@@ -31,6 +31,11 @@
 		5E1242F22C221BFC0042B089 /* UnivestalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1242F12C221BFC0042B089 /* UnivestalTests.swift */; };
 		5E1242FC2C221BFC0042B089 /* UnivestalUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1242FB2C221BFC0042B089 /* UnivestalUITests.swift */; };
 		5E1242FE2C221BFC0042B089 /* UnivestalUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E1242FD2C221BFC0042B089 /* UnivestalUITestsLaunchTests.swift */; };
+		5E7F17E12D07E99800CEA4F7 /* TradeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7F17E02D07E99500CEA4F7 /* TradeModels.swift */; };
+		5E7F17E32D07EDF800CEA4F7 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7F17E22D07EDF500CEA4F7 /* Errors.swift */; };
+		5E7F17E72D07FC9F00CEA4F7 /* Trade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7F17E62D07FC9B00CEA4F7 /* Trade.swift */; };
+		5E7F17EB2D07FE9F00CEA4F7 /* CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7F17EA2D07FE9C00CEA4F7 /* CoreData.swift */; };
+		5E7F17EE2D07FED300CEA4F7 /* Entities.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5E7F17EC2D07FED300CEA4F7 /* Entities.xcdatamodeld */; };
 		5E9AD4482C3C993100C55741 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD4472C3C993100C55741 /* Profile.swift */; };
 		5E9AD44A2C407F7B00C55741 /* Alpaca.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD4492C407F7B00C55741 /* Alpaca.swift */; };
 		5E9AD44C2C4095CD00C55741 /* AlpacaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD44B2C4095CD00C55741 /* AlpacaView.swift */; };
@@ -91,6 +96,11 @@
 		5E1242F72C221BFC0042B089 /* UnivestalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnivestalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E1242FB2C221BFC0042B089 /* UnivestalUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnivestalUITests.swift; sourceTree = "<group>"; };
 		5E1242FD2C221BFC0042B089 /* UnivestalUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnivestalUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		5E7F17E02D07E99500CEA4F7 /* TradeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeModels.swift; sourceTree = "<group>"; };
+		5E7F17E22D07EDF500CEA4F7 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
+		5E7F17E62D07FC9B00CEA4F7 /* Trade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trade.swift; sourceTree = "<group>"; };
+		5E7F17EA2D07FE9C00CEA4F7 /* CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreData.swift; sourceTree = "<group>"; };
+		5E7F17ED2D07FED300CEA4F7 /* Entities.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Entities.xcdatamodel; sourceTree = "<group>"; };
 		5E9AD4472C3C993100C55741 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		5E9AD4492C407F7B00C55741 /* Alpaca.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alpaca.swift; sourceTree = "<group>"; };
 		5E9AD44B2C4095CD00C55741 /* AlpacaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlpacaView.swift; sourceTree = "<group>"; };
@@ -127,15 +137,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5E11F6692CF539CE000E6DB9 /* API */ = {
+		5E11F6692CF539CE000E6DB9 /* Backend */ = {
 			isa = PBXGroup;
 			children = (
 				5E9AD44F2C41A53E00C55741 /* Config.swift */,
+				5E7F17DF2D07E98B00CEA4F7 /* Trade */,
 				5E11F68C2CFD48C0000E6DB9 /* Alpaca */,
 				5E11F68A2CFD41D4000E6DB9 /* Crypto */,
 				5E11F68B2CFD48AE000E6DB9 /* News */,
 			);
-			path = API;
+			path = Backend;
 			sourceTree = "<group>";
 		};
 		5E11F67A2CF7AE86000E6DB9 /* Secondary */ = {
@@ -152,6 +163,7 @@
 		5E11F67B2CF80222000E6DB9 /* Primary */ = {
 			isa = PBXGroup;
 			children = (
+				5E7F17E62D07FC9B00CEA4F7 /* Trade.swift */,
 				5EA1CDE32C3AF1DD00CE5AAA /* Hub.swift */,
 				5E11F6742CF55376000E6DB9 /* Search.swift */,
 				5E11F67C2CF8E0E4000E6DB9 /* Learn.swift */,
@@ -215,11 +227,12 @@
 			children = (
 				5E1242DE2C221BFA0042B089 /* App.swift */,
 				5E11F6512CE673CB000E6DB9 /* AppData.swift */,
+				5E7F17EA2D07FE9C00CEA4F7 /* CoreData.swift */,
 				5E1242E02C221BFA0042B089 /* ContentView.swift */,
 				5E1242E22C221BFA0042B089 /* Item.swift */,
 				5EE807892C38D2500070D8E9 /* Onboarding */,
 				5EA1CDE22C3AF1AE00CE5AAA /* Home */,
-				5E11F6692CF539CE000E6DB9 /* API */,
+				5E11F6692CF539CE000E6DB9 /* Backend */,
 				5E1242E42C221BFC0042B089 /* Assets.xcassets */,
 				5E11F64D2CE2D1F1000E6DB9 /* .gitignore */,
 				5E9AD44D2C41A46A00C55741 /* Config.plist */,
@@ -251,6 +264,16 @@
 				5E1242FD2C221BFC0042B089 /* UnivestalUITestsLaunchTests.swift */,
 			);
 			path = UnivestalUITests;
+			sourceTree = "<group>";
+		};
+		5E7F17DF2D07E98B00CEA4F7 /* Trade */ = {
+			isa = PBXGroup;
+			children = (
+				5E7F17E02D07E99500CEA4F7 /* TradeModels.swift */,
+				5E7F17E22D07EDF500CEA4F7 /* Errors.swift */,
+				5E7F17EC2D07FED300CEA4F7 /* Entities.xcdatamodeld */,
+			);
+			path = Trade;
 			sourceTree = "<group>";
 		};
 		5EA1CDE22C3AF1AE00CE5AAA /* Home */ = {
@@ -423,11 +446,16 @@
 				5E11F64C2CE28AFA000E6DB9 /* Buttons.swift in Sources */,
 				5E11F6612CF47127000E6DB9 /* Review.swift in Sources */,
 				5E11F6792CF7A4CA000E6DB9 /* CoinDetailView.swift in Sources */,
+				5E7F17E12D07E99800CEA4F7 /* TradeModels.swift in Sources */,
 				5E11F6772CF559F8000E6DB9 /* ImagePicker.swift in Sources */,
+				5E7F17EE2D07FED300CEA4F7 /* Entities.xcdatamodeld in Sources */,
 				5E9AD44C2C4095CD00C55741 /* AlpacaView.swift in Sources */,
 				5E11F66D2CF54E7D000E6DB9 /* CoinModels.swift in Sources */,
+				5E7F17E72D07FC9F00CEA4F7 /* Trade.swift in Sources */,
+				5E7F17E32D07EDF800CEA4F7 /* Errors.swift in Sources */,
 				5E9AD4482C3C993100C55741 /* Profile.swift in Sources */,
 				5EE8078D2C39F4B90070D8E9 /* Stage.swift in Sources */,
+				5E7F17EB2D07FE9F00CEA4F7 /* CoreData.swift in Sources */,
 				5E11F6502CE2DA6A000E6DB9 /* Pages.swift in Sources */,
 				5EA1CDE62C3AFD4C00CE5AAA /* Settings.swift in Sources */,
 				5E1242DF2C221BFA0042B089 /* App.swift in Sources */,
@@ -766,6 +794,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		5E7F17EC2D07FED300CEA4F7 /* Entities.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				5E7F17ED2D07FED300CEA4F7 /* Entities.xcdatamodel */,
+			);
+			currentVersion = 5E7F17ED2D07FED300CEA4F7 /* Entities.xcdatamodel */;
+			path = Entities.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 5E1242D32C221BFA0042B089 /* Project object */;
 }

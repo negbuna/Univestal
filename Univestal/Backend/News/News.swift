@@ -108,7 +108,7 @@ class News: ObservableObject {
     
     func loadMoreArticlesIfNeeded(currentArticle article: Article, query: String) {
         // Check if the current article is the last one and there are more articles to load
-        guard let article = articles.last, articles.count < totalArticlesFound else {
+        guard articles.count < totalArticlesFound else {
             return
         }
         

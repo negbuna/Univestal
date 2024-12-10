@@ -14,6 +14,7 @@ struct UnivestalApp: App {
     @StateObject var crypto = Crypto()
     @StateObject var news = News()
     @StateObject var alpacaModel = AlpacaModel()
+    @StateObject var tradingManager = PaperTradingManager()
 
     
     var sharedModelContainer: ModelContainer = {

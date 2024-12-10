@@ -11,7 +11,7 @@ import Combine
 class Crypto: ObservableObject { // Fetching Coin data
     @Published var coins: [Coin] = []
     @Published var detailedCoins: [Coin] = []
-    private var cancellables = Set<AnyCancellable>()
+    var cancellables = Set<AnyCancellable>()
     private let apiKey = Config.cryptoKey
 
     // General coin data for searching
