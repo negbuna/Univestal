@@ -217,7 +217,7 @@ class PaperTradingSimulator {
             throw PaperTradingError.storageError("Failed to get trades from portfolio")
         }
         
-        var tradeArray = Array(trades)
+        var _ = Array(trades)
         
         let totalTradeValue = trades.reduce(0.0) { total, trade in
             return total + (trade.currentPrice * trade.quantity)
@@ -231,6 +231,8 @@ class PaperTradingSimulator {
 class PaperTradingManager: ObservableObject {
     private let crypto: Crypto
     private let simulator: PaperTradingSimulator
+    @Published var tradedCoin: String = ""
+    @Published var tradedQuantity: String = ""
     
     init() {
         self.crypto = Crypto()

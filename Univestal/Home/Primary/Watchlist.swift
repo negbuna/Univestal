@@ -72,8 +72,16 @@ struct Watchlist: View {
                 }
             } else {
                 Text("Your watchlist is empty 😢")
+                NavigationLink(destination: Search(appData: appData, crypto: crypto)) {
+                    Text("Add coins")
+                        .foregroundColor(.blue)
+                }
             }
         }
         .navigationTitle("Watchlist")
     }
+}
+
+#Preview {
+    Watchlist(appData: AppData(), crypto: Crypto())
 }

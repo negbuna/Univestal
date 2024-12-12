@@ -11,6 +11,7 @@ struct PageViews: View {
     @ObservedObject var appData: AppData
     @ObservedObject var crypto: Crypto
     @ObservedObject var news: News
+    @ObservedObject var tradingManager: PaperTradingManager
     
     @State var showPrimary: Bool = false
     @State var showContinue: Bool = false
@@ -148,7 +149,7 @@ struct PageViews: View {
                 addPasswordSec
             case 3:
                 // Confirmation screen
-                HomepageView(appData: appData, crypto: crypto, news: news)
+                HomepageView(appData: appData, crypto: crypto, news: news, tradingManager: tradingManager)
             case 4:
                 loginSec
             default:
@@ -169,7 +170,7 @@ struct PageViews: View {
 }
 
 #Preview {
-    PageViews(appData: AppData(), crypto: Crypto(), news: News())
+    PageViews(appData: AppData(), crypto: Crypto(), news: News(), tradingManager: PaperTradingManager())
 }
 
 // Trying overlay as a var in a different way

@@ -15,6 +15,7 @@ struct UnivestalApp: App {
     @StateObject var news = News()
     @StateObject var alpacaModel = AlpacaModel()
     @StateObject var tradingManager = PaperTradingManager()
+    
 
     
     var sharedModelContainer: ModelContainer = {
@@ -30,7 +31,7 @@ struct UnivestalApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Stage(appData: appData, crypto: crypto, news: news)
+            Stage(appData: appData, crypto: crypto, news: news, tradingManager: tradingManager)
         }
         .modelContainer(sharedModelContainer)
     }

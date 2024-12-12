@@ -49,7 +49,7 @@ struct Search: View {
                     Spacer()
                     
                     VStack(alignment: .trailing) {
-                        Text(String(format: "%.2f", coin.current_price))
+                        Text(String(format: "$%.2f", coin.current_price))
                             .font(.headline)
                             .foregroundColor(.primary)
                         Text(String(format: "%.2f%%", coin.price_change_percentage_24h ?? 0.00))
@@ -66,13 +66,6 @@ struct Search: View {
             .navigationTitle("Coins")
             .onAppear {
                 crypto.fetchCoins()
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: Watchlist(appData: appData, crypto: crypto)) {
-                        Text("Watchlist")
-                    }
-                }
             }
             .navigationDestination(isPresented: .constant(selectedCoinID != nil)) {
                 if let coin = selectedCoin {

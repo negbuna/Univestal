@@ -11,6 +11,7 @@ struct HomepageView: View {
     @ObservedObject var appData: AppData
     @ObservedObject var crypto: Crypto
     @ObservedObject var news: News
+    @ObservedObject var tradingManager: PaperTradingManager
     
     @State var isAnimating: Bool = false
     @State var appState: Int = 0 // REMEMBER TO CHANGE THIS BACK TO 0 WHEN SIMULATING
@@ -35,7 +36,7 @@ struct HomepageView: View {
 }
 
 #Preview {
-    HomepageView(appData: AppData(), crypto: Crypto(), news: News())
+    HomepageView(appData: AppData(), crypto: Crypto(), news: News(), tradingManager: PaperTradingManager())
 }
 
 extension HomepageView {
@@ -74,12 +75,12 @@ extension HomepageView {
                     Label("Hub", systemImage: "globe")
                 }
                 .tag(0)
-            Search(appData: appData, crypto: crypto)
+            Watchlist(appData: appData, crypto: crypto)
                 .tabItem {
-                    Label("Coins", systemImage: "magnifyingglass")
+                    Label("Watchlist", systemImage: "star")
                 }
                 .tag(1)
-            Text("Trading View")
+            TradingView(crypto: crypto, tradingManager: tradingManager)
                 .tabItem {
                     Label("Trade", systemImage: "chart.line.uptrend.xyaxis")
                 }
