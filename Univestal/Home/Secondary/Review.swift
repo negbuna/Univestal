@@ -12,6 +12,7 @@ struct Review: View {
     var body: some View {
         Text("Review Content Goes Here")
             .navigationTitle("Review")
+            .navigationBarTitleDisplayMode(.inline)
     }
 }
 

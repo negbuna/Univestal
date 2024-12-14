@@ -72,7 +72,7 @@ struct Transaction {
     let totalCost: Double
 }
 
-class PaperTradingSimulator {
+class PaperTradingSimulator: ObservableObject {
     private let coreDataStack: CoreDataStack
     
     init(initialBalance: Double) {
@@ -229,15 +229,34 @@ class PaperTradingSimulator {
 
 // Usage Example
 class PaperTradingManager: ObservableObject {
-    private let crypto: Crypto
-    private let simulator: PaperTradingSimulator
+    @ObservedObject var crypto: Crypto
+    @ObservedObject var simulator: PaperTradingSimulator
     @Published var tradedCoin: String = ""
     @Published var tradedQuantity: String = ""
+    @Published var portfolioValue: (balance: Double, totalValue: Double) = (0, 0)
     
-    init() {
-        self.crypto = Crypto()
-        self.simulator = PaperTradingSimulator(initialBalance: 10000.0)
+    init(crypto: Crypto, simulator: PaperTradingSimulator) {
+        self.crypto = crypto
+        self.simulator = simulator
+        
+        do {
+            let portfolio = try simulator.getCurrentPortfolio()
+            self.portfolioValue = (balance: portfolio.balance, totalValue: portfolio.balance)
+        } catch {
+            print("Error initializing portfolio value: \(error)")
+            self.portfolioValue = (balance: 0, totalValue: 0) // Fallback if retrieval fails
+        }
+        
         setupCoinPriceUpdates()
+    }
+    
+    func updatePortfolioValue() {
+        do {
+            portfolioValue = try simulator.getPortfolioValue()
+        } catch {
+            print("Error getting portfolio value: \(error)")
+            portfolioValue = (0, 0)
+        }
     }
     
     private func setupCoinPriceUpdates() {

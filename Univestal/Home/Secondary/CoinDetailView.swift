@@ -40,5 +40,6 @@ struct CoinDetailView: View {
             }
         }
         .navigationTitle(coin.name)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

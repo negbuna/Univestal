@@ -66,6 +66,7 @@ struct UVSettingsView: View {
                     } // end section header
                 } // end list
                 .navigationTitle("Settings")
+                .navigationBarTitleDisplayMode(.inline)
             }
         } // end nav stack
     } // end body

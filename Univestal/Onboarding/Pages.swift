@@ -12,9 +12,11 @@ struct PageViews: View {
     @ObservedObject var crypto: Crypto
     @ObservedObject var news: News
     @ObservedObject var tradingManager: PaperTradingManager
+    @ObservedObject var simulator: PaperTradingSimulator
     
     @State var showPrimary: Bool = false
     @State var showContinue: Bool = false
+    @Binding var tradeUUID: UUID?
     
     var obb: UVButtons {
         UVButtons(appData: appData)
@@ -149,7 +151,7 @@ struct PageViews: View {
                 addPasswordSec
             case 3:
                 // Confirmation screen
-                HomepageView(appData: appData, crypto: crypto, news: news, tradingManager: tradingManager)
+                HomepageView(appData: appData, crypto: crypto, news: news, tradingManager: tradingManager, simulator: simulator, tradeUUID: $tradeUUID)
             case 4:
                 loginSec
             default:
@@ -170,7 +172,16 @@ struct PageViews: View {
 }
 
 #Preview {
-    PageViews(appData: AppData(), crypto: Crypto(), news: News(), tradingManager: PaperTradingManager())
+    @Previewable @State var tradeUUID: UUID? = UUID() // UUID for the preview
+    
+    PageViews(
+        appData: AppData(),
+        crypto: Crypto(),
+        news: News(),
+        tradingManager: PaperTradingManager(crypto: Crypto(), simulator: PaperTradingSimulator(initialBalance: 100_000.0)),
+        simulator: PaperTradingSimulator(initialBalance: 100_000.0),
+        tradeUUID: $tradeUUID
+    )
 }
 
 // Trying overlay as a var in a different way

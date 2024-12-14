@@ -82,6 +82,7 @@ struct Learn: View {
                 }
             }
             .navigationTitle("Learn")
+            .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $text, prompt: "Search")
         }
     }

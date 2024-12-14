@@ -64,6 +64,7 @@ struct Search: View {
             }
             .searchable(text: $searchText)
             .navigationTitle("Coins")
+            .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 crypto.fetchCoins()
             }

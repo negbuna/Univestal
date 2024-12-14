@@ -12,10 +12,12 @@ struct HomepageView: View {
     @ObservedObject var crypto: Crypto
     @ObservedObject var news: News
     @ObservedObject var tradingManager: PaperTradingManager
+    @ObservedObject var simulator: PaperTradingSimulator
     
     @State var isAnimating: Bool = false
-    @State var appState: Int = 0 // REMEMBER TO CHANGE THIS BACK TO 0 WHEN SIMULATING
+    @State var appState: Int = 0
     @State var page: Int = 0
+    @Binding var tradeUUID: UUID?
     
     var body: some View {
         VStack {
@@ -36,7 +38,15 @@ struct HomepageView: View {
 }
 
 #Preview {
-    HomepageView(appData: AppData(), crypto: Crypto(), news: News(), tradingManager: PaperTradingManager())
+    @Previewable @State var tradeUUID: UUID? = UUID() // UUID for the preview
+    
+    HomepageView(
+        appData: AppData(),
+        crypto: Crypto(),
+        news: News(),
+        tradingManager: PaperTradingManager(crypto: Crypto(), simulator: PaperTradingSimulator(initialBalance: 100_000.0)),
+        simulator: PaperTradingSimulator(initialBalance: 100_000.0),
+        tradeUUID: $tradeUUID)
 }
 
 extension HomepageView {
@@ -80,7 +90,12 @@ extension HomepageView {
                     Label("Watchlist", systemImage: "star")
                 }
                 .tag(1)
-            TradingView(crypto: crypto, tradingManager: tradingManager)
+            TradingView(
+                crypto: crypto,
+                tradingManager: tradingManager,
+                simulator: simulator,
+                tradeUUID: $tradeUUID
+            )
                 .tabItem {
                     Label("Trade", systemImage: "chart.line.uptrend.xyaxis")
                 }

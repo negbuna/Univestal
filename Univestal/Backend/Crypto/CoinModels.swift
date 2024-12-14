@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-struct Coin: Codable, Identifiable {
+struct Coin: Codable, Identifiable, Hashable {
     let name: String
     let symbol: String
     let id: String
@@ -24,7 +24,7 @@ struct Coin: Codable, Identifiable {
     let image: String
     let sparkline_in_7d: SparklineData? // Optional sparkline data
     
-    struct SparklineData: Codable {
+    struct SparklineData: Codable, Hashable {
         let price: [Double]? // Historical prices for sparkline
     }
 }
