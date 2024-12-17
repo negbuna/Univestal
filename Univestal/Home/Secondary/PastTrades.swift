@@ -64,10 +64,10 @@ struct TradeRowView: View {
                     
                     Spacer()
                     
-                    let amount = trade.purchasePrice * trade.quantity
-                    Text("\(amount, specifier: "$%.2f")")
+                    let amount = trade.purchasePrice * abs(trade.quantity)
+                    Text("\(trade.quantity > 0 ? "-" : "+")\(amount, specifier: "$%.2f")")
                         .fontWeight(.bold)
-                        .foregroundColor(amount < 0 ? .red : .green)
+                        .foregroundColor(trade.quantity > 0 ? .red : .green)
                 }
                 
                 Text(trade.quantity < 0 ? "SELL" : "BUY")
