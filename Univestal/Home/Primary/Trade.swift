@@ -15,6 +15,7 @@ struct TradingView: View {
     @State private var selectedCoin: Coin?
     @State private var tradeErrorAlert: Bool = false
     @State private var isBuying: Bool = true
+    @State private var selectedTimeFrame: TimeFrame = .day
     
     var filteredCoins: [Coin] {
         if tradedCoin.isEmpty {
@@ -62,20 +63,31 @@ struct TradingView: View {
     }
 
     private var portfolioView: some View {
-        VStack(spacing: 6) {
-            Text("Portfolio: \(calculateTotalPortfolioValue(), specifier: "$%.2f")")
-                .font(.title2)
-                .foregroundStyle(.primary)
-                .bold()
-            
-            if let holdings = environment.holdingsValue {
-                Text("Holdings: \(holdings, specifier: "$%.2f")")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+        VStack(spacing: 12) {
+            HStack {
+                Text("Your Portfolio: \(environment.totalPortfolioValue, specifier: "$%.2f")")
+                    .font(.title2)
+                    .bold()
+                
+                if let change = environment.portfolioChange(for: selectedTimeFrame) {
+                    Text("\(change.amount >= 0 ? "+" : "")\(change.amount, specifier: "$%.2f") (\(change.percentage, specifier: "%.1f")%)")
+                        .font(.subheadline)
+                        .foregroundColor(change.amount >= 0 ? .green : .red)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                }
             }
+            
+            Picker("Time Frame", selection: $selectedTimeFrame) {
+                Text("24H").tag(TimeFrame.day)
+                Text("7D").tag(TimeFrame.week)
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+            
             Text("Cash Available: \(environment.portfolioBalance, specifier: "$%.2f")")
-                .font(.headline)
-                .foregroundStyle(.primary)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
             
             tradeButtons
         }

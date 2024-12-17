@@ -51,6 +51,7 @@
 		5EA8D27C2D1107F3000D5022 /* TradingEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA8D27B2D1107F3000D5022 /* TradingEnvironment.swift */; };
 		5EE8078D2C39F4B90070D8E9 /* Stage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE8078C2C39F4B90070D8E9 /* Stage.swift */; };
 		5EE8078F2C3A200A0070D8E9 /* Homepage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE8078E2C3A200A0070D8E9 /* Homepage.swift */; };
+		5EFA2E7A2D11F71400850417 /* TimeFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFA2E792D11F71100850417 /* TimeFrame.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -114,6 +115,7 @@
 		5EA8D27B2D1107F3000D5022 /* TradingEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradingEnvironment.swift; sourceTree = "<group>"; };
 		5EE8078C2C39F4B90070D8E9 /* Stage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stage.swift; sourceTree = "<group>"; };
 		5EE8078E2C3A200A0070D8E9 /* Homepage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Homepage.swift; sourceTree = "<group>"; };
+		5EFA2E792D11F71100850417 /* TimeFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFrame.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -274,6 +276,7 @@
 		5E7F17DF2D07E98B00CEA4F7 /* Trade */ = {
 			isa = PBXGroup;
 			children = (
+				5EFA2E792D11F71100850417 /* TimeFrame.swift */,
 				5EA8D27B2D1107F3000D5022 /* TradingEnvironment.swift */,
 				5E7F17E02D07E99500CEA4F7 /* TradeModels.swift */,
 				5E7F17E22D07EDF500CEA4F7 /* Errors.swift */,
@@ -468,6 +471,7 @@
 				5E1242DF2C221BFA0042B089 /* App.swift in Sources */,
 				5E11F6832CF913BE000E6DB9 /* News.swift in Sources */,
 				5E11F6732CF551D1000E6DB9 /* Watchlist.swift in Sources */,
+				5EFA2E7A2D11F71400850417 /* TimeFrame.swift in Sources */,
 				5EA8D27C2D1107F3000D5022 /* TradingEnvironment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

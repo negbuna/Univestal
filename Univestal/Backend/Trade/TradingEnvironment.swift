@@ -8,6 +8,7 @@
 import SwiftUI
 import CoreData
 import Combine
+import Foundation
 
 class TradingEnvironment: ObservableObject {
     static let shared = TradingEnvironment()
@@ -156,5 +157,47 @@ class TradingEnvironment: ObservableObject {
         
         try? coreDataStack.context.save()
         objectWillChange.send()
+    }
+    
+    func portfolioChange(for timeFrame: TimeFrame) -> (amount: Double, percentage: Double)? {
+        let fetchRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
+        guard let trades = try? coreDataStack.context.fetch(fetchRequest) else { return nil }
+        
+        var totalChange = 0.0
+        var totalValue = 0.0
+        
+        let holdingsByCoin = Dictionary(grouping: trades, by: { $0.coinId })
+        
+        for (coinId, trades) in holdingsByCoin {
+            let quantity = trades.reduce(0.0) { $0 + $1.quantity }
+            
+            guard quantity != 0,
+                  let coin = crypto.coins.first(where: { $0.id == coinId }) else {
+                continue
+            }
+            
+            // Get price change based on timeframe
+            let priceChange: Double? = {
+                switch timeFrame {
+                case .day:
+                    return coin.price_change_24h
+                case .week:
+                    guard let sparkline = coin.sparkline_in_7d?.price,
+                          sparkline.count > 0 else { return nil }
+                    return coin.current_price - sparkline[0]
+                }
+            }()
+            
+            guard let change = priceChange else { continue }
+            
+            let valueChange = change * quantity
+            totalChange += valueChange
+            
+            // Calculate current value for percentage calculation
+            totalValue += coin.current_price * quantity
+        } 
+        
+        let percentageChange = totalValue > 0 ? (totalChange / totalValue) * 100 : 0
+        return (totalChange, percentageChange)
     }
 }
