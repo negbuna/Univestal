@@ -21,7 +21,7 @@ struct Coin: Codable, Identifiable, Hashable {
     let low_24h: Double?
     let price_change_24h: Double?
     let price_change_percentage_24h: Double?
-    let image: String
+    let image: String?
     let sparkline_in_7d: SparklineData? // Optional sparkline data
     
     struct SparklineData: Codable, Hashable {

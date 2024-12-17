@@ -6,25 +6,30 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct TradingView: View {
-    @ObservedObject var crypto: Crypto
-    @ObservedObject var tradingManager: PaperTradingManager
-    @ObservedObject var simulator: PaperTradingSimulator
+    @EnvironmentObject var environment: TradingEnvironment
     @State private var showMenu: Bool = false
-    @State private var showAlert: Bool = false
-    @State private var showMockAlert: Bool = false
-    @State private var insufficientFundsAlert: Bool = false
+    @State private var activeAlert: TradeAlertType?
     @State private var selectedCoin: Coin?
     @State private var tradeErrorAlert: Bool = false
-    @Binding var tradeUUID: UUID?
-
+    @State private var isBuying: Bool = true
+    
     var filteredCoins: [Coin] {
-        if tradingManager.tradedCoin.isEmpty {
-            return crypto.coins
+        if tradedCoin.isEmpty {
+            return environment.crypto.coins
         } else {
-            return crypto.coins.filter { $0.name.lowercased().contains(tradingManager.tradedCoin.lowercased()) }
+            return environment.crypto.coins.filter { $0.name.lowercased().contains(tradedCoin.lowercased()) }
         }
+    }
+    
+    @State private var tradedCoin: String = ""
+    @State private var tradedQuantity: String = ""
+    
+    enum TradeAlertType: Identifiable {
+        var id: String { UUID().uuidString }
+        case confirmTrade, insufficientFunds, insufficientHoldings, tradeError
     }
 
     var body: some View {
@@ -36,45 +41,69 @@ struct TradingView: View {
                         portfolioView
                     }
                     tradeMenuView
+                    Spacer()
                 }
+                .frame(maxWidth: .infinity)
                 .onAppear {
                     startPeriodicFetching()
                 }
                 .navigationTitle("Trading Simulator")
                 .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        NavigationLink("History") {
+                            PastTrades()
+                        }
+                    }
+                }
                 .globeOverlay()
             }
         }
     }
 
     private var portfolioView: some View {
-        ZStack(alignment: .bottom) {
-            RoundedRectangle(cornerRadius: 15)
-                .frame(maxWidth: .infinity)
-                .frame(height: 250)
-                .foregroundStyle(Color(UIColor.secondarySystemBackground))
-                .ignoresSafeArea()
-
-            VStack {
-                Text("Your Portfolio: \(tradingManager.portfolioValue.balance, specifier: "$%.2f")")
-                    .bold()
-
-                tradeButtons
+        VStack(spacing: 6) {
+            Text("Portfolio: \(calculateTotalPortfolioValue(), specifier: "$%.2f")")
+                .font(.title2)
+                .foregroundStyle(.primary)
+                .bold()
+            
+            if let holdings = environment.holdingsValue {
+                Text("Holdings: \(holdings, specifier: "$%.2f")")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
             }
+            Text("Cash Available: \(environment.portfolioBalance, specifier: "$%.2f")")
+                .font(.headline)
+                .foregroundStyle(.primary)
+            
+            tradeButtons
         }
+    }
+
+    private func calculateTotalPortfolioValue() -> Double {
+        let cashBalance = environment.portfolioBalance
+        
+        let fetchRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
+        let trades = try? environment.coreDataStack.context.fetch(fetchRequest)
+        
+        print("Found \(trades?.count ?? 0) trades")
+        
+        let holdingsValue = trades?.reduce(0.0) { total, trade in
+            let currentPrice = environment.crypto.coins.first { $0.id == trade.coinId }?.current_price ?? trade.purchasePrice
+            print("Trade: \(trade.quantity) \(String(describing: trade.coinSymbol)) at current price: \(currentPrice)")
+            return total + (currentPrice * trade.quantity)
+        } ?? 0.0
+        
+        print("Total holdings value: \(holdingsValue)")
+        print("Cash balance: \(cashBalance)")
+        
+        return cashBalance + holdingsValue
     }
 
     private var tradeMenuView: some View {
         Group {
             if showMenu {
-                Color.black.opacity(0.5)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation(.easeInOut) {
-                            showMenu = false
-                        }
-                    }
-
                 VStack {
                     Text("Trade")
                         .foregroundStyle(.secondary)
@@ -83,10 +112,9 @@ struct TradingView: View {
                     Divider()
 
                     TradeMenuView(
-                        crypto: crypto,
-                        tradingManager: tradingManager,
-                        tradeUUID: $tradeUUID,
-                        selectedCoin: $selectedCoin
+                        selectedCoin: $selectedCoin,
+                        tradedCoin: $tradedCoin,
+                        tradedQuantity: $tradedQuantity
                     )
 
                     Divider()
@@ -95,7 +123,6 @@ struct TradingView: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity)
-                .frame(height: 300)
                 .background(
                     RoundedRectangle(cornerRadius: 20)
                         .fill(Color(UIColor.secondarySystemBackground))
@@ -119,137 +146,174 @@ struct TradingView: View {
             Spacer()
 
             Button("Confirm") {
-                // Perform trade action here
-                withAnimation(.easeInOut) {
-                    showAlert = true
-                }
-            }
-            .alert(isPresented: $showAlert) {
-                Alert(
-                    title: Text("Confirm Trade?"),
-                    message: Text("This cannot be undone!"),
-                    primaryButton: .destructive(Text("Cancel")),
-                    secondaryButton: .default(Text("Confirm"), action: {
-                        showMenu = false
-                        if let coin = selectedCoin, let uuid = tradeUUID {
-                            do {
-                                try simulator.sellCoin(tradeId: uuid, currentPrice: coin.current_price)
-                            } catch {
-                                tradeErrorAlert = true
-                            }
-                        } else {
-                            print("No coin selected")
-                            tradeErrorAlert = true
-                        }
-                    })
-                )
-            }
-            .alert(isPresented: $tradeErrorAlert) {
-                Alert(
-                    title: Text("Error"),
-                    message: Text("An error occurred with the trade."),
-                    primaryButton: .default(Text("OK")) {
-                        tradeErrorAlert = false
-                    },
-                    secondaryButton: .cancel() // Dismisses the alert without any action
-                )
+                executeTrade()
             }
             .foregroundStyle(.green)
             .bold()
         }
         .padding(.horizontal)
+        .alert(item: $activeAlert) { alertType in
+            switch alertType {
+            case .confirmTrade:
+                return Alert(
+                    title: Text("Confirm Trade"),
+                    message: Text("Are you sure you want to execute this trade?"),
+                    primaryButton: .default(Text("Confirm")) {
+                        executeTrade()
+                    },
+                    secondaryButton: .cancel()
+                )
+            case .insufficientFunds:
+                return Alert(
+                    title: Text("Insufficient Funds"),
+                    message: Text("You don't have enough funds to complete this trade."),
+                    dismissButton: .default(Text("OK"))
+                )
+            case .insufficientHoldings:
+                return Alert(
+                    title: Text("Insufficient Holdings"),
+                    message: Text("You don't have enough holdings to complete this trade."),
+                    dismissButton: .default(Text("OK"))
+                )
+            case .tradeError:
+                return Alert(
+                    title: Text("Trade Error"),
+                    message: Text("An error occurred while executing the trade."),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
+        }
+    }
+
+    private func executeTrade() {
+        guard let coin = selectedCoin,
+              let quantity = Double(tradedQuantity) else {
+            activeAlert = .tradeError
+            return
+        }
+
+        do {
+            if isBuying {
+                try environment.executeTrade(
+                    coinId: coin.id,
+                    symbol: coin.symbol,
+                    name: coin.name,
+                    quantity: quantity,
+                    currentPrice: coin.current_price
+                )
+            } else {
+                try environment.executeSell(
+                    coinId: coin.id,
+                    symbol: coin.symbol,
+                    name: coin.name,
+                    quantity: quantity,
+                    currentPrice: coin.current_price
+                )
+            }
+            
+            withAnimation(.easeInOut) {
+                showMenu = false
+            }
+            
+            // Reset fields
+            selectedCoin = nil
+            tradedCoin = ""
+            tradedQuantity = ""
+        } catch PaperTradingError.insufficientBalance {
+            activeAlert = .insufficientFunds
+        } catch PaperTradingError.insufficientHoldings {
+            activeAlert = .insufficientHoldings
+        } catch {
+            activeAlert = .tradeError
+            print("Trade error: \(error)")
+        }
     }
 
     private func startPeriodicFetching() {
-        tradingManager.startTradingSimulation()
-        Timer.publish(every: 60.0, on: .main, in: .common)
+        environment.crypto.fetchCoins()
+        
+        Timer.publish(every: 20.0, on: .main, in: .common)
             .autoconnect()
             .sink { _ in
-                tradingManager.startTradingSimulation()
+                environment.crypto.fetchCoins()
+                
+                // Update trade prices with latest coin prices
+                let prices = Dictionary(
+                    uniqueKeysWithValues: environment.crypto.coins.map { 
+                        ($0.id, $0.current_price) 
+                    }
+                )
+                environment.updatePrices(with: prices)
             }
-            .store(in: &crypto.cancellables)
+            .store(in: &environment.crypto.cancellables)
     }
-}
 
-#Preview {
-    @Previewable @State var tradeUUID: UUID? = UUID() // UUID for the preview
-    
-    TradingView(
-        crypto: Crypto(),
-        tradingManager: PaperTradingManager(crypto: Crypto(), simulator: PaperTradingSimulator(initialBalance: 100_000.0)),
-        simulator: PaperTradingSimulator(initialBalance: 100_000.0),
-        tradeUUID: $tradeUUID)
-}
-
-extension TradingView {
     private var tradeButtons: some View {
         HStack {
-            Button("Start Trade") {
+            Button("Buy") {
                 withAnimation(.easeInOut) {
                     showMenu = true
+                    isBuying = true
                 }
             }
             .buttonStyle(.borderedProminent)
 
-            Button("Trade Bitcoin") {
-                tradingManager.performAutomaticTrade(coinId: "bitcoin")
-                showMockAlert = true
+            Button("Sell") {
+                withAnimation(.easeInOut) {
+                    showMenu = true
+                    isBuying = false
+                }
             }
             .buttonStyle(.bordered)
-            .alert("Error: Insufficient funds", isPresented: $showMockAlert) {
-                Button("OK", role: .cancel) { }
-            }
         }
         .padding(.vertical)
     }
 }
 
 struct TradeMenuView: View {
-    @ObservedObject var crypto: Crypto
-    @ObservedObject var tradingManager: PaperTradingManager
-    @State private var hasFetchedCoins = false
-    @Binding var tradeUUID: UUID?
-    @Binding var selectedCoin: Coin? // Bind to the selected coin
+    @EnvironmentObject var environment: TradingEnvironment
+    @Binding var selectedCoin: Coin?
+    @Binding var tradedCoin: String
+    @Binding var tradedQuantity: String
     
     var filteredCoins: [Coin] {
-        if tradingManager.tradedCoin.isEmpty {
-            return crypto.coins
+        if tradedCoin.isEmpty {
+            return environment.crypto.coins
         } else {
-            return crypto.coins.filter {
-                $0.name.lowercased().contains(tradingManager.tradedCoin.lowercased())
+            return environment.crypto.coins.filter {
+                $0.name.lowercased().contains(tradedCoin.lowercased())
             }
         }
     }
 
     var body: some View {
         VStack {
-            TextField("Enter Coin", text: $tradingManager.tradedCoin)
-                .padding(.horizontal)
+            TextField("Enter Coin", text: $tradedCoin)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onChange(of: tradingManager.tradedCoin) {
-                    // This automatically updates the `filteredCoins` dynamically
-                    print("All Coins: \(crypto.coins.map { $0.name })")
-                }
-            TextField("Quantity", text: $tradingManager.tradedQuantity)
-                .padding(.horizontal)
+            
+            TextField("Quantity", text: $tradedQuantity)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-            if !tradingManager.tradedCoin.isEmpty {
+            
+            if !tradedCoin.isEmpty {
                 Picker("Select a Coin", selection: $selectedCoin) {
                     ForEach(filteredCoins, id: \.id) { coin in
                         Text(coin.name)
                             .tag(coin as Coin?)
                     }
                 }
-                .pickerStyle(MenuPickerStyle()) // Use MenuPickerStyle for a dropdown-like interface
-                
+                .pickerStyle(MenuPickerStyle())
+                .onChange(of: selectedCoin) {
+                    if let coin = selectedCoin {
+                        tradedCoin = coin.name
+                    }
+                }
                 if let coin = selectedCoin,
-                   let quantity = Double(tradingManager.tradedQuantity), quantity > 0 {
-                    // Coin is valid and quantity is a valid number
-                    let tradeSummary = coin.current_price * quantity
+                   let quantity = Double(tradedQuantity),
+                   quantity > 0 {
                     VStack(spacing: 8) {
                         Text("Trade Summary")
                             .font(.headline)
-                        Text("\(quantity) \(coin.symbol.uppercased()) = \(String(format: "$%.2f", tradeSummary))")
+                        Text("\(quantity) \(coin.symbol.uppercased()) = \(String(format: "$%.2f", coin.current_price * quantity))")
                             .font(.body)
                             .foregroundColor(.secondary)
                     }
@@ -257,22 +321,19 @@ struct TradeMenuView: View {
                     .background(
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color(UIColor.systemGroupedBackground))
-                            .shadow(radius: 5)
                     )
-                    .padding(.horizontal)
-                } else if !tradingManager.tradedCoin.isEmpty && !tradingManager.tradedQuantity.isEmpty {
-                    // Invalid coin or quantity
-                    Text("Invalid coin or quantity")
                 }
             }
         }
         .padding()
         .onAppear {
-            tradeUUID = UUID()
-            if !hasFetchedCoins {
-                crypto.fetchCoins()
-                hasFetchedCoins = true
-            }
+            tradedCoin = ""
+            tradedQuantity = ""
         }
     }
+}
+
+#Preview {
+    TradingView()
+        .environmentObject(TradingEnvironment.shared)
 }

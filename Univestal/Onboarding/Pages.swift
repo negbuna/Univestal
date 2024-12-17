@@ -8,18 +8,13 @@
 import SwiftUI
 
 struct PageViews: View {
-    @ObservedObject var appData: AppData
-    @ObservedObject var crypto: Crypto
-    @ObservedObject var news: News
-    @ObservedObject var tradingManager: PaperTradingManager
-    @ObservedObject var simulator: PaperTradingSimulator
-    
+    @EnvironmentObject var appData: AppData
+    @EnvironmentObject var environment: TradingEnvironment
     @State var showPrimary: Bool = false
     @State var showContinue: Bool = false
-    @Binding var tradeUUID: UUID?
     
     var obb: UVButtons {
-        UVButtons(appData: appData)
+        UVButtons()
     }
     
     private var welcomeSec: some View {
@@ -151,7 +146,7 @@ struct PageViews: View {
                 addPasswordSec
             case 3:
                 // Confirmation screen
-                HomepageView(appData: appData, crypto: crypto, news: news, tradingManager: tradingManager, simulator: simulator, tradeUUID: $tradeUUID)
+                HomepageView()
             case 4:
                 loginSec
             default:
@@ -165,30 +160,22 @@ struct PageViews: View {
             } else if appData.onboardingState == 0 {
                 obb.primaryStack
             }
-            
         }
         .background(ColorManager.bkgColor)
     }
 }
 
 #Preview {
-    @Previewable @State var tradeUUID: UUID? = UUID() // UUID for the preview
-    
-    PageViews(
-        appData: AppData(),
-        crypto: Crypto(),
-        news: News(),
-        tradingManager: PaperTradingManager(crypto: Crypto(), simulator: PaperTradingSimulator(initialBalance: 100_000.0)),
-        simulator: PaperTradingSimulator(initialBalance: 100_000.0),
-        tradeUUID: $tradeUUID
-    )
+    PageViews()
+        .environmentObject(AppData())
+        .environmentObject(TradingEnvironment.shared)
 }
 
 // Trying overlay as a var in a different way
 struct GlobeOverlay: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .overlay(alignment: .topLeading) {
+            .background(alignment: .topLeading) {
                 Image(systemName: "globe")
                     .foregroundStyle(.primary)
                     .opacity(0.07)

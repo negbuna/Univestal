@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct UVButtons: View {
-    @ObservedObject var appData: AppData
+    @EnvironmentObject var appData: AppData
 
     // The "Back" and "Next" buttons
     var continueStack: some View {
@@ -120,10 +120,8 @@ struct UVButtons: View {
     var body: some View {
         VStack {
             if appData.onboardingState == 0 {
-                // Primary stack when onboardingState is 0 (before sign-up or log-in)
                 primaryStack
             } else {
-                // Continue stack for the rest of the onboarding
                 continueStack
             }
         }

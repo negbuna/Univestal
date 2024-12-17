@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct UVSettingsView: View {
-    @ObservedObject var appData: AppData
+    @EnvironmentObject var appData: AppData    
     
     @State private var showAlertSignout: Bool = false
     @State private var showAlertDelete: Bool = false
@@ -73,5 +73,6 @@ struct UVSettingsView: View {
 }
 
 #Preview {
-    UVSettingsView(appData: AppData())
+    UVSettingsView()
+        .environmentObject(AppData())
 }

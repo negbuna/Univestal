@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct UVProfileView: View {
-    @ObservedObject var appData: AppData
+    @EnvironmentObject var appData: AppData
     
     @State var isEditable: Bool = true
     @State var image: UIImage?
@@ -68,7 +68,7 @@ struct UVProfileView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: UVSettingsView(appData: appData)) {
+                    NavigationLink(destination: UVSettingsView()) {
                         Image(systemName: "gearshape.fill")
                     }
                 }
@@ -81,7 +81,8 @@ struct UVProfileView: View {
 }
 
 #Preview {
-    UVProfileView(appData: AppData())
+    UVProfileView()
+        .environmentObject(AppData())
 }
 
 extension UVProfileView {

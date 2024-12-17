@@ -15,6 +15,8 @@ enum PaperTradingError: Error {
     case invalidQuantity
     case apiError(String)
     case storageError(String)
+    case insufficientHoldings
+    case generalError
     
     var localizedDescription: String {
         switch self {
@@ -28,6 +30,10 @@ enum PaperTradingError: Error {
             return "API Error: \(message)"
         case .storageError(let message):
             return "Storage Error: \(message)"
+        case .insufficientHoldings:
+            return "You don't have enough holdings to complete this trade."
+        default:
+            return "Something went wrong."
         }
     }
 }
