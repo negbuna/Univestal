@@ -10,10 +10,10 @@ import SwiftUI
 struct HomepageView: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
+    @EnvironmentObject var news: News
     @State var isAnimating: Bool = false
     @State var appState: Int = 0
     @State var page: Int = 0
-    @Binding var tradeUUID: UUID?
     
     var body: some View {
         VStack {
@@ -34,9 +34,10 @@ struct HomepageView: View {
 }
 
 #Preview {
-    HomepageView(tradeUUID: .constant(UUID()))
+    HomepageView()
         .environmentObject(AppData())
         .environmentObject(TradingEnvironment.shared)
+        .environmentObject(News())
 }
 
 extension HomepageView {
@@ -80,7 +81,7 @@ extension HomepageView {
                     Label("Watchlist", systemImage: "star")
                 }
                 .tag(1)
-            TradingView(tradeUUID: $tradeUUID)
+            TradingView()
                 .tabItem {
                     Label("Trade", systemImage: "chart.line.uptrend.xyaxis")
                 }

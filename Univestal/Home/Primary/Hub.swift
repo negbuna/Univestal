@@ -6,19 +6,21 @@
 //
 
 import SwiftUI
+import Combine
 
 struct UVHubView: View {
-    @ObservedObject var appData: AppData
-    @ObservedObject var news: News
-    @State var searchQuery: String = ""
-    @State private var debounceTimer: Timer?
+    @EnvironmentObject var appData: AppData
+    @EnvironmentObject var environment: TradingEnvironment
+    @EnvironmentObject var news: News
+    @State private var searchText = ""
+    @State private var searchDebounceTask: Task<Void, Never>?
     
     var body: some View {
         NavigationStack {
             ZStack {
                 ColorManager.bkgColor
                     .ignoresSafeArea()
-
+                
                 ScrollView {
                     LazyVStack {
                         ForEach(news.articles.indices, id: \.self) { index in
@@ -26,13 +28,11 @@ struct UVHubView: View {
                             NavigationLink(destination: ArticleDetailView(article: article)) {
                                 ArticleCard(article: article)
                             }
-                            // Trigger loading more articles when reaching the last article
                             .onAppear {
-                                news.loadMoreArticlesIfNeeded(currentArticle: article, query: searchQuery)
+                                news.loadMoreArticlesIfNeeded(currentArticle: article, query: searchText.isEmpty ? "crypto" : searchText)
                             }
                         }
                         
-                        // Loading indicator
                         if news.isLoading {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle())
@@ -42,37 +42,47 @@ struct UVHubView: View {
                     .padding()
                 }
                 .refreshable {
-                    // Pull to refresh
-                    news.fetchArticles(query: searchQuery)
+                    news.fetchArticles(query: searchText.isEmpty ? "crypto" : searchText)
                 }
             }
-            .onAppear {
-                news.fetchArticles(query: "crypto")
-            }
-            .searchable(text: $searchQuery, prompt: "Search")
-            .onChange(of: searchQuery) {
-                debounceTimer?.invalidate()
-                news.showAlert = false
-                debounceTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false) { _ in
-                    if !searchQuery.isEmpty {
-                        news.fetchArticles(query: searchQuery.lowercased())
+            .searchable(text: $searchText, prompt: "Search")
+            .onChange(of: searchText) {
+                // Cancel any existing debounce task
+                searchDebounceTask?.cancel()
+                
+                // Create new debounce task
+                searchDebounceTask = Task {
+                    try? await Task.sleep(nanoseconds: 2_500_000_000) // 2.5 seconds
+                    if !Task.isCancelled {
+                        await MainActor.run {
+                            news.articles = [] // Clear current articles
+                            news.currentPage = 1 // Reset pagination
+                            news.fetchArticles(query: searchText.isEmpty ? "crypto" : searchText)
+                        }
                     }
                 }
             }
-            .navigationTitle("Top Stories")
-            .alert(isPresented: .constant(news.showAlert && !searchQuery.isEmpty)) {
-                Alert(
-                    title: Text("No Results"),
-                    message: Text(news.alertMessage),
-                    dismissButton: .default(Text("OK"))
-                )
+            .onAppear {
+                if news.articles.isEmpty {
+                    news.fetchArticles(query: "crypto")
+                }
             }
+            .alert("Error", isPresented: $news.showAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(news.alertMessage)
+            }
+            .navigationTitle("Top Stories")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
 
 #Preview {
-    UVHubView(appData: AppData(), news: News())
+    UVHubView()
+        .environmentObject(AppData())
+        .environmentObject(TradingEnvironment.shared)
+        .environmentObject(News())
 }
 
 struct ArticleCard: View {

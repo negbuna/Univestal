@@ -14,9 +14,9 @@
             filePath = "Univestal/Home/Primary/Trade.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "236"
-            endingLineNumber = "236"
-            landmarkName = "filteredCoins"
+            startingLineNumber = "266"
+            endingLineNumber = "266"
+            landmarkName = "tradeButtons"
             landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>

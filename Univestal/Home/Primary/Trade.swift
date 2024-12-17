@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct TradingView: View {
     @EnvironmentObject var environment: TradingEnvironment
@@ -13,7 +14,7 @@ struct TradingView: View {
     @State private var activeAlert: TradeAlertType?
     @State private var selectedCoin: Coin?
     @State private var tradeErrorAlert: Bool = false
-    @Binding var tradeUUID: UUID?
+    @State private var isBuying: Bool = true
     
     var filteredCoins: [Coin] {
         if tradedCoin.isEmpty {
@@ -28,7 +29,7 @@ struct TradingView: View {
     
     enum TradeAlertType: Identifiable {
         var id: String { UUID().uuidString }
-        case confirmTrade, insufficientFunds, tradeError
+        case confirmTrade, insufficientFunds, insufficientHoldings, tradeError
     }
 
     var body: some View {
@@ -61,11 +62,43 @@ struct TradingView: View {
     }
 
     private var portfolioView: some View {
-        VStack {
-            Text("Your Portfolio: \(environment.portfolioBalance, specifier: "$%.2f")")
+        VStack(spacing: 6) {
+            Text("Portfolio: \(calculateTotalPortfolioValue(), specifier: "$%.2f")")
+                .font(.title2)
+                .foregroundStyle(.primary)
                 .bold()
+            
+            if let holdings = environment.holdingsValue {
+                Text("Holdings: \(holdings, specifier: "$%.2f")")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+            }
+            Text("Cash Available: \(environment.portfolioBalance, specifier: "$%.2f")")
+                .font(.headline)
+                .foregroundStyle(.primary)
+            
             tradeButtons
         }
+    }
+
+    private func calculateTotalPortfolioValue() -> Double {
+        let cashBalance = environment.portfolioBalance
+        
+        let fetchRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
+        let trades = try? environment.coreDataStack.context.fetch(fetchRequest)
+        
+        print("Found \(trades?.count ?? 0) trades")
+        
+        let holdingsValue = trades?.reduce(0.0) { total, trade in
+            let currentPrice = environment.crypto.coins.first { $0.id == trade.coinId }?.current_price ?? trade.purchasePrice
+            print("Trade: \(trade.quantity) \(String(describing: trade.coinSymbol)) at current price: \(currentPrice)")
+            return total + (currentPrice * trade.quantity)
+        } ?? 0.0
+        
+        print("Total holdings value: \(holdingsValue)")
+        print("Cash balance: \(cashBalance)")
+        
+        return cashBalance + holdingsValue
     }
 
     private var tradeMenuView: some View {
@@ -136,6 +169,12 @@ struct TradingView: View {
                     message: Text("You don't have enough funds to complete this trade."),
                     dismissButton: .default(Text("OK"))
                 )
+            case .insufficientHoldings:
+                return Alert(
+                    title: Text("Insufficient Holdings"),
+                    message: Text("You don't have enough holdings to complete this trade."),
+                    dismissButton: .default(Text("OK"))
+                )
             case .tradeError:
                 return Alert(
                     title: Text("Trade Error"),
@@ -154,20 +193,39 @@ struct TradingView: View {
         }
 
         do {
-            try environment.executeTrade(
-                coinId: coin.id,
-                symbol: coin.symbol,
-                name: coin.name,
-                quantity: quantity,
-                currentPrice: coin.current_price
-            )
+            if isBuying {
+                try environment.executeTrade(
+                    coinId: coin.id,
+                    symbol: coin.symbol,
+                    name: coin.name,
+                    quantity: quantity,
+                    currentPrice: coin.current_price
+                )
+            } else {
+                try environment.executeSell(
+                    coinId: coin.id,
+                    symbol: coin.symbol,
+                    name: coin.name,
+                    quantity: quantity,
+                    currentPrice: coin.current_price
+                )
+            }
+            
             withAnimation(.easeInOut) {
                 showMenu = false
             }
-        } catch PaperTradingError.insufficientFunds {
+            
+            // Reset fields
+            selectedCoin = nil
+            tradedCoin = ""
+            tradedQuantity = ""
+        } catch PaperTradingError.insufficientBalance {
             activeAlert = .insufficientFunds
+        } catch PaperTradingError.insufficientHoldings {
+            activeAlert = .insufficientHoldings
         } catch {
             activeAlert = .tradeError
+            print("Trade error: \(error)")
         }
     }
 
@@ -188,6 +246,27 @@ struct TradingView: View {
                 environment.updatePrices(with: prices)
             }
             .store(in: &environment.crypto.cancellables)
+    }
+
+    private var tradeButtons: some View {
+        HStack {
+            Button("Buy") {
+                withAnimation(.easeInOut) {
+                    showMenu = true
+                    isBuying = true
+                }
+            }
+            .buttonStyle(.borderedProminent)
+
+            Button("Sell") {
+                withAnimation(.easeInOut) {
+                    showMenu = true
+                    isBuying = false
+                }
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding(.vertical)
     }
 }
 
@@ -223,7 +302,11 @@ struct TradeMenuView: View {
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
-                
+                .onChange(of: selectedCoin) {
+                    if let coin = selectedCoin {
+                        tradedCoin = coin.name
+                    }
+                }
                 if let coin = selectedCoin,
                    let quantity = Double(tradedQuantity),
                    quantity > 0 {
@@ -243,10 +326,14 @@ struct TradeMenuView: View {
             }
         }
         .padding()
+        .onAppear {
+            tradedCoin = ""
+            tradedQuantity = ""
+        }
     }
 }
 
 #Preview {
-    TradingView(tradeUUID: .constant(UUID()))
+    TradingView()
         .environmentObject(TradingEnvironment.shared)
 }

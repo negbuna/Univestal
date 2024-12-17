@@ -65,9 +65,9 @@ struct CoinDetailView: View {
 extension Coin {
     static var example: Coin {
         Coin(
-            id: "bitcoin",
+            name: "bitcoin",
             symbol: "btc",
-            name: "Bitcoin",
+            id: "Bitcoin",
             current_price: 45000.0,
             market_cap: 850000000000,
             total_volume: 25000000000,
@@ -75,6 +75,7 @@ extension Coin {
             low_24h: 44000.0,
             price_change_24h: 1000.0,
             price_change_percentage_24h: 2.5,
+            image: nil,
             sparkline_in_7d: nil
         )
     }

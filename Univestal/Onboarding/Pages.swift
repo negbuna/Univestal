@@ -12,10 +12,9 @@ struct PageViews: View {
     @EnvironmentObject var environment: TradingEnvironment
     @State var showPrimary: Bool = false
     @State var showContinue: Bool = false
-    @Binding var tradeUUID: UUID?
     
     var obb: UVButtons {
-        UVButtons(appData: appData)
+        UVButtons()
     }
     
     private var welcomeSec: some View {
@@ -147,7 +146,7 @@ struct PageViews: View {
                 addPasswordSec
             case 3:
                 // Confirmation screen
-                HomepageView(tradeUUID: $tradeUUID)
+                HomepageView()
             case 4:
                 loginSec
             default:
@@ -167,7 +166,7 @@ struct PageViews: View {
 }
 
 #Preview {
-    PageViews(tradeUUID: .constant(UUID()))
+    PageViews()
         .environmentObject(AppData())
         .environmentObject(TradingEnvironment.shared)
 }

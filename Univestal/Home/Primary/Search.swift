@@ -70,7 +70,7 @@ struct Search: View {
             }
             .navigationDestination(isPresented: .constant(selectedCoinID != nil)) {
                 if let coin = selectedCoin {
-                    CoinDetailView(appData: appData, coin: coin)
+                    CoinDetailView(coin: coin)
                 }
             }
         }

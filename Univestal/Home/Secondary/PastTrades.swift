@@ -10,11 +10,12 @@ import CoreData
 
 struct PastTrades: View {
     @EnvironmentObject var environment: TradingEnvironment
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \CDTrade.purchaseDate, ascending: false)],
-        animation: .default
-    )
-    private var trades: FetchedResults<CDTrade>
+    
+    private var trades: [CDTrade] {
+        let fetchRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \CDTrade.purchaseDate, ascending: false)]
+        return (try? environment.coreDataStack.context.fetch(fetchRequest)) ?? []
+    }
     
     var body: some View {
         NavigationStack {
@@ -25,23 +26,25 @@ struct PastTrades: View {
                         .foregroundColor(.gray)
                 } else {
                     List {
-                        ForEach(trades, id: \.id) { trade in
+                        ForEach(trades) { trade in
                             TradeRowView(trade: trade)
                         }
                     }
                 }
             }
             .navigationTitle("Trade History")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Refresh") {
-                        // Refresh prices from current crypto data
+                    Button {
                         let prices = Dictionary(
-                            uniqueKeysWithValues: environment.crypto.coins.map { 
-                                ($0.id, $0.current_price) 
+                            uniqueKeysWithValues: environment.crypto.coins.map {
+                                ($0.id, $0.current_price)
                             }
                         )
                         environment.updatePrices(with: prices)
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
                     }
                 }
             }
@@ -55,24 +58,35 @@ struct TradeRowView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(trade.coinSymbol?.uppercased() ?? "Unknown")
-                    .font(.headline)
+                HStack {
+                    Text("\(abs(trade.quantity), specifier: "%.3f") \(trade.coinSymbol?.uppercased() ?? "Unknown")")
+                        .font(.headline)
+                    
+                    Spacer()
+                    
+                    let amount = trade.purchasePrice * trade.quantity
+                    Text("\(amount, specifier: "$%.2f")")
+                        .fontWeight(.bold)
+                        .foregroundColor(amount < 0 ? .red : .green)
+                }
+                
+                Text(trade.quantity < 0 ? "SELL" : "BUY")
+                    .font(.caption)
+                    .foregroundColor(trade.quantity < 0 ? .green : .red)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(trade.quantity < 0 ? Color.green.opacity(0.2) : Color.red.opacity(0.2))
+                    )
                 
                 if let date = trade.purchaseDate {
-                    Text(date, formatter: DateFormatter.shortDate)
-                        .font(.subheadline)
+                    Text(date, style: .date)
+                        .font(.caption)
                         .foregroundColor(.secondary)
                 }
-            }
-            
-            Spacer()
-            
-            VStack(alignment: .trailing) {
-                Text(formattedTradeValue)
-                    .fontWeight(.bold)
-                    .foregroundColor(tradeValueColor)
                 
-                if let profitLoss = profitLossValue {
+                if let profitLoss = calculateProfitLoss() {
                     Text(profitLoss)
                         .font(.caption)
                         .foregroundColor(profitLossColor)
@@ -82,12 +96,7 @@ struct TradeRowView: View {
         .padding(.vertical, 5)
     }
     
-    private var formattedTradeValue: String {
-        let totalValue = (trade.quantity) * (trade.currentPrice)
-        return "$\(String(format: "%.2f", totalValue))"
-    }
-    
-    private var profitLossValue: String? {
+    private func calculateProfitLoss() -> String? {
         guard trade.currentPrice > 0, trade.purchasePrice > 0 else { return nil }
         let pl = (trade.currentPrice - trade.purchasePrice) * trade.quantity
         let percentage = ((trade.currentPrice / trade.purchasePrice) - 1) * 100
@@ -95,13 +104,8 @@ struct TradeRowView: View {
     }
     
     private var profitLossColor: Color {
-        guard let pl = profitLossValue else { return .gray }
+        guard let pl = calculateProfitLoss() else { return .gray }
         return pl.hasPrefix("+") ? .green : .red
-    }
-    
-    private var tradeValueColor: Color {
-        guard trade.currentPrice > 0, trade.purchasePrice > 0 else { return .primary }
-        return trade.currentPrice >= trade.purchasePrice ? .green : .red
     }
 }
 

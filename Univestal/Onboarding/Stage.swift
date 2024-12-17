@@ -10,22 +10,19 @@ import SwiftUI
 struct Stage: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
-    @Binding var tradeUUID: UUID?
     
     var body: some View {
         if appData.currentUserSignedIn && !appData.currentUsername.isEmpty {
-            HomepageView(tradeUUID: $tradeUUID)
+            HomepageView()
         } else {
-            PageViews(tradeUUID: $tradeUUID)
+            PageViews()
         }
     }
 }
 
-#Preview {
-    @Previewable @State var tradeUUID: UUID? = UUID() // UUID for the preview
-    
-    Stage(tradeUUID: $tradeUUID)
-    .environmentObject(AppData())
+#Preview { 
+    Stage()
+        .environmentObject(AppData())
         .environmentObject(TradingEnvironment.shared)
 }
 
