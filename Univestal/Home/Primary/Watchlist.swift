@@ -8,22 +8,22 @@
 import SwiftUI
 
 struct Watchlist: View {
-    @ObservedObject var appData: AppData
-    @ObservedObject var crypto: Crypto
+    @EnvironmentObject var appData: AppData
+    @EnvironmentObject var environment: TradingEnvironment
     @State private var searchText = ""
     @State private var selectedCoinID: String? = nil
 
     var filteredWatchlistCoins: [Coin] {
-        let watchlistCoins = crypto.coins.filter { appData.watchlist.contains($0.id) }
+        let watchlistCoins = environment.crypto.coins.filter { appData.watchlist.contains($0.id) }
         if searchText.isEmpty {
             return watchlistCoins
         } else {
             return watchlistCoins.filter { $0.name.lowercased().contains(searchText.lowercased()) }
         }
     }
-
+    
     var selectedCoin: Coin? {
-        crypto.coins.first { $0.id == selectedCoinID }
+        environment.crypto.coins.first { $0.id == selectedCoinID }
     }
 
     var body: some View {
@@ -38,29 +38,26 @@ struct Watchlist: View {
                                 Image(systemName: appData.watchlist.contains(coin.id) ? "star.fill" : "star")
                                     .foregroundColor(appData.watchlist.contains(coin.id) ? .yellow : .gray)
                             }
-                            .buttonStyle(BorderlessButtonStyle()) // So button taps are not intercepted
+                            .buttonStyle(BorderlessButtonStyle())
                             
                             VStack(alignment: .leading) {
                                 Text(coin.name)
                                     .font(.headline)
-                                    .foregroundColor(.primary)
                                 Text(coin.symbol.uppercased())
                                     .font(.subheadline)
-                                    .foregroundColor(.primary)
                             }
                             
                             Spacer()
                             
-                            VStack {
-                                Text(String(format: "%.2f", coin.current_price))
+                            VStack(alignment: .trailing) {
+                                Text(String(format: "$%.2f", coin.current_price))
                                     .font(.headline)
-                                    .foregroundColor(.primary)
                                 Text(String(format: "%.2f%%", coin.price_change_percentage_24h ?? 0.00))
                                     .font(.subheadline)
                                     .foregroundColor(appData.percentColor(coin.price_change_percentage_24h ?? 0))
                             }
                         }
-                        .contentShape(Rectangle()) // Keeps row tappable for gestures
+                        .contentShape(Rectangle())
                         .onTapGesture {
                             selectedCoinID = coin.id
                         }
@@ -68,27 +65,31 @@ struct Watchlist: View {
                     .searchable(text: $searchText)
                     .navigationDestination(isPresented: .constant(selectedCoinID != nil)) {
                         if let coin = selectedCoin {
-                            CoinDetailView(appData: appData, coin: coin)
+                            CoinDetailView(coin: coin)
                         }
                     }
                 } else {
-                    Text("Your watchlist is empty 😢")
+                    Text("Your watchlist is empty")
+                        .font(.headline)
+                        .foregroundColor(.gray)
                 }
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: Search(appData: appData, crypto: crypto)) {
+                    NavigationLink(destination: Search()) {
                         Image(systemName: "magnifyingglass")
                             .foregroundStyle(.blue)
                     }
                 }
             }
-            .navigationTitle("Watchlist") // Make sure this is inside NavigationStack
+            .navigationTitle("Watchlist")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
 
 #Preview {
-    Watchlist(appData: AppData(), crypto: Crypto())
+    Watchlist()
+        .environmentObject(AppData())
+        .environmentObject(TradingEnvironment.shared)
 }

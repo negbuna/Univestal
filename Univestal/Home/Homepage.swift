@@ -8,12 +8,8 @@
 import SwiftUI
 
 struct HomepageView: View {
-    @ObservedObject var appData: AppData
-    @ObservedObject var crypto: Crypto
-    @ObservedObject var news: News
-    @ObservedObject var tradingManager: PaperTradingManager
-    @ObservedObject var simulator: PaperTradingSimulator
-    
+    @EnvironmentObject var appData: AppData
+    @EnvironmentObject var environment: TradingEnvironment
     @State var isAnimating: Bool = false
     @State var appState: Int = 0
     @State var page: Int = 0
@@ -38,15 +34,9 @@ struct HomepageView: View {
 }
 
 #Preview {
-    @Previewable @State var tradeUUID: UUID? = UUID() // UUID for the preview
-    
-    HomepageView(
-        appData: AppData(),
-        crypto: Crypto(),
-        news: News(),
-        tradingManager: PaperTradingManager(crypto: Crypto(), simulator: PaperTradingSimulator(initialBalance: 100_000.0)),
-        simulator: PaperTradingSimulator(initialBalance: 100_000.0),
-        tradeUUID: $tradeUUID)
+    HomepageView(tradeUUID: .constant(UUID()))
+        .environmentObject(AppData())
+        .environmentObject(TradingEnvironment.shared)
 }
 
 extension HomepageView {
@@ -80,22 +70,17 @@ extension HomepageView {
     
     private var homepage: some View {
         TabView(selection: $page) {
-            UVHubView(appData: appData, news: news)
+            UVHubView()
                 .tabItem {
                     Label("Hub", systemImage: "globe")
                 }
                 .tag(0)
-            Watchlist(appData: appData, crypto: crypto)
+            Watchlist()
                 .tabItem {
                     Label("Watchlist", systemImage: "star")
                 }
                 .tag(1)
-            TradingView(
-                crypto: crypto,
-                tradingManager: tradingManager,
-                simulator: simulator,
-                tradeUUID: $tradeUUID
-            )
+            TradingView(tradeUUID: $tradeUUID)
                 .tabItem {
                     Label("Trade", systemImage: "chart.line.uptrend.xyaxis")
                 }
@@ -105,7 +90,7 @@ extension HomepageView {
                     Label("Learn", systemImage: "puzzlepiece")
                 }
                 .tag(3)
-            UVProfileView(appData: appData)
+            UVProfileView()
                 .tabItem {
                     Label("Me", systemImage: "person")
                 }

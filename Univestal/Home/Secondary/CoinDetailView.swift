@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct CoinDetailView: View {
-    @ObservedObject var appData: AppData
+    @EnvironmentObject var appData: AppData
+    @EnvironmentObject var environment: TradingEnvironment
     let coin: Coin
      
     var body: some View {
@@ -25,7 +26,6 @@ struct CoinDetailView: View {
                     Text("24h Price Change: \(coin.price_change_24h ?? 0, specifier: "%.2f") USD")
 
                     if let sparkline = coin.sparkline_in_7d?.price {
-                        // Visualize sparkline
                         Text("Sparkline available (\(sparkline.count) points)")
                     } else {
                         Text("Sparkline data is currently unavailable")
@@ -41,5 +41,41 @@ struct CoinDetailView: View {
         }
         .navigationTitle(coin.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    appData.toggleWatchlist(for: coin.id)
+                }) {
+                    Image(systemName: appData.watchlist.contains(coin.id) ? "star.fill" : "star")
+                        .foregroundColor(appData.watchlist.contains(coin.id) ? .yellow : .gray)
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        CoinDetailView(coin: Coin.example)
+            .environmentObject(AppData())
+            .environmentObject(TradingEnvironment.shared)
+    }
+}
+
+extension Coin {
+    static var example: Coin {
+        Coin(
+            id: "bitcoin",
+            symbol: "btc",
+            name: "Bitcoin",
+            current_price: 45000.0,
+            market_cap: 850000000000,
+            total_volume: 25000000000,
+            high_24h: 46000.0,
+            low_24h: 44000.0,
+            price_change_24h: 1000.0,
+            price_change_percentage_24h: 2.5,
+            sparkline_in_7d: nil
+        )
     }
 }

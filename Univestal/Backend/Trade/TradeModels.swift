@@ -5,9 +5,8 @@
 //  Created by Nathan Egbuna on 12/9/24.
 //
 
-import Foundation
-import CoreData
 import SwiftUI
+import CoreData
 
 struct Trade {
     let id: UUID
@@ -27,35 +26,14 @@ struct Trade {
         guard let currentPrice = currentPrice else { return 0 }
         return (currentPrice - purchasePrice) * quantity
     }
-    
-    var profitLossPercentage: Double {
-        guard let currentPrice = currentPrice else { return 0 }
-        return ((currentPrice - purchasePrice) / purchasePrice) * 100
-    }
 }
 
 struct Portfolio {
     var balance: Double
     var trades: [Trade]
     
-    var totalInvestment: Double {
-        trades.reduce(0) { $0 + ($1.purchasePrice * $1.quantity) }
-    }
-    
-    var currentPortfolioValue: Double {
-        trades.reduce(0) { $0 + ($1.currentPrice ?? $1.purchasePrice * $1.quantity) }
-    }
-    
-    var totalProfitLoss: Double {
-        trades.reduce(0) { $0 + $1.profitLoss }
-    }
-    
-    mutating func addTrade(_ trade: Trade) {
-        trades.append(trade)
-    }
-    
-    mutating func removeTrade(_ trade: Trade) {
-        trades.removeAll { $0.id == trade.id }
+    var totalValue: Double {
+        balance + trades.reduce(0) { $0 + ($1.currentValue) }
     }
 }
 
@@ -72,6 +50,7 @@ struct Transaction {
     let totalCost: Double
 }
 
+// MARK: SIMULATOR
 class PaperTradingSimulator: ObservableObject {
     private let coreDataStack: CoreDataStack
     
@@ -227,6 +206,7 @@ class PaperTradingSimulator: ObservableObject {
     }
 }
 
+// MARK: MANAGER
 // Usage Example
 class PaperTradingManager: ObservableObject {
     @ObservedObject var crypto: Crypto
@@ -248,6 +228,14 @@ class PaperTradingManager: ObservableObject {
         }
         
         setupCoinPriceUpdates()
+    }
+    
+    var filteredCoins: [Coin] {
+        if tradedCoin.isEmpty {
+            return crypto.coins
+        } else {
+            return crypto.coins.filter { $0.name.lowercased().contains(tradedCoin.lowercased()) }
+        }
     }
     
     func updatePortfolioValue() {

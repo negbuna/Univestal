@@ -8,21 +8,21 @@
 import SwiftUI
 
 struct Search: View {
-    @ObservedObject var appData: AppData
-    @ObservedObject var crypto: Crypto
+    @EnvironmentObject var appData: AppData
+    @EnvironmentObject var environment: TradingEnvironment
     @State private var searchText = ""
     @State private var selectedCoinID: String? = nil
 
     var filteredCoins: [Coin] {
         if searchText.isEmpty {
-            return crypto.coins
+            return environment.crypto.coins
         } else {
-            return crypto.coins.filter { $0.name.lowercased().contains(searchText.lowercased()) }
+            return environment.crypto.coins.filter { $0.name.lowercased().contains(searchText.lowercased()) }
         }
     }
 
     var selectedCoin: Coin? {
-        crypto.coins.first { $0.id == selectedCoinID }
+        environment.crypto.coins.first { $0.id == selectedCoinID }
     }
 
     var body: some View {
@@ -66,7 +66,7 @@ struct Search: View {
             .navigationTitle("Coins")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
-                crypto.fetchCoins()
+                environment.crypto.fetchCoins()
             }
             .navigationDestination(isPresented: .constant(selectedCoinID != nil)) {
                 if let coin = selectedCoin {
@@ -78,5 +78,7 @@ struct Search: View {
 }
 
 #Preview {
-    Search(appData: AppData(), crypto: Crypto())
+    Search()
+        .environmentObject(AppData())
+        .environmentObject(TradingEnvironment.shared)
 }

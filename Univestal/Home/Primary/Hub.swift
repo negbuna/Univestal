@@ -158,7 +158,8 @@ struct ArticleDetailView: View {
                 Text(snippet)
             } else {
                 Text("No article snippet available.")
-                    .font(.caption)
+                    .font(.headline)
+                    .foregroundColor(.gray)
             }
 
             if let url = URL(string: article.url) {
