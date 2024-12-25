@@ -13,10 +13,6 @@ struct PageViews: View {
     @State var showPrimary: Bool = false
     @State var showContinue: Bool = false
     
-    var obb: UVButtons {
-        UVButtons()
-    }
-    
     private var welcomeSec: some View {
         GeometryReader { geometry in
             ZStack {
@@ -156,9 +152,9 @@ struct PageViews: View {
             Spacer()
             
             if appData.onboardingState > 0 && appData.onboardingState <= 2 || appData.onboardingState == 4 {
-                obb.continueStack
+                continueStack
             } else if appData.onboardingState == 0 {
-                obb.primaryStack
+                primaryStack
             }
         }
         .background(ColorManager.bkgColor)
@@ -171,23 +167,110 @@ struct PageViews: View {
         .environmentObject(TradingEnvironment.shared)
 }
 
-// Trying overlay as a var in a different way
-struct GlobeOverlay: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .background(alignment: .topLeading) {
-                Image(systemName: "globe")
-                    .foregroundStyle(.primary)
-                    .opacity(0.07)
-                    .font(.system(size: 800))
-                    .offset(x: 20, y: 2)
-                    .ignoresSafeArea()
+extension PageViews {
+    var continueStack: some View {
+        HStack {
+            backButton
+            nextButton
+        }
+        .padding()
+        .onChange(of: appData.onboardingState) {
+            appData.updateButtonState()
+        }
+        .onChange(of: appData.name) {
+            appData.updateButtonState()
+            if appData.onboardingState == 4 {
+                appData.hasAttemptedLogin = false
             }
+        }
+        .onChange(of: appData.password) {
+            appData.updateButtonState()
+            if appData.onboardingState == 4 {
+                appData.hasAttemptedLogin = false
+            }
+        }
+        .onChange(of: appData.confirmPassword) {
+            appData.updateButtonState()
+        }
     }
-}
 
-extension View {
-    func globeOverlay() -> some View {
-        self.modifier(GlobeOverlay())
+    // Separate view for Back Button
+    var backButton: some View {
+        Button("Back") {
+            withAnimation {
+                if appData.onboardingState > 0 && appData.onboardingState != 4 {
+                    appData.onboardingState -= 1
+                } else {
+                    appData.onboardingState = 0
+                }
+            }
+            appData.updateButtonState()
+        }
+        .foregroundStyle(.white)
+        .frame(height: 55)
+        .frame(maxWidth: .infinity)
+        .background(Color.blue)
+        .cornerRadius(20)
+    }
+
+    // Separate view for Next Button
+    var nextButton: some View {
+        Button("Next") {
+            withAnimation {
+                if appData.onboardingState != 4 && appData.onboardingState != 2 {
+                    appData.onboardingState += 1
+                } else if appData.onboardingState == 2 {
+                    print("Before sign-up: \(appData.password)")
+                    appData.signUp()
+                    print("After sign-up: \(appData.hashPassword(appData.password))")
+                    appData.onboardingState = 3
+                } else if appData.onboardingState == 4 {
+                    appData.hasAttemptedLogin = true
+                    if appData.login() {
+                        appData.onboardingState = 3
+                    }
+                }
+            }
+            appData.updateButtonState()
+        }
+        .disabled(appData.isNextButtonDisabled)
+        .foregroundStyle(.white)
+        .frame(height: 55)
+        .frame(maxWidth: .infinity)
+        .background(appData.isNextButtonDisabled ? Color.gray : Color.blue)
+        .cornerRadius(20)
+        .opacity(appData.isNextButtonDisabled ? 0.5 : 1.0)
+    }
+
+    // The "Log in" and "Sign up" buttons
+    var primaryStack: some View {
+        HStack {
+            Button("Log in") {
+                withAnimation {
+                    appData.onboardingState = 4
+                    appData.showLoginButton = false
+                }
+                appData.updateButtonState()
+            }
+            .foregroundStyle(.white)
+            .frame(height: 55)
+            .frame(maxWidth: .infinity)
+            .background(Color.blue)
+            .cornerRadius(20)
+
+            Button("Sign up") {
+                withAnimation {
+                    appData.onboardingState = 1
+                    appData.showLoginButton = false
+                }
+                appData.updateButtonState()
+            }
+            .foregroundStyle(.white)
+            .frame(height: 55)
+            .frame(maxWidth: .infinity)
+            .background(Color.blue)
+            .cornerRadius(20)
+        }
+        .padding()
     }
 }

@@ -348,4 +348,5 @@ struct TradeMenuView: View {
 #Preview {
     TradingView()
         .environmentObject(TradingEnvironment.shared)
+        .environmentObject(AppData())
 }
