@@ -89,56 +89,41 @@ struct ArticleCard: View {
     let article: Article
 
     var body: some View {
-        VStack {
-            // Upper half: Article image
-            if let imageUrl = article.imageUrl, let url = URL(string: imageUrl) {
-                AsyncImage(url: url) { image in
-                    image
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 200)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                } placeholder: {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(height: 200)
-                        .cornerRadius(16)
+        GeometryReader { geometry in
+            VStack(alignment: .leading) {
+                // Upper half: Article image
+                if let imageUrl = article.imageUrl, let url = URL(string: imageUrl) {
+                    AsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: geometry.size.width, height: 200)
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                    } placeholder: {
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(width: geometry.size.width, height: 200)
+                            .cornerRadius(16)
+                    }
                 }
-            } else { // Fallback view if there is no image URL
-                Rectangle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(height: 200)
-                    .cornerRadius(16)
-                    .overlay(
-                        Text("No Image")
-                            .font(.headline)
-                            .foregroundColor(.gray)
-                    )
-            }
-            
-            // Lower half: Article details
-            VStack(alignment: .leading, spacing: 8) {
-                Text(article.source) // News source/company
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-
-                Text(article.title)
-                    .font(.headline)
-                    .lineLimit(2)
-
-                Divider()
-
-                HStack() { // Bottom: Date and author
-                    Text(article.publishedAt, style: .date)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        
+                
+                // Lower half: Article details
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(article.source)
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                    
+                    Text(article.title)
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .lineLimit(3)
                 }
+                .padding(.horizontal)
             }
-            .padding([.top, .bottom], 8)
-            .padding(.horizontal)
-        } // End VStack
-        .background(RoundedRectangle(cornerRadius: 16).fill(Color(.secondarySystemBackground)))
+            .frame(width: geometry.size.width)
+            .background(Color.clear)
+        }
+        .frame(height: 300)
     }
 }
 
@@ -146,42 +131,43 @@ struct ArticleDetailView: View {
     let article: Article
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(article.title)
-                .font(.largeTitle)
-                .bold()
-            if let imageUrl = article.imageUrl, let url = URL(string: imageUrl) {
-                AsyncImage(url: url) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                        .frame(height: 200)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                } placeholder: {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(height: 200)
-                        .cornerRadius(16)
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    if let imageUrl = article.imageUrl, let url = URL(string: imageUrl) {
+                        AsyncImage(url: url) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: geometry.size.width, height: 250)
+                                .clipShape(Rectangle())
+                        } placeholder: {
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: geometry.size.width, height: 250)
+                        }
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(article.title)
+                            .font(.largeTitle)
+                            .bold()
+                        
+                        if let snippet = article.snippet {
+                            Text(snippet)
+                                .font(.body)
+                        }
+                        
+                        if let url = URL(string: article.url) {
+                            Link("Read full article on \(article.source)", destination: url)
+                                .font(.callout)
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    .padding()
                 }
             }
-            if let snippet = article.snippet {
-                Text(snippet)
-            } else {
-                Text("No article snippet available.")
-                    .font(.headline)
-                    .foregroundColor(.gray)
-            }
-
-            if let url = URL(string: article.url) {
-                Link("Read full article on \(article.source)", destination: url)
-                    .font(.callout)
-                    .foregroundColor(.blue)
-            }
-            
-            Spacer()
         }
-        .padding()
-        .navigationTitle("Article")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
