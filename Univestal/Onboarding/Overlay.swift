@@ -10,18 +10,22 @@ import SwiftUI
 // Trying overlay as a var in a different way
 struct GlobeOverlay: ViewModifier {
     func body(content: Content) -> some View {
-        content
-            .background(alignment: .topLeading) {
+        GeometryReader { geometry in
+            ZStack(alignment: .bottomTrailing) {
+                content
+                
+                let size = min(geometry.size.width, geometry.size.height) * 1.5
                 Image(systemName: "globe")
                     .foregroundStyle(.primary)
-                    .frame(
-                        width: 2*UIScreen.main.bounds.width,
-                        height: 2*UIScreen.main.bounds.height)
+                    .font(.system(size: size))
+                    .frame(width: size, height: size)
                     .opacity(0.07)
-                    .font(.system(size: 800))
-                    .offset(x: 20, y: 2)
-                    .ignoresSafeArea()
+                    .offset(x: size/7, y: size/7) 
+                    .clipped()
+                    .frame(width: size/7, height: size/7)
+                    .position(x: geometry.size.width, y: geometry.size.height)
             }
+        }
     }
 }
 
