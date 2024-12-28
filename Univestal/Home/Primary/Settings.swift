@@ -25,7 +25,9 @@ struct UVSettingsView: View {
                         NavigationLink(destination: PrivacyPolicy()) {
                             Text("Privacy Policy")
                         }
-                        NavigationLink(destination: Review()) {
+                        Button(action: {
+                            openAppStore()
+                        }) {
                             Text("Leave a Review")
                         }
                     }
@@ -70,6 +72,13 @@ struct UVSettingsView: View {
             }
         } // end nav stack
     } // end body
+    
+    private func openAppStore() {
+        let appStoreURL = URL(string: "https://apps.apple.com/app/idYOUR_APP_ID")! // Replace YOUR_APP_ID
+        if UIApplication.shared.canOpenURL(appStoreURL) {
+            UIApplication.shared.open(appStoreURL, options: [:], completionHandler: nil)
+        }
+    }
 }
 
 #Preview {

@@ -7,10 +7,11 @@
 
 import SwiftUI
 
-// Might not even need this, will just prompt to open app's page in App Store?
+// app url: https://apps.apple.com/app/idYOUR_APP_ID
+// will implement once i actually have an id
 struct Review: View {
     var body: some View {
-        Text("Review Content Goes Here")
+        Text("This page will be updated in the near future!")
             .navigationTitle("Review")
             .navigationBarTitleDisplayMode(.inline)
     }
