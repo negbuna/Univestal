@@ -37,29 +37,29 @@ struct Search: View {
                     }
                     .buttonStyle(BorderlessButtonStyle()) // So button taps are not intercepted
                     
-                    VStack(alignment: .leading) {
-                        Text(coin.name)
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                        Text(coin.symbol.uppercased())
-                            .font(.subheadline)
-                            .foregroundColor(.primary)
+                    NavigationLink(destination: CoinDetailView(coin: coin)) {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(coin.name)
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text(coin.symbol.uppercased())
+                                    .font(.subheadline)
+                                    .foregroundColor(.primary)
+                            }
+                            
+                            Spacer()
+                            
+                            VStack(alignment: .trailing) {
+                                Text(String(format: "$%.2f", coin.current_price))
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text(String(format: "%.2f%%", coin.price_change_percentage_24h ?? 0.00))
+                                    .font(.subheadline)
+                                    .foregroundColor(appData.percentColor(coin.price_change_percentage_24h ?? 0))
+                            }
+                        }
                     }
-                    
-                    Spacer()
-                    
-                    VStack(alignment: .trailing) {
-                        Text(String(format: "$%.2f", coin.current_price))
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                        Text(String(format: "%.2f%%", coin.price_change_percentage_24h ?? 0.00))
-                            .font(.subheadline)
-                            .foregroundColor(appData.percentColor(coin.price_change_percentage_24h ?? 0))
-                    }
-                }
-                .contentShape(Rectangle()) // Keeps row tappable for gestures
-                .onTapGesture {
-                    selectedCoinID = coin.id
                 }
             }
             .searchable(text: $searchText)
@@ -68,17 +68,12 @@ struct Search: View {
             .onAppear {
                 environment.crypto.fetchCoins()
             }
-            .navigationDestination(isPresented: .constant(selectedCoinID != nil)) {
-                if let coin = selectedCoin {
-                    CoinDetailView(coin: coin)
-                }
-            }
         }
     }
 }
 
 #Preview {
     Search()
-        .environmentObject(AppData())
+        .environmentObject(AppData(context: PersistenceController.preview.container.viewContext))
         .environmentObject(TradingEnvironment.shared)
 }

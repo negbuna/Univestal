@@ -28,7 +28,7 @@ struct UVSettingsView: View {
                         Button(action: {
                             openAppStore()
                         }) {
-                            Text("Leave a Review")
+                            Text("Send Feedback")
                         }
                     }
                     
@@ -57,8 +57,8 @@ struct UVSettingsView: View {
                         }
                         .alert(isPresented: $showAlertDelete) {
                             Alert(
-                                title: Text("Are you sure you want to delete your account?"),
-                                message: Text("This action cannot be undone."),
+                                title: Text("Are you sure?"),
+                                message: Text("You will lose all data. This action cannot be undone."),
                                 primaryButton: .cancel(Text("No")),
                                 secondaryButton: .destructive(Text("Delete Account")) {
                                     appData.deleteAccount()
@@ -74,9 +74,10 @@ struct UVSettingsView: View {
     } // end body
     
     private func openAppStore() {
-        let appStoreURL = URL(string: "https://apps.apple.com/app/idYOUR_APP_ID")! // Replace YOUR_APP_ID
-        if UIApplication.shared.canOpenURL(appStoreURL) {
-            UIApplication.shared.open(appStoreURL, options: [:], completionHandler: nil)
+        //let appStoreURL = URL(string: "https://apps.apple.com/app/idYOUR_APP_ID")! // Replace YOUR_APP_ID later
+        let betaURL = URL(string: "itms-beta://testflight.apple.com/join/43RrhW8V")!
+        if UIApplication.shared.canOpenURL(betaURL) {
+            UIApplication.shared.open(betaURL, options: [:], completionHandler: nil)
         }
     }
 }

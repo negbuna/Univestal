@@ -44,6 +44,7 @@
 		5E9AD4542C421A3500C55741 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5E9AD44D2C41A46A00C55741 /* Config.plist */; };
 		5E9AD4552C421A3800C55741 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD44F2C41A53E00C55741 /* Config.swift */; };
 		5E9AD4562C421A3900C55741 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD44F2C41A53E00C55741 /* Config.swift */; };
+		5E9B20DB2D2528B80054EE0D /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9B20DA2D2528B80054EE0D /* Persistence.swift */; };
 		5EA1CDE42C3AF1DD00CE5AAA /* Hub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA1CDE32C3AF1DD00CE5AAA /* Hub.swift */; };
 		5EA1CDE62C3AFD4C00CE5AAA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA1CDE52C3AFD4C00CE5AAA /* Settings.swift */; };
 		5EA8D25D2D0E7238000D5022 /* PastTrades.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA8D25C2D0E7231000D5022 /* PastTrades.swift */; };
@@ -108,6 +109,7 @@
 		5E9AD44B2C4095CD00C55741 /* AlpacaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlpacaView.swift; sourceTree = "<group>"; };
 		5E9AD44D2C41A46A00C55741 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
 		5E9AD44F2C41A53E00C55741 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		5E9B20DA2D2528B80054EE0D /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		5EA1CDE32C3AF1DD00CE5AAA /* Hub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hub.swift; sourceTree = "<group>"; };
 		5EA1CDE52C3AFD4C00CE5AAA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		5EA8D25C2D0E7231000D5022 /* PastTrades.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PastTrades.swift; sourceTree = "<group>"; };
@@ -236,6 +238,7 @@
 				5E11F6512CE673CB000E6DB9 /* AppData.swift */,
 				5E7F17EA2D07FE9C00CEA4F7 /* CoreData.swift */,
 				5E1242E02C221BFA0042B089 /* ContentView.swift */,
+				5E9B20DA2D2528B80054EE0D /* Persistence.swift */,
 				5E1242E22C221BFA0042B089 /* Item.swift */,
 				5EE807892C38D2500070D8E9 /* Onboarding */,
 				5EA1CDE22C3AF1AE00CE5AAA /* Home */,
@@ -468,6 +471,7 @@
 				5E11F6502CE2DA6A000E6DB9 /* Pages.swift in Sources */,
 				5EA1CDE62C3AFD4C00CE5AAA /* Settings.swift in Sources */,
 				5E1242DF2C221BFA0042B089 /* App.swift in Sources */,
+				5E9B20DB2D2528B80054EE0D /* Persistence.swift in Sources */,
 				5E11F6832CF913BE000E6DB9 /* News.swift in Sources */,
 				5E11F6732CF551D1000E6DB9 /* Watchlist.swift in Sources */,
 				5EDC07812D1BB538002172E5 /* Overlay.swift in Sources */,
@@ -638,7 +642,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Univestal/Preview Content\"";
-				DEVELOPMENT_TEAM = WM4543PAN6;
+				DEVELOPMENT_TEAM = P6PV2R9443;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Univestal;
@@ -670,7 +674,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Univestal/Preview Content\"";
-				DEVELOPMENT_TEAM = WM4543PAN6;
+				DEVELOPMENT_TEAM = P6PV2R9443;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Univestal;

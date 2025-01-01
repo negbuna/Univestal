@@ -5,10 +5,9 @@
 //  Created by Nathan Egbuna on 11/14/24.
 //
 
-// Shared state model
 import Foundation
 import CryptoKit
-import Combine
+import CoreData
 import SwiftUI
 
 class AppData: ObservableObject {
@@ -19,12 +18,18 @@ class AppData: ObservableObject {
     @Published var showLoginButton: Bool = false
     @Published var isButtonDisabled: Bool = true
     @Published var hasAttemptedLogin: Bool = false
-    @Published var watchlist: Set<String> = [] // Store coin IDs in a Set for easy lookup
+    @Published var watchlist: Set<String> = []
+    private let viewContext: NSManagedObjectContext
 
     @AppStorage("username") var currentUsername: String = "" // The active user
     @AppStorage("joindate") var storedJoinDateString: String?
     @AppStorage("signed_in") var currentUserSignedIn: Bool = false
     @AppStorage("storedUserCredentials") var storedUserCredentialsData: String = "" // JSON string for user credentials in AppStorage
+    
+    init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
+        self.viewContext = context
+        loadWatchlistFromCoreData()
+    }
     
     let transition: AnyTransition = .asymmetric(
         insertion: .move(edge: .trailing),
@@ -184,13 +189,13 @@ class AppData: ObservableObject {
     
     // MARK: Crypto
     
-    func toggleWatchlist(for id: String) {
-        if watchlist.contains(id) {
-            watchlist.remove(id)
-        } else {
-            watchlist.insert(id)
-        }
-    }
+//    func toggleWatchlist(for id: String) {
+//        if watchlist.contains(id) {
+//            watchlist.remove(id)
+//        } else {
+//            watchlist.insert(id)
+//        }
+//    }
     
     func formatLargeNumber(_ number: Double) -> String {
         let absNumber = abs(number) // Ensure positive values for formatting
@@ -217,7 +222,54 @@ class AppData: ObservableObject {
             return .white // No change
         }
     }
+    
+    func loadWatchlistFromCoreData() {
+        let request = NSFetchRequest<WatchlistItem>(entityName: "WatchlistItem")
+        do {
+            let items = try viewContext.fetch(request)
+            watchlist = Set(items.compactMap { $0.coinId })
+        } catch {
+            print("Error loading watchlist: \(error)")
+        }
+    }
+    
+    func toggleWatchlist(for coinId: String) {
+        if watchlist.contains(coinId) {
+            removeFromWatchlist(coinId)
+        } else {
+            addToWatchlist(coinId)
+        }
+        objectWillChange.send() // Force UI update
+    }
+    
+    private func addToWatchlist(_ coinId: String) {
+        let item = WatchlistItem(context: viewContext)
+        item.coinId = coinId
+        item.dateAdded = Date()
+        
+        do {
+            try viewContext.save()
+            watchlist.insert(coinId)
+        } catch {
+            print("Error adding to watchlist: \(error)")
+        }
+    }
+    
+    private func removeFromWatchlist(_ coinId: String) {
+        let request = NSFetchRequest<WatchlistItem>(entityName: "WatchlistItem")
+        request.predicate = NSPredicate(format: "coinId == %@", coinId)
+        
+        do {
+            let items = try viewContext.fetch(request)
+            items.forEach { viewContext.delete($0) }
+            try viewContext.save()
+            watchlist.remove(coinId)
+        } catch {
+            print("Error removing from watchlist: \(error)")
+        }
+    }
 }
+
 
 // App colors
 struct ColorManager {
