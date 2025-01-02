@@ -21,18 +21,40 @@ class News: ObservableObject {
     let apiKey = Config.newsKey
     let articlesPerPage = 3 // Match the API's default limit
 
-    private func handleError(_ error: Error) -> String {
-        let errorMessage = error.localizedDescription.lowercased()
+    private func handleError(_ error: Error) {
+    DispatchQueue.main.async {
+        self.showAlert = true
         
-        // Check if error message contains keywords indicating API limit
-        if errorMessage.contains("code=429") || 
-           errorMessage.contains("too many requests") || 
-           errorMessage.contains("rate limit exceeded") {
-            return "The app's daily API limit has reached. Articles will refresh tomorrow. We apologize for the inconvenience."
+        // API Limit Error
+        if let urlError = error as? URLError, 
+           urlError.errorCode == 429 {
+            self.alertMessage = "Daily article limit reached. Please try again tomorrow."
+            return
         }
         
-        return "Error: \(error.localizedDescription)"
+        // Network Error
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .notConnectedToInternet:
+                self.alertMessage = "No internet connection. Please check your connection and try again."
+            case .timedOut:
+                self.alertMessage = "Request timed out. Please try again."
+            default:
+                self.alertMessage = "Network error. Please try again later."
+            }
+            return
+        }
+        
+        // Decoding Error
+        if error is DecodingError {
+            self.alertMessage = "Unable to load articles. Please try again later."
+            return
+        }
+        
+        // Generic Error
+        self.alertMessage = "Something went wrong. Please try again later."
     }
+}
 
     func fetchArticles(query: String, page: Int = 1) {
         // Prevent multiple simultaneous requests
@@ -59,8 +81,7 @@ class News: ObservableObject {
             
             if let error = error {
                 DispatchQueue.main.async {
-                    self.showAlert = true
-                    self.alertMessage = "Network error: \(error.localizedDescription)"
+                    self.handleError(error)
                 }
                 return
             }
@@ -107,13 +128,12 @@ class News: ObservableObject {
                     
                     if decodedResponse.data.isEmpty {
                         self.showAlert = true
-                        self.alertMessage = "No more articles found."
+                        self.alertMessage = "No articles found for this search."
                     }
                 }
             } catch {
                 DispatchQueue.main.async {
-                    self.showAlert = true
-                    self.alertMessage = self.handleError(error)
+                    self.handleError(error)
                 }
             }
         }.resume()

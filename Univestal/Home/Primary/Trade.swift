@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreData
+import Combine
 
 struct TradingView: View {
     @EnvironmentObject var environment: TradingEnvironment
@@ -16,6 +17,7 @@ struct TradingView: View {
     @State private var tradeErrorAlert: Bool = false
     @State private var isBuying: Bool = true
     @State private var selectedTimeFrame: TimeFrame = .day
+    @State private var cancellables = Set<AnyCancellable>()
     
     var filteredCoins: [Coin] {
         if tradedCoin.isEmpty {
@@ -242,22 +244,18 @@ struct TradingView: View {
     }
 
     private func startPeriodicFetching() {
-        environment.crypto.fetchCoins()
-        
-        Timer.publish(every: 20.0, on: .main, in: .common)
-            .autoconnect()
-            .sink { _ in
-                environment.crypto.fetchCoins()
-                
-                // Update trade prices with latest coin prices
-                let prices = Dictionary(
-                    uniqueKeysWithValues: environment.crypto.coins.map { 
-                        ($0.id, $0.current_price) 
+        Task {
+            await environment.crypto.fetchCoins()
+            
+            Timer.publish(every: 20.0, on: .main, in: .common)
+                .autoconnect()
+                .sink { _ in
+                    Task {
+                        await environment.crypto.fetchCoins()
                     }
-                )
-                environment.updatePrices(with: prices)
-            }
-            .store(in: &environment.crypto.cancellables)
+                }
+                .store(in: &cancellables)
+        }
     }
 
     private var tradeButtons: some View {

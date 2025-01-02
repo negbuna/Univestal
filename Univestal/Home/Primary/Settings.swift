@@ -75,7 +75,7 @@ struct UVSettingsView: View {
     
     private func openAppStore() {
         //let appStoreURL = URL(string: "https://apps.apple.com/app/idYOUR_APP_ID")! // Replace YOUR_APP_ID later
-        let betaURL = URL(string: "itms-beta://testflight.apple.com/join/43RrhW8V")!
+        let betaURL = URL(string: "https://testflight.apple.com/join/43RrhW8V")!
         if UIApplication.shared.canOpenURL(betaURL) {
             UIApplication.shared.open(betaURL, options: [:], completionHandler: nil)
         }

@@ -15,8 +15,8 @@ class Crypto: ObservableObject { // Fetching Coin data
     private let apiKey = Config.cryptoKey
 
     // General coin data for searching
-    func fetchCoins() {
-        guard let url = URL(string: "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&api_key=\(apiKey)") else {
+    func fetchCoins() async {
+        guard let url = URL(string: "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&api_key=\(apiKey)") else {
             return
         }
         

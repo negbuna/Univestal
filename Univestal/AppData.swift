@@ -189,27 +189,19 @@ class AppData: ObservableObject {
     
     // MARK: Crypto
     
-//    func toggleWatchlist(for id: String) {
-//        if watchlist.contains(id) {
-//            watchlist.remove(id)
-//        } else {
-//            watchlist.insert(id)
-//        }
-//    }
-    
     func formatLargeNumber(_ number: Double) -> String {
-        let absNumber = abs(number) // Ensure positive values for formatting
+        let absNumber = abs(number)
         switch absNumber {
         case 1_000_000_000_000...:
-            return String(format: "%.2fT", number / 1_000_000_000_000) // Trillions
+            return String(format: "$%.2fT", number / 1_000_000_000_000)
         case 1_000_000_000...:
-            return String(format: "%.2fB", number / 1_000_000_000) // Billions
+            return String(format: "$%.2fB", number / 1_000_000_000)
         case 1_000_000...:
-            return String(format: "%.2fM", number / 1_000_000) // Millions
+            return String(format: "$%.2fM", number / 1_000_000)
         case 1_000...:
-            return String(format: "%.0f", number) // Thousands without decimal
+            return String(format: "$%.0f", number)
         default:
-            return String(format: "%.2f", number) // Below 1,000
+            return String(format: "$%.2f", number)
         }
     }
     
@@ -243,7 +235,8 @@ class AppData: ObservableObject {
     }
     
     private func addToWatchlist(_ coinId: String) {
-        let item = WatchlistItem(context: viewContext)
+        let item = NSEntityDescription.insertNewObject(forEntityName: "WatchlistItem", 
+                                                    into: viewContext) as! WatchlistItem
         item.coinId = coinId
         item.dateAdded = Date()
         

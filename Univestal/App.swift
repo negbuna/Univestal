@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreData
+import Combine
 
 @main
 struct UnivestalApp: App {
@@ -27,8 +28,8 @@ struct UnivestalApp: App {
                 .environmentObject(appData)
                 .environmentObject(tradingEnvironment)
                 .environmentObject(newsService)
-                .onAppear {
-                    tradingEnvironment.crypto.fetchCoins()
+                .task {
+                    await tradingEnvironment.crypto.fetchCoins()
                 }
         }
     }

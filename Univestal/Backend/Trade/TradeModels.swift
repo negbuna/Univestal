@@ -308,7 +308,7 @@ class PaperTradingManager: ObservableObject {
     }
     
     // Method to start fetching coin prices
-    func startTradingSimulation() {
-        crypto.fetchCoins()
+    func startTradingSimulation() async {
+        await crypto.fetchCoins()
     }
 }
