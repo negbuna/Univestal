@@ -36,18 +36,22 @@ struct LearnDetailView: View {
 struct Learn: View {
     @State var text: String = ""
     
+    static private func boldText(_ text: String) -> Text {
+        return Text(text).bold()
+    }
+    
     var topics = [
         ("What is investing?",
-         "Investing is putting your money into something with the hope that it will grow over time. For example, you might invest in stocks or cryptocurrencies. Think of it as planting a tree that grows and gives you fruit later. Univestal helps by offering a trading simulator where you can practice investing with fake money to see how your decisions play out."),
+         "\(boldText("Investing")) is putting your money into something with the hope that it will grow over time. For example, you might invest in stocks or cryptocurrencies. Think of it as planting a tree that grows and gives you fruit later. Univestal helps by offering a trading simulator where you can practice investing with fake money to see how your decisions play out."),
 
         ("Why is diversification important?",
-         "Diversification means not putting all your eggs in one basket. If you spread your money across different investments, like stocks, crypto, or even other assets, you reduce the risk of losing it all if one fails. With Univestal, you can learn diversification strategies through our tools, which include market data and portfolio simulations."),
+         "\(boldText("Diversification")) means not putting all your eggs in one basket. If you spread your money across different investments, like stocks, crypto, or even other assets, you reduce the risk of losing it all if one fails. With Univestal, you can learn diversification strategies through our tools, which include market data and portfolio simulations."),
 
         ("What are stocks?",
-         "Stocks are shares of ownership in a company. When you own a stock, you're a small part-owner of that business, and you can earn money if the company does well. It's like owning a slice of the company pie. Univestal provides real-time stock price data and educational resources to help you understand the market."),
+         "\(boldText("Stocks")) are shares of ownership in a company. When you own a stock, you're a small part-owner of that business, and you can earn money if the company does well. It's like owning a slice of the company pie. Univestal provides real-time stock price data and educational resources to help you understand the market."),
 
         ("What is cryptocurrency?",
-         "Cryptocurrency is digital money that's secured using cryptography, which makes it safe and hard to counterfeit. Popular examples are Bitcoin and Ethereum. With Univestal, you can track coin prices, create a watchlist, and learn how to trade in a safe, simulated environment."),
+         "\(boldText("Cryptocurrency")) is digital money that's secured using cryptography, which makes it safe and hard to counterfeit. Popular examples are Bitcoin and Ethereum. With Univestal, you can track coin prices, create a watchlist, and learn how to trade in a safe, simulated environment."),
 
         ("How do I start investing?",
          "Starting small is key! You don't need a lot of money to begin investing. Learn the basics, set goals, and practice. Univestal gives you all the tools to start, including tutorials, tips, and a trading simulator where you can invest without risking real money."),
@@ -62,7 +66,7 @@ struct Learn: View {
          "Investing always comes with risks—your investments might not grow, and you could even lose money. Learning to manage risk is important. Univestal helps you understand risks through simulations and lessons, so you can make smarter decisions."),
         
         ("What types of orders can you place?",
-        "There are four main types of orders:\n\n1. **Market Orders**: Buy or sell instantly at the current price.\n2. **Limit Orders**: Set a specific price to buy or sell.\n3. **Stop-Limit Orders**: Automatically trade when a target price is reached.\n4. **Bracket Orders**: Lock in profits or cut losses with a pre-set plan.\n\nUnivestal’s trading simulator lets you try all these orders to learn how they work in real markets.")
+        "There are four main types of orders:\n\n1. \(boldText("Market Orders")): Buy or sell instantly at the current price.\n2. \(boldText("Limit Orders")): Set a specific price to buy or sell.\n3. \(boldText("Stop-Limit Orders")): Automatically trade when a target price is reached.\n4. \(boldText("Bracket Orders")): Lock in profits or cut losses with a pre-set plan.\n\nUnivestal’s trading simulator will soon let you try all of these orders to learn how they work in real markets.")
     ]
     
     var filteredTopics: [(String, String)] {
