@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5E05DDD32D30746B00AC21C0 /* Topic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E05DDD22D30746B00AC21C0 /* Topic.swift */; };
 		5E11F64E2CE2D1F9000E6DB9 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 5E11F64D2CE2D1F1000E6DB9 /* .gitignore */; };
 		5E11F6502CE2DA6A000E6DB9 /* Pages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F64F2CE2DA68000E6DB9 /* Pages.swift */; };
 		5E11F6522CE673CE000E6DB9 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6512CE673CB000E6DB9 /* AppData.swift */; };
@@ -73,6 +74,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5E05DDD22D30746B00AC21C0 /* Topic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Topic.swift; sourceTree = "<group>"; };
 		5E11F64D2CE2D1F1000E6DB9 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		5E11F64F2CE2DA68000E6DB9 /* Pages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pages.swift; sourceTree = "<group>"; };
 		5E11F6512CE673CB000E6DB9 /* AppData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppData.swift; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 		5E11F67A2CF7AE86000E6DB9 /* Secondary */ = {
 			isa = PBXGroup;
 			children = (
+				5E05DDD22D30746B00AC21C0 /* Topic.swift */,
 				5EA8D25C2D0E7231000D5022 /* PastTrades.swift */,
 				5E11F6782CF7A4CA000E6DB9 /* CoinDetailView.swift */,
 				5E11F6762CF559F8000E6DB9 /* ImagePicker.swift */,
@@ -443,6 +446,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5E11F66F2CF54EA5000E6DB9 /* AlpacaModels.swift in Sources */,
+				5E05DDD32D30746B00AC21C0 /* Topic.swift in Sources */,
 				5EE8078F2C3A200A0070D8E9 /* Homepage.swift in Sources */,
 				5E1242E12C221BFA0042B089 /* ContentView.swift in Sources */,
 				5E9AD44A2C407F7B00C55741 /* Alpaca.swift in Sources */,

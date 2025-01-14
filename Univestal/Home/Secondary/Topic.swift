@@ -1,76 +1,19 @@
 //
-//  Learn.swift
+//  Topic.swift
 //  Univestal
 //
-//  Created by Nathan Egbuna on 11/28/24.
+//  Created by Nathan Egbuna on 1/9/25.
 //
 
 import SwiftUI
 
-struct LearnDetailView: View {
-    let topic: Topic
-    
-    private func formatText(_ input: String) -> Text {
-        var result = Text("")
-        let parts = input.split(separator: "*")
-        
-        for (index, part) in parts.enumerated() {
-            if index % 2 == 1 {
-                // Bold text between **
-                result = result + Text(String(part)).bold()
-            } else {
-                // Regular text
-                result = result + Text(String(part))
-            }
-        }
-        return result
-    }
-    
-    var body: some View {
-            Spacer()
-            VStack(alignment: .leading, spacing: 16) {
-                Spacer()
-                Text(topic.description)
-                    .padding()
-                    .font(.body)
-            Spacer()
-        }
-        .navigationTitle(topic.question)
-        .navigationBarTitleDisplayMode(.inline)
-    }
+struct Topic: Identifiable {
+    let id = UUID()
+    let question: String
+    let description: String
 }
 
-#Preview {
-    Learn()
-}
-
-struct Learn: View {
-    @State var text: String = ""
-    
-    var filteredTopics: [Topic] {
-        if text.isEmpty {
-            return Topics.allTopics
-        } else {
-            return Topics.allTopics.filter { $0.question.localizedCaseInsensitiveContains(text) }
-        }
-    }
-    
-    var body: some View {
-        NavigationStack {
-            List(filteredTopics) { topic in
-                NavigationLink(destination: LearnDetailView(topic: topic)) {
-                    Text(topic.question)
-                        .padding()
-                }
-            }
-            .navigationTitle("Learn")
-            .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $text, prompt: "Search")
-        }
-    }
-}
-
-extension Learn {
+struct Topics {
     static let investing = Topic(
         question: "What is investing?",
         description: "Investing is putting your money into something with the hope that it will grow over time. For example, you might invest in stocks or cryptocurrencies. Think of it as planting a tree that grows and gives you fruit later. Univestal helps by offering a trading simulator where you can practice investing with fake money to see how your decisions play out."
@@ -115,4 +58,16 @@ extension Learn {
         question: "What types of orders can you place?",
         description: "There are four main types of orders:\n\n1. **Market Orders**: Buy or sell instantly at the current price.\n2. **Limit Orders**: Set a specific price to buy or sell.\n3. **Stop-Limit Orders**: Automatically trade when a target price is reached.\n4. **Bracket Orders**: Lock in profits or cut losses with a pre-set plan.\n\nUnivestal's trading simulator will soon let you try all of these orders to learn how they work in real markets."
     )
+    
+    static let allTopics: [Topic] = [
+        investing,
+        diversification,
+        stocks,
+        cryptocurrency,
+        gettingStarted,
+        simulator,
+        pricing,
+        risks,
+        orders
+    ]
 }
