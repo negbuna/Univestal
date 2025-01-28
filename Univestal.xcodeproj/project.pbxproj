@@ -15,9 +15,8 @@
 		5E11F6612CF47127000E6DB9 /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6602CF47127000E6DB9 /* Review.swift */; };
 		5E11F66B2CF54CB3000E6DB9 /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F66A2CF54C9A000E6DB9 /* Crypto.swift */; };
 		5E11F66D2CF54E7D000E6DB9 /* CoinModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F66C2CF54E71000E6DB9 /* CoinModels.swift */; };
-		5E11F66F2CF54EA5000E6DB9 /* AlpacaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F66E2CF54E9F000E6DB9 /* AlpacaModels.swift */; };
 		5E11F6732CF551D1000E6DB9 /* Watchlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6722CF551CF000E6DB9 /* Watchlist.swift */; };
-		5E11F6752CF55378000E6DB9 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6742CF55376000E6DB9 /* Search.swift */; };
+		5E11F6752CF55378000E6DB9 /* CryptoSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6742CF55376000E6DB9 /* CryptoSearch.swift */; };
 		5E11F6772CF559F8000E6DB9 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6762CF559F8000E6DB9 /* ImagePicker.swift */; };
 		5E11F6792CF7A4CA000E6DB9 /* CoinDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6782CF7A4CA000E6DB9 /* CoinDetailView.swift */; };
 		5E11F67D2CF8E0E6000E6DB9 /* Learn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F67C2CF8E0E4000E6DB9 /* Learn.swift */; };
@@ -36,9 +35,12 @@
 		5E7F17E72D07FC9F00CEA4F7 /* Trade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7F17E62D07FC9B00CEA4F7 /* Trade.swift */; };
 		5E7F17EB2D07FE9F00CEA4F7 /* CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7F17EA2D07FE9C00CEA4F7 /* CoreData.swift */; };
 		5E7F17EE2D07FED300CEA4F7 /* Entities.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5E7F17EC2D07FED300CEA4F7 /* Entities.xcdatamodeld */; };
+		5E84FCE62D3FF5F10093A6EA /* Polygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84FCE52D3FF5EE0093A6EA /* Polygon.swift */; };
+		5E84FD122D468CC10093A6EA /* StockModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84FD112D468CC10093A6EA /* StockModels.swift */; };
+		5E84FD142D468D330093A6EA /* StockSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84FD132D468D330093A6EA /* StockSearch.swift */; };
+		5E84FD162D468E400093A6EA /* StockDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84FD152D468E400093A6EA /* StockDetailView.swift */; };
+		5E84FD182D491A280093A6EA /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84FD172D491A240093A6EA /* Search.swift */; };
 		5E9AD4482C3C993100C55741 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD4472C3C993100C55741 /* Profile.swift */; };
-		5E9AD44A2C407F7B00C55741 /* Alpaca.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD4492C407F7B00C55741 /* Alpaca.swift */; };
-		5E9AD44C2C4095CD00C55741 /* AlpacaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD44B2C4095CD00C55741 /* AlpacaView.swift */; };
 		5E9AD44E2C41A46A00C55741 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5E9AD44D2C41A46A00C55741 /* Config.plist */; };
 		5E9AD4522C41E01700C55741 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD44F2C41A53E00C55741 /* Config.swift */; };
 		5E9AD4532C421A3500C55741 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5E9AD44D2C41A46A00C55741 /* Config.plist */; };
@@ -82,9 +84,8 @@
 		5E11F6602CF47127000E6DB9 /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
 		5E11F66A2CF54C9A000E6DB9 /* Crypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crypto.swift; sourceTree = "<group>"; };
 		5E11F66C2CF54E71000E6DB9 /* CoinModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinModels.swift; sourceTree = "<group>"; };
-		5E11F66E2CF54E9F000E6DB9 /* AlpacaModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlpacaModels.swift; sourceTree = "<group>"; };
 		5E11F6722CF551CF000E6DB9 /* Watchlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Watchlist.swift; sourceTree = "<group>"; };
-		5E11F6742CF55376000E6DB9 /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
+		5E11F6742CF55376000E6DB9 /* CryptoSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoSearch.swift; sourceTree = "<group>"; };
 		5E11F6762CF559F8000E6DB9 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		5E11F6782CF7A4CA000E6DB9 /* CoinDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinDetailView.swift; sourceTree = "<group>"; };
 		5E11F67C2CF8E0E4000E6DB9 /* Learn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Learn.swift; sourceTree = "<group>"; };
@@ -106,9 +107,12 @@
 		5E7F17E62D07FC9B00CEA4F7 /* Trade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trade.swift; sourceTree = "<group>"; };
 		5E7F17EA2D07FE9C00CEA4F7 /* CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreData.swift; sourceTree = "<group>"; };
 		5E7F17ED2D07FED300CEA4F7 /* Entities.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Entities.xcdatamodel; sourceTree = "<group>"; };
+		5E84FCE52D3FF5EE0093A6EA /* Polygon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polygon.swift; sourceTree = "<group>"; };
+		5E84FD112D468CC10093A6EA /* StockModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockModels.swift; sourceTree = "<group>"; };
+		5E84FD132D468D330093A6EA /* StockSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockSearch.swift; sourceTree = "<group>"; };
+		5E84FD152D468E400093A6EA /* StockDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailView.swift; sourceTree = "<group>"; };
+		5E84FD172D491A240093A6EA /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		5E9AD4472C3C993100C55741 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
-		5E9AD4492C407F7B00C55741 /* Alpaca.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alpaca.swift; sourceTree = "<group>"; };
-		5E9AD44B2C4095CD00C55741 /* AlpacaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlpacaView.swift; sourceTree = "<group>"; };
 		5E9AD44D2C41A46A00C55741 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
 		5E9AD44F2C41A53E00C55741 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		5E9B20DA2D2528B80054EE0D /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -150,9 +154,11 @@
 		5E11F6692CF539CE000E6DB9 /* Backend */ = {
 			isa = PBXGroup;
 			children = (
+				5E7F17EC2D07FED300CEA4F7 /* Entities.xcdatamodeld */,
+				5E7F17E22D07EDF500CEA4F7 /* Errors.swift */,
 				5E9AD44F2C41A53E00C55741 /* Config.swift */,
 				5E7F17DF2D07E98B00CEA4F7 /* Trade */,
-				5E11F68C2CFD48C0000E6DB9 /* Alpaca */,
+				5E11F68C2CFD48C0000E6DB9 /* Stocks */,
 				5E11F68A2CFD41D4000E6DB9 /* Crypto */,
 				5E11F68B2CFD48AE000E6DB9 /* News */,
 			);
@@ -165,6 +171,7 @@
 				5E05DDD22D30746B00AC21C0 /* Topic.swift */,
 				5EA8D25C2D0E7231000D5022 /* PastTrades.swift */,
 				5E11F6782CF7A4CA000E6DB9 /* CoinDetailView.swift */,
+				5E84FD152D468E400093A6EA /* StockDetailView.swift */,
 				5E11F6762CF559F8000E6DB9 /* ImagePicker.swift */,
 				5E11F65E2CF47093000E6DB9 /* PrivacyPolicy.swift */,
 				5E11F6602CF47127000E6DB9 /* Review.swift */,
@@ -177,7 +184,9 @@
 			children = (
 				5E7F17E62D07FC9B00CEA4F7 /* Trade.swift */,
 				5EA1CDE32C3AF1DD00CE5AAA /* Hub.swift */,
-				5E11F6742CF55376000E6DB9 /* Search.swift */,
+				5E84FD172D491A240093A6EA /* Search.swift */,
+				5E11F6742CF55376000E6DB9 /* CryptoSearch.swift */,
+				5E84FD132D468D330093A6EA /* StockSearch.swift */,
 				5E11F67C2CF8E0E4000E6DB9 /* Learn.swift */,
 				5E11F6722CF551CF000E6DB9 /* Watchlist.swift */,
 				5EA1CDE52C3AFD4C00CE5AAA /* Settings.swift */,
@@ -204,14 +213,13 @@
 			path = News;
 			sourceTree = "<group>";
 		};
-		5E11F68C2CFD48C0000E6DB9 /* Alpaca */ = {
+		5E11F68C2CFD48C0000E6DB9 /* Stocks */ = {
 			isa = PBXGroup;
 			children = (
-				5E11F66E2CF54E9F000E6DB9 /* AlpacaModels.swift */,
-				5E9AD4492C407F7B00C55741 /* Alpaca.swift */,
-				5E9AD44B2C4095CD00C55741 /* AlpacaView.swift */,
+				5E84FD112D468CC10093A6EA /* StockModels.swift */,
+				5E84FCE52D3FF5EE0093A6EA /* Polygon.swift */,
 			);
-			path = Alpaca;
+			path = Stocks;
 			sourceTree = "<group>";
 		};
 		5E1242D22C221BFA0042B089 = {
@@ -285,8 +293,6 @@
 				5EFA2E792D11F71100850417 /* TimeFrame.swift */,
 				5EA8D27B2D1107F3000D5022 /* Environment.swift */,
 				5E7F17E02D07E99500CEA4F7 /* TradeModels.swift */,
-				5E7F17E22D07EDF500CEA4F7 /* Errors.swift */,
-				5E7F17EC2D07FED300CEA4F7 /* Entities.xcdatamodeld */,
 			);
 			path = Trade;
 			sourceTree = "<group>";
@@ -445,29 +451,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E11F66F2CF54EA5000E6DB9 /* AlpacaModels.swift in Sources */,
 				5E05DDD32D30746B00AC21C0 /* Topic.swift in Sources */,
+				5E84FD122D468CC10093A6EA /* StockModels.swift in Sources */,
 				5EE8078F2C3A200A0070D8E9 /* Homepage.swift in Sources */,
 				5E1242E12C221BFA0042B089 /* ContentView.swift in Sources */,
-				5E9AD44A2C407F7B00C55741 /* Alpaca.swift in Sources */,
 				5E11F6522CE673CE000E6DB9 /* AppData.swift in Sources */,
 				5E11F66B2CF54CB3000E6DB9 /* Crypto.swift in Sources */,
 				5EA8D25D2D0E7238000D5022 /* PastTrades.swift in Sources */,
 				5E1242E32C221BFA0042B089 /* Item.swift in Sources */,
 				5EA1CDE42C3AF1DD00CE5AAA /* Hub.swift in Sources */,
+				5E84FCE62D3FF5F10093A6EA /* Polygon.swift in Sources */,
 				5E11F67D2CF8E0E6000E6DB9 /* Learn.swift in Sources */,
 				5E11F65F2CF470F2000E6DB9 /* PrivacyPolicy.swift in Sources */,
 				5E9AD4522C41E01700C55741 /* Config.swift in Sources */,
 				5E11F6812CF91389000E6DB9 /* NewsModels.swift in Sources */,
-				5E11F6752CF55378000E6DB9 /* Search.swift in Sources */,
+				5E11F6752CF55378000E6DB9 /* CryptoSearch.swift in Sources */,
 				5E11F6612CF47127000E6DB9 /* Review.swift in Sources */,
 				5E11F6792CF7A4CA000E6DB9 /* CoinDetailView.swift in Sources */,
 				5E7F17E12D07E99800CEA4F7 /* TradeModels.swift in Sources */,
 				5E11F6772CF559F8000E6DB9 /* ImagePicker.swift in Sources */,
+				5E84FD142D468D330093A6EA /* StockSearch.swift in Sources */,
 				5E7F17EE2D07FED300CEA4F7 /* Entities.xcdatamodeld in Sources */,
-				5E9AD44C2C4095CD00C55741 /* AlpacaView.swift in Sources */,
 				5E11F66D2CF54E7D000E6DB9 /* CoinModels.swift in Sources */,
 				5E7F17E72D07FC9F00CEA4F7 /* Trade.swift in Sources */,
+				5E84FD162D468E400093A6EA /* StockDetailView.swift in Sources */,
 				5E7F17E32D07EDF800CEA4F7 /* Errors.swift in Sources */,
 				5E9AD4482C3C993100C55741 /* Profile.swift in Sources */,
 				5EE8078D2C39F4B90070D8E9 /* Stage.swift in Sources */,
@@ -475,6 +482,7 @@
 				5E11F6502CE2DA6A000E6DB9 /* Pages.swift in Sources */,
 				5EA1CDE62C3AFD4C00CE5AAA /* Settings.swift in Sources */,
 				5E1242DF2C221BFA0042B089 /* App.swift in Sources */,
+				5E84FD182D491A280093A6EA /* Search.swift in Sources */,
 				5E9B20DB2D2528B80054EE0D /* Persistence.swift in Sources */,
 				5E11F6832CF913BE000E6DB9 /* News.swift in Sources */,
 				5E11F6732CF551D1000E6DB9 /* Watchlist.swift in Sources */,

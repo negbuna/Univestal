@@ -19,6 +19,7 @@ class AppData: ObservableObject {
     @Published var isButtonDisabled: Bool = true
     @Published var hasAttemptedLogin: Bool = false
     @Published var watchlist: Set<String> = []
+    @Published var stockWatchlist: Set<String> = []
     private let viewContext: NSManagedObjectContext
 
     @AppStorage("username") var currentUsername: String = "" // The active user
@@ -232,6 +233,14 @@ class AppData: ObservableObject {
             addToWatchlist(coinId)
         }
         objectWillChange.send() // Force UI update
+    }
+    
+    func toggleStockWatchlist(for symbol: String) {
+        if stockWatchlist.contains(symbol) {
+            stockWatchlist.remove(symbol)
+        } else {
+            stockWatchlist.insert(symbol)
+        }
     }
     
     private func addToWatchlist(_ coinId: String) {

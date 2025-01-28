@@ -43,4 +43,13 @@ struct Config {
         }
         return key
     }
+    
+    static var polygonKey: String {
+        guard let path = Bundle.main.path(forResource: "Config", ofType: "plist"),
+              let config = NSDictionary(contentsOfFile: path),
+              let key = config["POLYGON-KEY"] as? String else {
+            fatalError("Polygon key not found in Config.plist")
+        }
+        return key
+    }
 }

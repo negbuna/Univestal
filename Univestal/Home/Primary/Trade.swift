@@ -6,8 +6,8 @@
 //
 
 import SwiftUI
-import CoreData
 import Combine
+import CoreData
 
 struct TradingView: View {
     @EnvironmentObject var environment: TradingEnvironment

@@ -37,6 +37,7 @@ struct LearnDetailView: View {
         }
         .navigationTitle(topic.question)
         .navigationBarTitleDisplayMode(.inline)
+        .globeOverlay()
     }
 }
 
@@ -116,3 +117,4 @@ extension Learn {
         description: "There are four main types of orders:\n\n1. **Market Orders**: Buy or sell instantly at the current price.\n2. **Limit Orders**: Set a specific price to buy or sell.\n3. **Stop-Limit Orders**: Automatically trade when a target price is reached.\n4. **Bracket Orders**: Lock in profits or cut losses with a pre-set plan.\n\nUnivestal's trading simulator will soon let you try all of these orders to learn how they work in real markets."
     )
 }
+

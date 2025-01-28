@@ -5,8 +5,8 @@
 //  Created by Nathan Egbuna on 7/7/24.
 //
 
-import SwiftUI
 import Combine
+import SwiftUI
 
 struct UVHubView: View {
     @EnvironmentObject var appData: AppData

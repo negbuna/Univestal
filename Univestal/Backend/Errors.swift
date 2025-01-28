@@ -35,7 +35,7 @@ enum PaperTradingError: Error {
             return "You don't have enough holdings to complete this trade."
         case .apiLimitExceeded:
             return "API request limit reached. Please try again in a minute."
-        default:
+        case .generalError:
             return "Something went wrong."
         }
     }

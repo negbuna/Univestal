@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 struct Coin: Codable, Identifiable, Hashable {
     let name: String

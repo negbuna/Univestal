@@ -7,7 +7,6 @@
 
 import SwiftUI
 import CoreData
-import Combine
 
 @main
 struct UnivestalApp: App {

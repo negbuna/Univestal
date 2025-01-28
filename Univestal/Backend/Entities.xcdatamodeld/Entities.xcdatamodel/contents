@@ -3,6 +3,7 @@
     <entity name="CDPortfolio" representedClassName="CDPortfolio" syncable="YES" codeGenerationType="class">
         <attribute name="balance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="trades" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDTrade" inverseName="portfolio" inverseEntity="CDTrade"/>
+        <relationship name="stockTrades" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="StockTrade" inverseName="portfolio" inverseEntity="StockTrade"/>
     </entity>
     <entity name="CDTrade" representedClassName="CDTrade" syncable="YES" codeGenerationType="class">
         <attribute name="coinId" optional="YES" attributeType="String"/>

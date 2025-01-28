@@ -5,8 +5,8 @@
 //  Created by Nathan Egbuna on 11/25/24.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 class Crypto: ObservableObject { // Fetching Coin data
     @Published var coins: [Coin] = []

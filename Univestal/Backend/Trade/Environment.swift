@@ -5,19 +5,20 @@
 //  Created by Nathan Egbuna on 12/16/24.
 //
 
-import SwiftUI
 import CoreData
-import Combine
-import Foundation
+import SwiftUI
 
-class TradingEnvironment: ObservableObject {
+@MainActor
+class TradingEnvironment: ObservableObject, @unchecked Sendable {
     static let shared = TradingEnvironment()
     
     @Published var crypto: Crypto
     @Published var currentPortfolio: CDPortfolio?
+    @Published var stocks: [Stock] = []
     let coreDataStack: CoreDataStack
+    let polygon = PolygonAPI()
     
-    // Computed property for holdings value
+    // Make computed property for holdings value
     var holdingsValue: Double? {
         let fetchRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
         guard let trades = try? coreDataStack.context.fetch(fetchRequest) else {
@@ -43,6 +44,11 @@ class TradingEnvironment: ObservableObject {
         
         // Initialize or fetch existing portfolio
         setupPortfolio()
+        
+        // Setup stock data fetching asynchronously
+        Task {
+            try? await fetchStockData()
+        }
     }
     
     private func setupPortfolio() {
@@ -199,5 +205,27 @@ class TradingEnvironment: ObservableObject {
         
         let percentageChange = totalValue > 0 ? (totalChange / totalValue) * 100 : 0
         return (totalChange, percentageChange)
+    }
+    
+    func fetchStockData() async throws {
+        let symbols = ["AAPL", "GOOGL", "MSFT", "AMZN", "META"]
+        for symbol in symbols {
+            polygon.fetchQuote(for: symbol) { [weak self] result in
+                Task { @MainActor in
+                    switch result {
+                    case .success(let quote):
+                        self?.stocks.append(Stock(
+                            symbol: symbol,
+                            name: quote.name ?? symbol,
+                            price: quote.close,
+                            change: quote.change,
+                            percentChange: quote.percentChange
+                        ))
+                    case .failure(let error):
+                        print("Error fetching \(symbol): \(error)")
+                    }
+                }
+            }
+        }
     }
 }
