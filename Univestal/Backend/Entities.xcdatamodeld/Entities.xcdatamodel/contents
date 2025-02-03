@@ -26,11 +26,13 @@
         <attribute name="dateAdded" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <entity name="StockTrade" representedClassName="StockTrade" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="symbol" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="quantity" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="purchasePrice" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="purchaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="currentPrice" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="purchaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="portfolio" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDPortfolio" inverseName="stockTrades" inverseEntity="CDPortfolio"/>
     </entity>
 </model>

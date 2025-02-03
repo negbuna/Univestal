@@ -17,95 +17,88 @@ struct PastTrades: View {
         return (try? environment.coreDataStack.context.fetch(fetchRequest)) ?? []
     }
     
+    private var stockTrades: [StockTrade] {
+        let fetchRequest: NSFetchRequest<StockTrade> = StockTrade.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \StockTrade.purchaseDate, ascending: false)]
+        return (try? environment.coreDataStack.context.fetch(fetchRequest)) ?? []
+    }
+    
+    private var allTrades: [TradeDisplayItem] {
+        let cryptoTrades = trades.map { TradeDisplayItem(trade: $0) }
+        let stockTrades = stockTrades.map { TradeDisplayItem(stockTrade: $0) }
+        return (cryptoTrades + stockTrades).sorted { $0.date > $1.date }
+    }
+    
     var body: some View {
         NavigationStack {
-            VStack {
-                if trades.isEmpty {
-                    Text("No trades yet")
-                        .font(.headline)
-                        .foregroundColor(.gray)
-                } else {
-                    List {
-                        ForEach(trades) { trade in
-                            TradeRowView(trade: trade)
-                        }
-                    }
+            List {
+                ForEach(allTrades) { item in
+                    TradeRowView(item: item)
                 }
             }
             .navigationTitle("Trade History")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        let prices = Dictionary(
-                            uniqueKeysWithValues: environment.crypto.coins.map {
-                                ($0.id, $0.current_price)
-                            }
-                        )
-                        environment.updatePrices(with: prices)
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
-                    }
-                }
-            }
         }
     }
 }
 
 struct TradeRowView: View {
-    let trade: CDTrade
+    let item: TradeDisplayItem
     
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
                 HStack {
-                    Text("\(abs(trade.quantity), specifier: "%.3f") \(trade.coinSymbol?.uppercased() ?? "Unknown")")
+                    Text("\(abs(item.quantity), specifier: "%.3f") \(item.symbol.uppercased())")
                         .font(.headline)
                     
                     Spacer()
                     
-                    let amount = trade.purchasePrice * abs(trade.quantity)
-                    Text("\(trade.quantity > 0 ? "-" : "+")\(amount, specifier: "$%.2f")")
+                    let amount = item.purchasePrice * abs(item.quantity)
+                    Text("\(item.quantity > 0 ? "-" : "+")\(amount, specifier: "$%.2f")")
                         .fontWeight(.bold)
-                        .foregroundColor(trade.quantity > 0 ? .red : .green)
+                        .foregroundColor(item.quantity > 0 ? .red : .green)
                 }
                 
-                Text(trade.quantity < 0 ? "SELL" : "BUY")
+                Text(item.quantity < 0 ? "SELL" : "BUY")
                     .font(.caption)
-                    .foregroundColor(trade.quantity < 0 ? .green : .red)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(trade.quantity < 0 ? Color.green.opacity(0.2) : Color.red.opacity(0.2))
-                    )
-                
-                if let date = trade.purchaseDate {
-                    Text(date, style: .date)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                if let profitLoss = calculateProfitLoss() {
-                    Text(profitLoss)
-                        .font(.caption)
-                        .foregroundColor(profitLossColor)
-                }
+                    .foregroundColor(item.quantity < 0 ? .green : .red)
+                    .padding(6)
+                    .background(RoundedRectangle(cornerRadius: 2.5).fill(item.quantity < 0 ? Color.green.opacity(0.2) : Color.red.opacity(0.2)))
             }
         }
-        .padding(.vertical, 5)
+    }
+}
+
+struct TradeDisplayItem: Identifiable {
+    let id: UUID
+    let symbol: String
+    let name: String
+    let quantity: Double
+    let purchasePrice: Double
+    let currentPrice: Double
+    let date: Date
+    let isStock: Bool
+    
+    init(trade: CDTrade) {
+        self.id = trade.id ?? UUID()
+        self.symbol = trade.coinSymbol ?? ""
+        self.name = trade.coinName ?? ""
+        self.quantity = trade.quantity
+        self.purchasePrice = trade.purchasePrice
+        self.currentPrice = trade.currentPrice
+        self.date = trade.purchaseDate ?? Date()
+        self.isStock = false
     }
     
-    private func calculateProfitLoss() -> String? {
-        guard trade.currentPrice > 0, trade.purchasePrice > 0 else { return nil }
-        let pl = (trade.currentPrice - trade.purchasePrice) * trade.quantity
-        let percentage = ((trade.currentPrice / trade.purchasePrice) - 1) * 100
-        return String(format: "%+.2f (%.1f%%)", pl, percentage)
-    }
-    
-    private var profitLossColor: Color {
-        guard let pl = calculateProfitLoss() else { return .gray }
-        return pl.hasPrefix("+") ? .green : .red
+    init(stockTrade: StockTrade) {
+        self.id = stockTrade.id ?? UUID()
+        self.symbol = stockTrade.symbol ?? ""
+        self.name = stockTrade.name ?? ""
+        self.quantity = stockTrade.quantity
+        self.purchasePrice = stockTrade.purchasePrice
+        self.currentPrice = stockTrade.currentPrice
+        self.date = stockTrade.purchaseDate ?? Date()
+        self.isStock = true
     }
 }
 

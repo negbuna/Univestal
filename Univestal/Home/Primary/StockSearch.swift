@@ -5,12 +5,13 @@
 //  Created by Nathan Egbuna on 1/26/25.
 //
 
+// merge stock and crypto search into one view
 import SwiftUI
 
 struct StockSearch: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
-    @State private var searchText = ""
+    @Binding var searchText: String
     @State private var isLoading = true
     @State private var showError = false
     @State private var errorMessage = ""
@@ -19,7 +20,8 @@ struct StockSearch: View {
         if searchText.isEmpty {
             return environment.stocks
         } else {
-            return environment.stocks.filter { $0.symbol.lowercased().contains(searchText.lowercased()) }
+            let results = environment.stocks.filter { $0.symbol.lowercased().contains(searchText.lowercased()) }
+            return results.isEmpty ? environment.stocks.filter { $0.name.lowercased().contains(searchText.lowercased()) } : results
         }
     }
     
@@ -28,6 +30,15 @@ struct StockSearch: View {
             ZStack {
                 if isLoading {
                     ProgressView()
+                } else if filteredStocks.isEmpty {
+                    VStack {
+                        Spacer()
+                        Text("No results")
+                            .font(.headline)
+                            .foregroundStyle(.gray)
+                            .padding()
+                        Spacer()
+                    }
                 } else {
                     List(filteredStocks) { stock in
                         HStack {
@@ -64,8 +75,8 @@ struct StockSearch: View {
                 }
             }
             .searchable(text: $searchText)
-            .navigationTitle("Stocks")
-            .navigationBarTitleDisplayMode(.inline)
+//            .navigationTitle("Stocks")
+//            .navigationBarTitleDisplayMode(.inline)
             .alert("Error", isPresented: $showError) {
                 Button("OK", role: .cancel) { }
             } message: {
@@ -88,8 +99,8 @@ struct StockSearch: View {
     }
 }
 
-#Preview {
-    StockSearch()
-        .environmentObject(AppData(context: PersistenceController.preview.container.viewContext))
-        .environmentObject(TradingEnvironment.shared)
-}
+//#Preview {
+//    StockSearch()
+//        .environmentObject(AppData(context: PersistenceController.preview.container.viewContext))
+//        .environmentObject(TradingEnvironment.shared)
+//}

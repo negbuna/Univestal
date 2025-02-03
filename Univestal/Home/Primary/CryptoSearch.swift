@@ -10,7 +10,7 @@ import SwiftUI
 struct CryptoSearch: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
-    @State private var searchText = ""
+    @Binding var searchText: String
     @State private var selectedCoinID: String? = nil
     @State private var isLoading = true
 
@@ -18,7 +18,8 @@ struct CryptoSearch: View {
         if searchText.isEmpty {
             return environment.crypto.coins
         } else {
-            return environment.crypto.coins.filter { $0.name.lowercased().contains(searchText.lowercased()) }
+            let results = environment.crypto.coins.filter { $0.name.lowercased().contains(searchText.lowercased()) }
+            return results.isEmpty ? [] : results // Return empty array if no results
         }
     }
 
@@ -31,6 +32,15 @@ struct CryptoSearch: View {
             ZStack {
                 if isLoading {
                     ProgressView()
+                } else if filteredCoins.isEmpty {
+                    VStack {
+                        Spacer()
+                        Text("No results")
+                            .font(.headline)
+                            .foregroundStyle(.gray)
+                            .padding()
+                        Spacer()
+                    }
                 } else {
                     List(filteredCoins) { coin in
                         HStack {
@@ -69,21 +79,21 @@ struct CryptoSearch: View {
                     }
                 }
             }
-            .searchable(text: $searchText)
-            .navigationTitle("Coins")
-            .navigationBarTitleDisplayMode(.inline)
+//            .navigationTitle("Coins")
+//            .navigationBarTitleDisplayMode(.inline)
             .task {
                 if environment.crypto.coins.isEmpty {
                     await environment.crypto.fetchCoins()
                 }
                 isLoading = false
             }
+            .searchable(text: $searchText)
         }
     }
 }
 
-#Preview {
-    CryptoSearch()
-        .environmentObject(AppData(context: PersistenceController.preview.container.viewContext))
-        .environmentObject(TradingEnvironment.shared)
-}
+//#Preview {
+//    CryptoSearch()
+//        .environmentObject(AppData(context: PersistenceController.preview.container.viewContext))
+//        .environmentObject(TradingEnvironment.shared)
+//}

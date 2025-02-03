@@ -33,9 +33,20 @@ class TradingEnvironment: ObservableObject, @unchecked Sendable {
         return value
     }
     
-    // Total portfolio value using optional
+    var stockTrades: [StockTrade] {
+        (currentPortfolio?.stockTrades?.allObjects as? [StockTrade]) ?? []
+    }
+    
+    var stockHoldingsValue: Double {
+        stockTrades.reduce(0.0) { total, trade in
+            let currentPrice = stocks.first { $0.symbol == trade.symbol }?.price ?? trade.currentPrice
+            return total + (currentPrice * trade.quantity)
+        }
+    }
+    
+    // Update total portfolio value to include stocks
     var totalPortfolioValue: Double {
-        return portfolioBalance + (holdingsValue ?? 0.0)
+        return portfolioBalance + (holdingsValue ?? 0.0) + stockHoldingsValue
     }
     
     private init() {
@@ -227,5 +238,68 @@ class TradingEnvironment: ObservableObject, @unchecked Sendable {
                 }
             }
         }
+    }
+}
+
+extension TradingEnvironment {
+    func executeStockTrade(symbol: String, name: String, quantity: Double, currentPrice: Double) throws {
+        let totalCost = currentPrice * quantity
+        
+        guard let portfolio = currentPortfolio,
+              portfolio.balance >= totalCost else {
+            throw PaperTradingError.insufficientBalance
+        }
+        
+        let context = coreDataStack.context
+        let trade = StockTrade(context: context)
+        trade.id = UUID()
+        trade.symbol = symbol
+        trade.name = name
+        trade.quantity = quantity
+        trade.purchasePrice = currentPrice
+        trade.purchaseDate = Date()
+        trade.currentPrice = currentPrice
+        trade.portfolio = portfolio
+        
+        portfolio.balance -= totalCost
+        
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            throw error
+        }
+    }
+    
+    func executeStockSell(symbol: String, name: String, quantity: Double, currentPrice: Double) throws {
+        let totalValue = currentPrice * quantity
+        
+        // Check holdings
+        let fetchRequest: NSFetchRequest<StockTrade> = StockTrade.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "symbol == %@", symbol)
+        
+        guard let trades = try? coreDataStack.context.fetch(fetchRequest),
+              let portfolio = currentPortfolio else {
+            throw PaperTradingError.generalError
+        }
+        
+        let totalHoldings = trades.reduce(0.0) { $0 + $1.quantity }
+        guard totalHoldings >= quantity else {
+            throw PaperTradingError.insufficientHoldings
+        }
+        
+        let trade = StockTrade(context: coreDataStack.context)
+        trade.id = UUID()
+        trade.symbol = symbol
+        trade.name = name
+        trade.quantity = -quantity
+        trade.purchasePrice = currentPrice
+        trade.purchaseDate = Date()
+        trade.currentPrice = currentPrice
+        trade.portfolio = portfolio
+        
+        portfolio.balance += totalValue
+        
+        try? coreDataStack.context.save()
     }
 }

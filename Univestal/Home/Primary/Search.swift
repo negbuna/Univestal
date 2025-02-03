@@ -11,28 +11,30 @@ struct Search: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
     @State var selectedTab = "crypto"
+    @State var searchText = ""
     
     var body: some View {
-        NavigationStack {
-            TabView(selection: $selectedTab) {
-                CryptoSearch()
-                    .tabItem {
-                        Image(systemName: "bitcoinsign.circle.fill")
-                        Text("Crypto")
+            NavigationStack {
+                VStack {
+                    // Picker stays at the top
+                    Picker("", selection: $selectedTab) {
+                        Text("Crypto").tag("crypto")
+                        Text("Stocks").tag("stocks")
                     }
-                    .tag("crypto")
-                
-                StockSearch()
-                    .tabItem {
-                        Image(systemName: "dollarsign.circle.fill")
-                        Text("Stocks")
+                    .pickerStyle(SegmentedPickerStyle())
+                    .labelsHidden()
+                    .padding(.horizontal)
+
+                    // Display the selected view
+                    if selectedTab == "crypto" {
+                        CryptoSearch(searchText: $searchText)
+                    } else {
+                        StockSearch(searchText: $searchText)
                     }
-                    .tag("stocks")
+                }
+                .searchable(text: $searchText)
             }
-            .navigationTitle("Search")
-            .navigationBarTitleDisplayMode(.inline)
         }
-    }
 }
 
 #Preview {

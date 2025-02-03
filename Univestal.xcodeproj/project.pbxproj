@@ -40,6 +40,7 @@
 		5E84FD142D468D330093A6EA /* StockSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84FD132D468D330093A6EA /* StockSearch.swift */; };
 		5E84FD162D468E400093A6EA /* StockDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84FD152D468E400093A6EA /* StockDetailView.swift */; };
 		5E84FD182D491A280093A6EA /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84FD172D491A240093A6EA /* Search.swift */; };
+		5E84FD1A2D4958340093A6EA /* StockTrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84FD192D49582D0093A6EA /* StockTrade.swift */; };
 		5E9AD4482C3C993100C55741 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD4472C3C993100C55741 /* Profile.swift */; };
 		5E9AD44E2C41A46A00C55741 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5E9AD44D2C41A46A00C55741 /* Config.plist */; };
 		5E9AD4522C41E01700C55741 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD44F2C41A53E00C55741 /* Config.swift */; };
@@ -112,6 +113,7 @@
 		5E84FD132D468D330093A6EA /* StockSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockSearch.swift; sourceTree = "<group>"; };
 		5E84FD152D468E400093A6EA /* StockDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailView.swift; sourceTree = "<group>"; };
 		5E84FD172D491A240093A6EA /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
+		5E84FD192D49582D0093A6EA /* StockTrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockTrade.swift; sourceTree = "<group>"; };
 		5E9AD4472C3C993100C55741 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		5E9AD44D2C41A46A00C55741 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
 		5E9AD44F2C41A53E00C55741 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
@@ -183,6 +185,7 @@
 			isa = PBXGroup;
 			children = (
 				5E7F17E62D07FC9B00CEA4F7 /* Trade.swift */,
+				5E84FD192D49582D0093A6EA /* StockTrade.swift */,
 				5EA1CDE32C3AF1DD00CE5AAA /* Hub.swift */,
 				5E84FD172D491A240093A6EA /* Search.swift */,
 				5E11F6742CF55376000E6DB9 /* CryptoSearch.swift */,
@@ -476,6 +479,7 @@
 				5E7F17E72D07FC9F00CEA4F7 /* Trade.swift in Sources */,
 				5E84FD162D468E400093A6EA /* StockDetailView.swift in Sources */,
 				5E7F17E32D07EDF800CEA4F7 /* Errors.swift in Sources */,
+				5E84FD1A2D4958340093A6EA /* StockTrade.swift in Sources */,
 				5E9AD4482C3C993100C55741 /* Profile.swift in Sources */,
 				5EE8078D2C39F4B90070D8E9 /* Stage.swift in Sources */,
 				5E7F17EB2D07FE9F00CEA4F7 /* CoreData.swift in Sources */,
