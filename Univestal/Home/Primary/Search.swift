@@ -10,6 +10,7 @@ import SwiftUI
 struct Search: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
+    @Environment(\.dismiss) private var dismiss
     @State var selectedTab = "crypto"
     @State var searchText = ""
     
@@ -33,6 +34,7 @@ struct Search: View {
                     }
                 }
                 .searchable(text: $searchText)
+                .navigationBarBackButtonHidden(true)
             }
         }
 }

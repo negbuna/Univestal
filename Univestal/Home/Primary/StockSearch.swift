@@ -11,6 +11,7 @@ import SwiftUI
 struct StockSearch: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
+    @Environment(\.dismiss) private var dismiss
     @Binding var searchText: String
     @State private var isLoading = true
     @State private var showError = false
@@ -35,7 +36,7 @@ struct StockSearch: View {
                         Spacer()
                         Text("No results")
                             .font(.headline)
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(.secondary)
                             .padding()
                         Spacer()
                     }
@@ -77,6 +78,17 @@ struct StockSearch: View {
             .searchable(text: $searchText)
 //            .navigationTitle("Stocks")
 //            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
             .alert("Error", isPresented: $showError) {
                 Button("OK", role: .cancel) { }
             } message: {

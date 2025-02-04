@@ -11,6 +11,7 @@ import Charts
 struct CoinDetailView: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
+    @Environment(\.dismiss) private var dismiss
     
     let coin: Coin 
     @State private var selectedPrice: Double?
@@ -186,6 +187,27 @@ struct CoinDetailView: View {
                                     .opacity(0.07)
                             )
                         }
+                        
+                        HStack {
+                            NavigationLink(destination: BuyUI(asset: coin)) {
+                                Text("Buy")
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.blue)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(15)
+                            }
+                            
+                            NavigationLink(destination: SellUI(asset: coin)) {
+                                Text("Sell")
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.gray.opacity(0.2))
+                                    .foregroundColor(.primary)
+                                    .cornerRadius(15)
+                            }
+                        }
+                        .padding()
                     }
                     .padding(30)
                     .background(
@@ -197,7 +219,16 @@ struct CoinDetailView: View {
             }
             .navigationTitle(coin.name)
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.blue)
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         appData.toggleWatchlist(for: coin.id)
@@ -223,6 +254,7 @@ struct CoinDetailView: View {
         CoinDetailView(coin: Coin.example)
             .environmentObject(AppData())
             .environmentObject(TradingEnvironment.shared)
+            .navigationBarBackButtonHidden(true)
     }
 }
 

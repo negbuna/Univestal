@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct PrivacyPolicy: View {
+    @Environment(\.dismiss) private var dismiss
+    
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                Text(
+        ScrollView {
+            Text(
         """
         \(boldText("Effective Date: December 28, 2024"))
         
@@ -45,9 +46,19 @@ struct PrivacyPolicy: View {
         """
                 )
                 .padding()
+        }
+        .navigationTitle("Privacy Policy")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.blue)
+                }
             }
-            .navigationTitle("Privacy Policy")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
     

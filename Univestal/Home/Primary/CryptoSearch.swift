@@ -10,6 +10,7 @@ import SwiftUI
 struct CryptoSearch: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
+    @Environment(\.dismiss) private var dismiss
     @Binding var searchText: String
     @State private var selectedCoinID: String? = nil
     @State private var isLoading = true
@@ -37,7 +38,7 @@ struct CryptoSearch: View {
                         Spacer()
                         Text("No results")
                             .font(.headline)
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(.secondary)
                             .padding()
                         Spacer()
                     }
@@ -81,6 +82,17 @@ struct CryptoSearch: View {
             }
 //            .navigationTitle("Coins")
 //            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
             .task {
                 if environment.crypto.coins.isEmpty {
                     await environment.crypto.fetchCoins()
