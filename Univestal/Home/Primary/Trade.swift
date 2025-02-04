@@ -61,6 +61,7 @@ struct TradingView: View {
                 }
                 .globeOverlay()
             }
+            .navigationBarBackButtonHidden(true)
         }
     }
 

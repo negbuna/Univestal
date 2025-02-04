@@ -29,7 +29,7 @@ struct UVHubView: View {
                                 ArticleCard(article: article)
                             }
                             .onAppear {
-                                news.loadMoreArticlesIfNeeded(currentArticle: article, query: searchText.isEmpty ? "crypto" : searchText)
+                                news.loadMoreArticlesIfNeeded(currentArticle: article, query: searchText.isEmpty ? "stocks crypto" : searchText)
                             }
                         }
                         
@@ -42,7 +42,7 @@ struct UVHubView: View {
                     .padding()
                 }
                 .refreshable {
-                    news.fetchArticles(query: searchText.isEmpty ? "crypto" : searchText)
+                    news.fetchArticles(query: searchText.isEmpty ? "stocks crypto" : searchText)
                 }
             }
             .searchable(text: $searchText, prompt: "Search")
@@ -57,14 +57,14 @@ struct UVHubView: View {
                         await MainActor.run {
                             news.articles = [] // Clear current articles
                             news.currentPage = 1 // Reset pagination
-                            news.fetchArticles(query: searchText.isEmpty ? "crypto" : searchText)
+                            news.fetchArticles(query: searchText.isEmpty ? "stocks crypto" : searchText)
                         }
                     }
                 }
             }
             .onAppear {
                 if news.articles.isEmpty {
-                    news.fetchArticles(query: "crypto")
+                    news.fetchArticles(query: "stocks crypto")
                 }
             }
             .alert("Error", isPresented: $news.showAlert) {
@@ -74,6 +74,7 @@ struct UVHubView: View {
             }
             .navigationTitle("Top Stories")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
         }
     }
 }
@@ -128,47 +129,61 @@ struct ArticleCard: View {
 }
 
 struct ArticleDetailView: View {
+    @Environment(\.dismiss) private var dismiss
     let article: Article
 
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    if let imageUrl = article.imageUrl, let url = URL(string: imageUrl) {
-                        AsyncImage(url: url) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: geometry.size.width, height: 250)
-                                .clipShape(Rectangle())
-                        } placeholder: {
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(width: geometry.size.width, height: 250)
-                        }
-                    }
-                    
+        NavigationStack {
+            GeometryReader { geometry in
+                ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text(article.title)
-                            .font(.largeTitle)
-                            .bold()
-                        
-                        if let snippet = article.snippet {
-                            Text(snippet)
-                                .font(.body)
+                        if let imageUrl = article.imageUrl, let url = URL(string: imageUrl) {
+                            AsyncImage(url: url) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: geometry.size.width, height: 250)
+                                    .clipShape(Rectangle())
+                            } placeholder: {
+                                Rectangle()
+                                    .fill(Color.gray.opacity(0.3))
+                                    .frame(width: geometry.size.width, height: 250)
+                            }
                         }
                         
-                        if let url = URL(string: article.url) {
-                            Link("Read full article on \(article.source)", destination: url)
-                                .font(.callout)
-                                .foregroundColor(.blue)
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text(article.title)
+                                .font(.largeTitle)
+                                .bold()
+                            
+                            if let snippet = article.snippet {
+                                Text(snippet)
+                                    .font(.body)
+                            }
+                            
+                            if let url = URL(string: article.url) {
+                                Link("Read full article on \(article.source)", destination: url)
+                                    .font(.callout)
+                                    .foregroundColor(.blue)
+                            }
                         }
+                        .padding()
                     }
-                    .padding()
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.blue)
+                    }
                 }
             }
         }
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

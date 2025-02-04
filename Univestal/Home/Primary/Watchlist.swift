@@ -79,6 +79,7 @@ struct Watchlist: View {
             }
             .navigationTitle("Watchlist")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
         }
     }
 }

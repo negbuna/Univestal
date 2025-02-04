@@ -91,7 +91,7 @@ extension HomepageView {
                     Label("Learn", systemImage: "puzzlepiece")
                 }
                 .tag(3)
-            UVProfileView()
+            ProfileView()
                 .tabItem {
                     Label("Me", systemImage: "person")
                 }

@@ -18,6 +18,7 @@ extension Array {
 struct StockDetailView: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
+    @Environment(\.dismiss) private var dismiss
     let stock: Stock
     @State private var historicalData: [PolygonBar] = []
     @State private var isLoading = true
@@ -27,20 +28,55 @@ struct StockDetailView: View {
     @State private var tooltipPosition: CGPoint = .zero
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                StockInfoView(stock: stock)
-                if !historicalData.isEmpty {
-                    StockChartView(
-                        historicalData: historicalData,
-                        selectedPrice: $selectedPrice,
-                        selectedIndex: $selectedIndex,
-                        showTooltip: $showTooltip,
-                        tooltipPosition: $tooltipPosition
-                    )
+        NavigationStack{
+            ScrollView {
+                VStack(spacing: 16) {
+                    StockInfoView(stock: stock)
+                    if !historicalData.isEmpty {
+                        StockChartView(
+                            historicalData: historicalData,
+                            selectedPrice: $selectedPrice,
+                            selectedIndex: $selectedIndex,
+                            showTooltip: $showTooltip,
+                            tooltipPosition: $tooltipPosition
+                        )
+                    }
+                    
+                    HStack {
+                        NavigationLink(destination: BuyUI(asset: stock)) {
+                            Text("Buy")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                        
+                        NavigationLink(destination: SellUI(asset: stock)) {
+                            Text("Sell")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.gray.opacity(0.2))
+                                .foregroundColor(.primary)
+                                .cornerRadius(10)
+                        }
+                    }
+                    .padding()
                 }
+                .padding()
             }
-            .padding()
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.blue)
+                    }
+                }
+                // Keep any existing toolbar items
+            }
         }
         .task {
             await loadHistoricalData()

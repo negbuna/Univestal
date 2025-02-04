@@ -47,6 +47,7 @@ struct LearnDetailView: View {
 
 struct Learn: View {
     @State var text: String = ""
+    @Environment(\.dismiss) private var dismiss
     
     var filteredTopics: [Topic] {
         if text.isEmpty {
@@ -66,6 +67,7 @@ struct Learn: View {
             }
             .navigationTitle("Learn")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
             .searchable(text: $text, prompt: "Search")
         }
     }

@@ -10,6 +10,7 @@ import CoreData
 
 struct PastTrades: View {
     @EnvironmentObject var environment: TradingEnvironment
+    @Environment(\.dismiss) private var dismiss
     
     private var trades: [CDTrade] {
         let fetchRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
@@ -37,6 +38,18 @@ struct PastTrades: View {
                 }
             }
             .navigationTitle("Trade History")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
         }
     }
 }
@@ -58,6 +71,10 @@ struct TradeRowView: View {
                         .fontWeight(.bold)
                         .foregroundColor(item.quantity > 0 ? .red : .green)
                 }
+                
+                Text(item.date, formatter: DateFormatter.shortDate)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
                 
                 Text(item.quantity < 0 ? "SELL" : "BUY")
                     .font(.caption)

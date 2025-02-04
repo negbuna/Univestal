@@ -1,5 +1,5 @@
 //
-//  UVProfileView.swift
+//  Profile.swift
 //  Univestal
 //
 //  Created by Nathan Egbuna on 7/8/24.
@@ -7,8 +7,9 @@
 
 import SwiftUI
 
-struct UVProfileView: View {
+struct ProfileView: View {
     @EnvironmentObject var appData: AppData
+    @Environment(\.dismiss) private var dismiss
     
     @State var isEditable: Bool = true
     @State var image: UIImage?
@@ -66,9 +67,10 @@ struct UVProfileView: View {
             }
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: UVSettingsView()) {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink(destination: SettingsView()) {
                         Image(systemName: "gearshape.fill")
                     }
                 }
@@ -81,11 +83,11 @@ struct UVProfileView: View {
 }
 
 #Preview {
-    UVProfileView()
+    ProfileView()
         .environmentObject(AppData())
 }
 
-extension UVProfileView {
+extension ProfileView {
     private var defaultProfile: some View {
         ZStack {
             Circle()
