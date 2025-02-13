@@ -11,6 +11,7 @@ struct BuyUI: View {
     let asset: Any // Can be Coin or Stock
     @State private var quantity: String = ""
     @Environment(\.dismiss) private var dismiss
+    @ObservedObject var environment: TradingEnvironment
     
     // Validation Logic
     private func validateInput(_ input: String) -> Bool {
@@ -42,8 +43,8 @@ struct BuyUI: View {
                     .font(.largeTitle)
                     .padding()
                 
-                HStack(alignment: .top) {
-                    Text("Amount:")
+                VStack() {
+                    Text("Buying Power: \(environment.portfolioBalance)")
                         .font(.title2)
                     
                     TextField("0", text: $quantity)

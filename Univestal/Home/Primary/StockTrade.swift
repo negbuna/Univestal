@@ -23,48 +23,50 @@ struct StockTradingView: View {
     @State private var alertType: TradeAlertType?
     
     var body: some View {
-        VStack {
-            if let stock = selectedStock {
-                VStack(spacing: 12) {
-                    Text(stock.name)
-                        .font(.headline)
-                    Text("$\(stock.price, specifier: "%.2f")")
-                        .font(.title2)
-                    
-                    TextField("Quantity", text: $quantity)
-                        .keyboardType(.decimalPad)
-                        .textFieldStyle(.roundedBorder)
-                        .padding()
-                    
-                    if let qty = Double(quantity) {
-                        Text("Total: $\(qty * stock.price, specifier: "%.2f")")
-                    }
-                    
-                    HStack {
-                        Button("Buy") {
-                            isBuying = true
-                            executeStockTrade()
-                        }
-                        .buttonStyle(.borderedProminent)
+        NavigationStack {
+            VStack {
+                if let stock = selectedStock {
+                    VStack(spacing: 12) {
+                        Text(stock.name)
+                            .font(.headline)
+                        Text("$\(stock.price, specifier: "%.2f")")
+                            .font(.title2)
                         
-                        Button("Sell") {
-                            isBuying = false
-                            executeStockTrade()
+                        TextField("Quantity", text: $quantity)
+                            .keyboardType(.decimalPad)
+                            .textFieldStyle(.roundedBorder)
+                            .padding()
+                        
+                        if let qty = Double(quantity) {
+                            Text("Total: $\(qty * stock.price, specifier: "%.2f")")
                         }
-                        .buttonStyle(.bordered)
+                        
+                        HStack {
+                            Button("Buy") {
+                                isBuying = true
+                                executeStockTrade()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            
+                            Button("Sell") {
+                                isBuying = false
+                                executeStockTrade()
+                            }
+                            .buttonStyle(.bordered)
+                        }
                     }
+                    .padding()
                 }
-                .padding()
             }
-        }
-        .alert(item: $alertType) { type in
-            switch type {
-            case .insufficientFunds:
-                Alert(title: Text("Insufficient Funds"))
-            case .insufficientHoldings:
-                Alert(title: Text("Insufficient Holdings"))
-            case .tradeError:
-                Alert(title: Text("Trade Error"))
+            .alert(item: $alertType) { type in
+                switch type {
+                case .insufficientFunds:
+                    Alert(title: Text("Insufficient Funds"))
+                case .insufficientHoldings:
+                    Alert(title: Text("Insufficient Holdings"))
+                case .tradeError:
+                    Alert(title: Text("Trade Error"))
+                }
             }
         }
     }

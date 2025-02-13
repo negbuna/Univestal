@@ -5,10 +5,15 @@
 //  Created by Nathan Egbuna on 1/21/25.
 //
 
-import Foundation
+import SwiftUI
 
 class PolygonAPI {
     private let apiKey = Config.polygonKey
+    @ObservedObject var shared: APIRateLimiter
+    
+    init(shared: APIRateLimiter) {
+        self.shared = shared
+    }
     
     // Fetch stock data for the given ticker and date range
     func fetchStockData(
@@ -18,9 +23,9 @@ class PolygonAPI {
         completion: @escaping (Result<[StockData], Error>) -> Void
     ) throws {
         // Use default date range if none is provided
-        let dateRange = getDefaultDateRange()
-        let fromDate = from ?? dateRange.from
-        let toDate = to ?? dateRange.to
+        let dateRange = getLastWeekDateRange()
+        let fromDate = dateRange.from
+        let toDate = dateRange.to
         
         // Build the request URL
         let urlString = "https://api.polygon.io/v2/aggs/ticker/\(ticker)/range/1/day/\(fromDate)/\(toDate)?adjusted=true&sort=desc&apiKey=\(apiKey)"
@@ -70,28 +75,17 @@ class PolygonAPI {
 }
 
 extension PolygonAPI {
-    // Get today's date in "yyyy-MM-dd" format
-    private func getToday() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: Date())
-    }
-
-    // Get the default date range (last 3 months to today)
-    private func getDefaultDateRange() -> (from: String, to: String) {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        
+    func getLastWeekDateRange() -> (from: Date, to: Date) {
         let today = Date()
-        let threeMonthsAgo = Calendar.current.date(byAdding: .month, value: -3, to: today)!
-        
-        let fromDate = dateFormatter.string(from: threeMonthsAgo)
-        let toDate = dateFormatter.string(from: today)
-        
-        return (from: fromDate, to: toDate)
+        let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: today)!
+        return (from: sevenDaysAgo, to: today)
     }
     
     func fetchQuote(for symbol: String, completion: @escaping (Result<StockQuote, Error>) -> Void) {
+        guard shared.canMakeRequest() else {
+            return
+        }
+        
         let urlString = "https://api.polygon.io/v2/aggs/ticker/\(symbol)/prev?adjusted=true&apiKey=\(apiKey)"
         
         guard let url = URL(string: urlString) else {
@@ -121,9 +115,9 @@ extension PolygonAPI {
                 
                 if let result = response.results?.first {
                     let quote = StockQuote(
-                        close: result.close,
-                        change: result.close - result.open,
-                        percentChange: ((result.close - result.open) / result.open) * 100,
+                        close: result.c,
+                        change: result.c - result.o,
+                        percentChange: ((result.c - result.o) / result.o) * 100,
                         name: response.ticker
                     )
                     completion(.success(quote))
@@ -149,11 +143,12 @@ extension PolygonAPI {
     }
     
     func fetchHistoricalData(for symbol: String, from: Date, to: Date, completion: @escaping (Result<[PolygonBar], Error>) -> Void) {
+        let dateRange = getLastWeekDateRange()
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
-        let fromStr = dateFormatter.string(from: from)
-        let toStr = dateFormatter.string(from: to)
+        let fromStr = dateFormatter.string(from: dateRange.from)
+        let toStr = dateFormatter.string(from: dateRange.to)
         
         let urlString = "https://api.polygon.io/v2/aggs/ticker/\(symbol)/range/1/day/\(fromStr)/\(toStr)?adjusted=true&sort=desc&apiKey=\(apiKey)"
         
@@ -176,7 +171,7 @@ extension PolygonAPI {
             do {
                 let response = try JSONDecoder().decode(PolygonResponse.self, from: data)
                 if let results = response.results {
-                    let bars = results.map { PolygonBar(c: $0.close, h: $0.high, l: $0.low, o: $0.open, t: $0.timestamp, v: $0.volume) } // First value in returned object
+                    let bars = results.map { self.mapToPolygonBar($0) } // First value in returned object
                     completion(.success(bars))
                 } else {
                     completion(.failure(NSError(domain: "No results", code: 0, userInfo: nil)))
@@ -185,5 +180,41 @@ extension PolygonAPI {
                 completion(.failure(error))
             }
         }.resume()
+    }
+    
+    func mapToPolygonBar(_ data: StockData) -> PolygonBar {
+        PolygonBar(
+            close: data.c,
+            high: data.h,
+            low: data.l,
+            open: data.o,
+            timestamp: data.t,
+            volume: data.v
+        )
+    }
+}
+
+class APIRateLimiter: ObservableObject {
+    private let limit = 5
+    private let timeWindow: TimeInterval = 60 // 60 seconds
+    private var requestTimestamps: [Date] = []
+    
+    static let shared = APIRateLimiter()
+    
+    private init() {}
+    
+    func canMakeRequest() -> Bool {
+        cleanUpOldRequests()
+        return requestTimestamps.count < limit
+    }
+    
+    func logRequest() {
+        cleanUpOldRequests()
+        requestTimestamps.append(Date())
+    }
+    
+    private func cleanUpOldRequests() {
+        let now = Date()
+        requestTimestamps = requestTimestamps.filter { now.timeIntervalSince($0) < timeWindow }
     }
 }

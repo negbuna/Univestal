@@ -10,13 +10,12 @@ import SwiftUI
 
 @MainActor
 class TradingEnvironment: ObservableObject, @unchecked Sendable {
-    static let shared = TradingEnvironment()
-    
+    static let shared = TradingEnvironment()    
     @Published var crypto: Crypto
     @Published var currentPortfolio: CDPortfolio?
     @Published var stocks: [Stock] = []
     let coreDataStack: CoreDataStack
-    let polygon = PolygonAPI()
+    let polygon = PolygonAPI(shared: APIRateLimiter.shared)
     
     // Make computed property for holdings value
     var holdingsValue: Double? {

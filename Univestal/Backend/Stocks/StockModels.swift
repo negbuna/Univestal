@@ -51,36 +51,27 @@ struct StockQuote: Codable {
 }
 
 struct StockData: Codable {
+    let c: Double // close price
+    let h: Double // highest price
+    let l: Double // lowest price
+    let n: Int    // number of transactions
+    let o: Double // open price
+    let t: Int    // Unix msec timestamp
+    let v: Int    // trading volume
+}
+
+struct PolygonBar: Identifiable {
+    let id = UUID()
     let close: Double
     let high: Double
     let low: Double
-    let transactions: Int
     let open: Double
-    let timestamp: Int
+    let timestamp: Int // Keep as Int for Unix timestamp
     let volume: Int
-    let volumeWeightedAverage: Double
-
-    enum CodingKeys: String, CodingKey {
-        case close = "c"
-        case high = "h"
-        case low = "l"
-        case transactions = "n"
-        case open = "o"
-        case timestamp = "t"
-        case volume = "v"
-        case volumeWeightedAverage = "vw"
-    }
-}
-
-struct PolygonBar: Codable, Identifiable {
-    let c: Double // close
-    let h: Double // high
-    let l: Double // low
-    let o: Double // open
-    let t: Int    // timestamp
-    let v: Int    // volume
     
-    var id: Int { t }
+    var date: Date {
+        Date(timeIntervalSince1970: TimeInterval(timestamp / 1000))
+    }
 }
 
 struct StockSymbols {

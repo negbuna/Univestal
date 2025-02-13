@@ -43,6 +43,8 @@
 		5E84FD1A2D4958340093A6EA /* StockTrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84FD192D49582D0093A6EA /* StockTrade.swift */; };
 		5E939C232D51C25800848B3C /* SellUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939C222D51C24F00848B3C /* SellUI.swift */; };
 		5E939C252D51CF2E00848B3C /* BuyUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939C242D51CF2A00848B3C /* BuyUI.swift */; };
+		5E939C632D5A773900848B3C /* TradeNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939C622D5A773600848B3C /* TradeNew.swift */; };
+		5E939C672D5B091600848B3C /* ChartModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939C662D5B091300848B3C /* ChartModels.swift */; };
 		5E9AD4482C3C993100C55741 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD4472C3C993100C55741 /* Profile.swift */; };
 		5E9AD44E2C41A46A00C55741 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5E9AD44D2C41A46A00C55741 /* Config.plist */; };
 		5E9AD4522C41E01700C55741 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD44F2C41A53E00C55741 /* Config.swift */; };
@@ -118,6 +120,8 @@
 		5E84FD192D49582D0093A6EA /* StockTrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockTrade.swift; sourceTree = "<group>"; };
 		5E939C222D51C24F00848B3C /* SellUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SellUI.swift; sourceTree = "<group>"; };
 		5E939C242D51CF2A00848B3C /* BuyUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyUI.swift; sourceTree = "<group>"; };
+		5E939C622D5A773600848B3C /* TradeNew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeNew.swift; sourceTree = "<group>"; };
+		5E939C662D5B091300848B3C /* ChartModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartModels.swift; sourceTree = "<group>"; };
 		5E9AD4472C3C993100C55741 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		5E9AD44D2C41A46A00C55741 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
 		5E9AD44F2C41A53E00C55741 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
@@ -175,14 +179,15 @@
 			isa = PBXGroup;
 			children = (
 				5E939C242D51CF2A00848B3C /* BuyUI.swift */,
-				5E939C222D51C24F00848B3C /* SellUI.swift */,
-				5E05DDD22D30746B00AC21C0 /* Topic.swift */,
-				5EA8D25C2D0E7231000D5022 /* PastTrades.swift */,
+				5E939C662D5B091300848B3C /* ChartModels.swift */,
 				5E11F6782CF7A4CA000E6DB9 /* CoinDetailView.swift */,
-				5E84FD152D468E400093A6EA /* StockDetailView.swift */,
 				5E11F6762CF559F8000E6DB9 /* ImagePicker.swift */,
+				5EA8D25C2D0E7231000D5022 /* PastTrades.swift */,
 				5E11F65E2CF47093000E6DB9 /* PrivacyPolicy.swift */,
 				5E11F6602CF47127000E6DB9 /* Review.swift */,
+				5E939C222D51C24F00848B3C /* SellUI.swift */,
+				5E84FD152D468E400093A6EA /* StockDetailView.swift */,
+				5E05DDD22D30746B00AC21C0 /* Topic.swift */,
 			);
 			path = Secondary;
 			sourceTree = "<group>";
@@ -190,16 +195,17 @@
 		5E11F67B2CF80222000E6DB9 /* Primary */ = {
 			isa = PBXGroup;
 			children = (
-				5E7F17E62D07FC9B00CEA4F7 /* Trade.swift */,
-				5E84FD192D49582D0093A6EA /* StockTrade.swift */,
-				5E11F6722CF551CF000E6DB9 /* Watchlist.swift */,
-				5EA1CDE32C3AF1DD00CE5AAA /* Hub.swift */,
-				5E84FD172D491A240093A6EA /* Search.swift */,
 				5E11F6742CF55376000E6DB9 /* CryptoSearch.swift */,
-				5E84FD132D468D330093A6EA /* StockSearch.swift */,
+				5EA1CDE32C3AF1DD00CE5AAA /* Hub.swift */,
 				5E11F67C2CF8E0E4000E6DB9 /* Learn.swift */,
-				5EA1CDE52C3AFD4C00CE5AAA /* Settings.swift */,
 				5E9AD4472C3C993100C55741 /* Profile.swift */,
+				5E84FD172D491A240093A6EA /* Search.swift */,
+				5EA1CDE52C3AFD4C00CE5AAA /* Settings.swift */,
+				5E84FD132D468D330093A6EA /* StockSearch.swift */,
+				5E84FD192D49582D0093A6EA /* StockTrade.swift */,
+				5E7F17E62D07FC9B00CEA4F7 /* Trade.swift */,
+				5E939C622D5A773600848B3C /* TradeNew.swift */,
+				5E11F6722CF551CF000E6DB9 /* Watchlist.swift */,
 			);
 			path = Primary;
 			sourceTree = "<group>";
@@ -254,18 +260,18 @@
 		5E1242DD2C221BFA0042B089 /* Univestal */ = {
 			isa = PBXGroup;
 			children = (
+				5E11F64D2CE2D1F1000E6DB9 /* .gitignore */,
 				5E1242DE2C221BFA0042B089 /* App.swift */,
 				5E11F6512CE673CB000E6DB9 /* AppData.swift */,
-				5E7F17EA2D07FE9C00CEA4F7 /* CoreData.swift */,
-				5E1242E02C221BFA0042B089 /* ContentView.swift */,
-				5E9B20DA2D2528B80054EE0D /* Persistence.swift */,
-				5E1242E22C221BFA0042B089 /* Item.swift */,
-				5EE807892C38D2500070D8E9 /* Onboarding */,
-				5EA1CDE22C3AF1AE00CE5AAA /* Home */,
-				5E11F6692CF539CE000E6DB9 /* Backend */,
 				5E1242E42C221BFC0042B089 /* Assets.xcassets */,
-				5E11F64D2CE2D1F1000E6DB9 /* .gitignore */,
 				5E9AD44D2C41A46A00C55741 /* Config.plist */,
+				5E1242E02C221BFA0042B089 /* ContentView.swift */,
+				5E7F17EA2D07FE9C00CEA4F7 /* CoreData.swift */,
+				5E1242E22C221BFA0042B089 /* Item.swift */,
+				5E9B20DA2D2528B80054EE0D /* Persistence.swift */,
+				5E11F6692CF539CE000E6DB9 /* Backend */,
+				5EA1CDE22C3AF1AE00CE5AAA /* Home */,
+				5EE807892C38D2500070D8E9 /* Onboarding */,
 				5E1242E62C221BFC0042B089 /* Preview Content */,
 			);
 			path = Univestal;
@@ -482,6 +488,7 @@
 				5E11F6772CF559F8000E6DB9 /* ImagePicker.swift in Sources */,
 				5E84FD142D468D330093A6EA /* StockSearch.swift in Sources */,
 				5E7F17EE2D07FED300CEA4F7 /* Entities.xcdatamodeld in Sources */,
+				5E939C672D5B091600848B3C /* ChartModels.swift in Sources */,
 				5E11F66D2CF54E7D000E6DB9 /* CoinModels.swift in Sources */,
 				5E7F17E72D07FC9F00CEA4F7 /* Trade.swift in Sources */,
 				5E84FD162D468E400093A6EA /* StockDetailView.swift in Sources */,
@@ -499,6 +506,7 @@
 				5E11F6832CF913BE000E6DB9 /* News.swift in Sources */,
 				5E11F6732CF551D1000E6DB9 /* Watchlist.swift in Sources */,
 				5EDC07812D1BB538002172E5 /* Overlay.swift in Sources */,
+				5E939C632D5A773900848B3C /* TradeNew.swift in Sources */,
 				5EFA2E7A2D11F71400850417 /* TimeFrame.swift in Sources */,
 				5EA8D27C2D1107F3000D5022 /* Environment.swift in Sources */,
 			);
