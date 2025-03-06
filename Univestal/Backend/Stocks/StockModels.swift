@@ -8,7 +8,7 @@
 import Foundation
 
 // Models to represent the JSON response
-struct Stock: Codable, Identifiable, Hashable {
+struct PolygonStock: Codable, Identifiable, Hashable {
     let symbol: String
     let name: String
     let price: Double
@@ -32,21 +32,6 @@ struct PolygonResponse: Codable {
         case error
         case results
         case ticker
-    }
-}
-
-struct StockQuote: Codable {
-    let close: Double
-    let change: Double
-    let percentChange: Double
-    let name: String?
-    
-    // Latest quote fields
-    enum CodingKeys: String, CodingKey {
-        case close = "c"
-        case change = "d"
-        case percentChange = "dp"
-        case name
     }
 }
 

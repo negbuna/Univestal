@@ -312,3 +312,8 @@ class PaperTradingManager: ObservableObject {
         await crypto.fetchCoins()
     }
 }
+
+enum TimeFrame {
+    case day
+    case week
+}

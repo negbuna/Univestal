@@ -52,4 +52,22 @@ struct Config {
         }
         return key
     }
+    
+    static var finnhubKey: String {
+        guard let path = Bundle.main.path(forResource: "Config", ofType: "plist"),
+              let config = NSDictionary(contentsOfFile: path),
+              let key = config["FINNHUB-KEY"] as? String else {
+            fatalError("Finnhub key not found in Config.plist")
+        }
+        return key
+    }
+    
+    static var finnhubSecret: String {
+        guard let path = Bundle.main.path(forResource: "Config", ofType: "plist"),
+              let config = NSDictionary(contentsOfFile: path),
+              let key = config["FINNHUB-SECRET"] as? String else {
+            fatalError("Finnhub secret not found in Config.plist")
+        }
+        return key
+    }
 }

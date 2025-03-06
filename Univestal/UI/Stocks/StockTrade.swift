@@ -14,7 +14,9 @@ enum TradeAlertType: Identifiable {
 }
 
 struct StockTradingView: View {
+    @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
+    @EnvironmentObject var finnhub: Finnhub
     @State private var showMenu = false
     @State private var selectedStock: Stock?
     @State private var quantity = ""
@@ -27,9 +29,9 @@ struct StockTradingView: View {
             VStack {
                 if let stock = selectedStock {
                     VStack(spacing: 12) {
-                        Text(stock.name)
+                        Text(stock.symbol)
                             .font(.headline)
-                        Text("$\(stock.price, specifier: "%.2f")")
+                        Text("$\(stock.quote.currentPrice, specifier: "%.2f")")
                             .font(.title2)
                         
                         TextField("Quantity", text: $quantity)
@@ -38,7 +40,7 @@ struct StockTradingView: View {
                             .padding()
                         
                         if let qty = Double(quantity) {
-                            Text("Total: $\(qty * stock.price, specifier: "%.2f")")
+                            Text("Total: $\(qty * stock.quote.currentPrice, specifier: "%.2f")")
                         }
                         
                         HStack {
@@ -81,16 +83,16 @@ struct StockTradingView: View {
             if isBuying {
                 try environment.executeStockTrade(
                     symbol: stock.symbol,
-                    name: stock.name,
+                    name: stock.lookup?.description ?? stock.symbol,
                     quantity: quantity,
-                    currentPrice: stock.price
+                    currentPrice: stock.quote.currentPrice
                 )
             } else {
                 try environment.executeStockSell(
                     symbol: stock.symbol,
-                    name: stock.name,
+                    name: stock.lookup?.description ?? stock.symbol,
                     quantity: quantity,
-                    currentPrice: stock.price
+                    currentPrice: stock.quote.currentPrice
                 )
             }
             self.quantity = ""
@@ -105,5 +107,5 @@ struct StockTradingView: View {
     StockTradingView()
         .environmentObject(TradingEnvironment.shared)
         .environmentObject(AppData())
-    
+        .environmentObject(Finnhub())
 }

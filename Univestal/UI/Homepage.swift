@@ -11,6 +11,7 @@ struct HomepageView: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
     @EnvironmentObject var news: News
+    @EnvironmentObject var finnhub: Finnhub
     @State var isAnimating: Bool = false
     @State var appState: Int = 0
     @State var page: Int = 0
@@ -38,6 +39,7 @@ struct HomepageView: View {
         .environmentObject(AppData())
         .environmentObject(TradingEnvironment.shared)
         .environmentObject(News())
+        .environmentObject(Finnhub())
 }
 
 extension HomepageView {
@@ -72,16 +74,26 @@ extension HomepageView {
     private var homepage: some View {
         TabView(selection: $page) {
             UVHubView()
+                .environmentObject(appData)
+                .environmentObject(environment)
+                .environmentObject(news)
+                .environmentObject(finnhub)
                 .tabItem {
                     Label("Hub", systemImage: "globe")
                 }
                 .tag(0)
             Watchlist()
+                .environmentObject(appData)
+                .environmentObject(environment)
+                .environmentObject(finnhub)
                 .tabItem {
                     Label("Watchlist", systemImage: "star")
                 }
                 .tag(1)
             TradingView()
+                .environmentObject(appData)
+                .environmentObject(environment)
+                .environmentObject(finnhub)
                 .tabItem {
                     Label("Trade", systemImage: "chart.line.uptrend.xyaxis")
                 }
@@ -92,6 +104,9 @@ extension HomepageView {
                 }
                 .tag(3)
             ProfileView()
+                .environmentObject(appData)
+                .environmentObject(environment)
+                .environmentObject(finnhub)
                 .tabItem {
                     Label("Me", systemImage: "person")
                 }

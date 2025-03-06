@@ -11,6 +11,7 @@ struct Stage: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
     @EnvironmentObject var news: News
+    @EnvironmentObject var finnhub: Finnhub
     
     var body: some View {
         if appData.currentUserSignedIn && !appData.currentUsername.isEmpty {
@@ -26,5 +27,6 @@ struct Stage: View {
         .environmentObject(AppData())
         .environmentObject(TradingEnvironment.shared)
         .environmentObject(News())
+        .environmentObject(Finnhub())
 }
 

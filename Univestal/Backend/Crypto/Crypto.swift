@@ -23,7 +23,7 @@ class Crypto: ObservableObject { // Fetching Coin data
         URLSession.shared.dataTaskPublisher(for: url) // Making the network request w/ URL
             .map { $0.data } // Only extract data from dataTaskPublisher
             .decode(type: [Coin].self, decoder: JSONDecoder()) // Format data into Coin struct w/ JSONDecoder; will fail if JSONDecoder doesn't match up with Coin struct
-            .receive(on: DispatchQueue.main) // To ensure UI updates are on main thread
+            .receive(on: DispatchQueue.main) // Ensure UI updates are on main thread
             .sink( // Subscribe to publisher
                 receiveCompletion: { completion in // Ensure request was received
                 if case .failure(let error) = completion {

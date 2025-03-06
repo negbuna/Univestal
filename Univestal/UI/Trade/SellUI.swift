@@ -1,5 +1,5 @@
 //
-//  BuyUI.swift
+//  SellUI.swift
 //  Univestal
 //
 //  Created by Nathan Egbuna on 2/3/25.
@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-struct BuyUI: View {
-    let asset: Any // Can be Coin or Stock
+struct SellUI: View {
+    let asset: Any
     @State private var quantity: String = ""
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject var environment: TradingEnvironment
+    @EnvironmentObject var environment: TradingEnvironment
+    @EnvironmentObject var finnhub: Finnhub
     
-    // Validation Logic
     private func validateInput(_ input: String) -> Bool {
         // Don't allow empty string to be processed
         guard !input.isEmpty else { return true }
@@ -39,12 +39,12 @@ struct BuyUI: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Text("Buy \(assetName)")
+                Text("Sell \(assetName)")
                     .font(.largeTitle)
                     .padding()
                 
                 VStack() {
-                    Text("Buying Power: \(environment.portfolioBalance)")
+                    Text("Buying Power: \(environment.portfolioBalance.formatted(.currency(code: "USD")))")
                         .font(.title2)
                     
                     TextField("0", text: $quantity)
@@ -61,8 +61,27 @@ struct BuyUI: View {
                 
                 Spacer()
                 
-                Button("Confirm Buy") {
-                    // Handle buy action
+                Button("Confirm Sell") {
+                    if let coin = asset as? Coin {
+                        let boughtQuantity = (coin.current_price / Double(quantity)!)
+                        
+                        do {
+                            try environment.executeSell(coinId: coin.name, symbol: coin.symbol, name: coin.name, quantity: boughtQuantity, currentPrice: coin.current_price)
+                        } catch {
+                            print("Failed to sell coin.")
+                        }
+                    } else if let stock = asset as? Stock {
+                        let boughtQuantity = (stock.quote.currentPrice / Double(quantity)!)
+                        
+                        do {
+                            try environment.executeStockSell(symbol: stock.symbol, name: stock.lookup?.description ?? stock.symbol, quantity: boughtQuantity, currentPrice: stock.quote.currentPrice)
+                        } catch {
+                            print("Failed to sell stock.")
+                        }
+                    }
+
+                    dismiss()
+                    
                 }
                 .buttonStyle(.borderedProminent)
             }
@@ -86,6 +105,24 @@ struct BuyUI: View {
             return coin.name
         } else if let stock = asset as? Stock {
             return stock.symbol
+        }
+        return ""
+    }
+    
+    private var assetSymbol: String {
+        if let coin = asset as? Coin {
+            return coin.symbol
+        } else if let stock = asset as? Stock {
+            return stock.symbol
+        }
+        return ""
+    }
+    
+    private var assetCurrentPrice: String {
+        if let coin = asset as? Coin {
+            return String(coin.current_price)
+        } else if let stock = asset as? Stock {
+            return String(stock.quote.currentPrice)
         }
         return ""
     }

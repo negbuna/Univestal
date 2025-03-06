@@ -14,8 +14,9 @@ class TradingEnvironment: ObservableObject, @unchecked Sendable {
     @Published var crypto: Crypto
     @Published var currentPortfolio: CDPortfolio?
     @Published var stocks: [Stock] = []
+    let finnhub: Finnhub
     let coreDataStack: CoreDataStack
-    let polygon = PolygonAPI(shared: APIRateLimiter.shared)
+    //let polygon = PolygonAPI(shared: APIRateLimiter.shared)
     
     // Make computed property for holdings value
     var holdingsValue: Double? {
@@ -38,7 +39,7 @@ class TradingEnvironment: ObservableObject, @unchecked Sendable {
     
     var stockHoldingsValue: Double {
         stockTrades.reduce(0.0) { total, trade in
-            let currentPrice = stocks.first { $0.symbol == trade.symbol }?.price ?? trade.currentPrice
+            let currentPrice = stocks.first { $0.symbol == trade.symbol }?.quote.currentPrice ?? trade.currentPrice
             return total + (currentPrice * trade.quantity)
         }
     }
@@ -51,14 +52,11 @@ class TradingEnvironment: ObservableObject, @unchecked Sendable {
     private init() {
         self.crypto = Crypto()
         self.coreDataStack = CoreDataStack.shared
+        self.finnhub = Finnhub()
         
-        // Initialize or fetch existing portfolio
+        // Initialize/fetch existing portfolio
         setupPortfolio()
         
-        // Setup stock data fetching asynchronously
-        Task {
-            try? await fetchStockData()
-        }
     }
     
     private func setupPortfolio() {
@@ -89,7 +87,7 @@ class TradingEnvironment: ObservableObject, @unchecked Sendable {
         (currentPortfolio?.trades?.allObjects as? [CDTrade]) ?? []
     }
     
-    // MARK: - Trading Functions
+    // MARK: - Coin Trading
     func executeTrade(coinId: String, symbol: String, name: String, quantity: Double, currentPrice: Double) throws {
         let totalCost = currentPrice * quantity
         
@@ -218,28 +216,23 @@ class TradingEnvironment: ObservableObject, @unchecked Sendable {
     }
     
     func fetchStockData() async throws {
-        let symbols = ["AAPL", "GOOGL", "MSFT", "AMZN", "META"]
-        for symbol in symbols {
-            polygon.fetchQuote(for: symbol) { [weak self] result in
-                Task { @MainActor in
-                    switch result {
-                    case .success(let quote):
-                        self?.stocks.append(Stock(
-                            symbol: symbol,
-                            name: quote.name ?? symbol,
-                            price: quote.close,
-                            change: quote.change,
-                            percentChange: quote.percentChange
-                        ))
-                    case .failure(let error):
-                        print("Error fetching \(symbol): \(error)")
-                    }
-                }
+        let symbols = Storage().commonStocks
+        
+        do {
+            let fetchedStocks = try await finnhub.fetchStocks(symbols: symbols)
+            
+            DispatchQueue.main.async {
+                self.stocks = fetchedStocks
+                self.objectWillChange.send()
             }
+        } catch {
+            print("Failed to fetch stock data: \(error)")
+            throw error
         }
     }
 }
 
+// MARK: - Stock Trading
 extension TradingEnvironment {
     func executeStockTrade(symbol: String, name: String, quantity: Double, currentPrice: Double) throws {
         let totalCost = currentPrice * quantity

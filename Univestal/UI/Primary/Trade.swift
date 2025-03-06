@@ -11,6 +11,7 @@ import CoreData
 
 struct TradingView: View {
     @EnvironmentObject var environment: TradingEnvironment
+    @EnvironmentObject var finnhub: Finnhub
     @State private var showMenu: Bool = false
     @State private var activeAlert: TradeAlertType?
     @State private var selectedCoin: Coin?
@@ -348,4 +349,5 @@ struct TradeMenuView: View {
     TradingView()
         .environmentObject(TradingEnvironment.shared)
         .environmentObject(AppData())
+        .environmentObject(Finnhub())
 }

@@ -10,6 +10,7 @@ import CoreData
 
 struct PastTrades: View {
     @EnvironmentObject var environment: TradingEnvironment
+    @EnvironmentObject var finnhub: Finnhub
     @Environment(\.dismiss) private var dismiss
     
     private var trades: [CDTrade] {
@@ -131,4 +132,5 @@ extension DateFormatter {
 #Preview {
     PastTrades()
         .environmentObject(TradingEnvironment.shared)
+        .environmentObject(Finnhub())
 }

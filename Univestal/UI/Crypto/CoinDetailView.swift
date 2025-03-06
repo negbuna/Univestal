@@ -13,7 +13,7 @@ struct CoinDetailView: View {
     @EnvironmentObject var environment: TradingEnvironment
     @Environment(\.dismiss) private var dismiss
     
-    let coin: Coin 
+    let coin: Coin
     @State private var selectedPrice: Double?
     @State private var selectedIndex: Int?
     @State private var showTooltip = false
@@ -149,7 +149,7 @@ extension CoinDetailView {
     
     private var detailedTradeButtons: some View {
         HStack {
-            NavigationLink(destination: BuyUI(asset: coin, environment: environment)) {
+            NavigationLink(destination: BuyUI(asset: coin)) {
                 Text("Buy")
                     .frame(maxWidth: .infinity)
                     .padding()

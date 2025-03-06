@@ -45,6 +45,9 @@
 		5E939C252D51CF2E00848B3C /* BuyUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939C242D51CF2A00848B3C /* BuyUI.swift */; };
 		5E939C632D5A773900848B3C /* TradeNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939C622D5A773600848B3C /* TradeNew.swift */; };
 		5E939C672D5B091600848B3C /* ChartModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939C662D5B091300848B3C /* ChartModels.swift */; };
+		5E939CA72D5E6B0600848B3C /* ArticleModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939CA62D5E6B0100848B3C /* ArticleModels.swift */; };
+		5E939CA92D6000D600848B3C /* Finnhub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939CA82D6000D200848B3C /* Finnhub.swift */; };
+		5E939CC22D64E6C900848B3C /* FinnhubModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939CC12D64E6C400848B3C /* FinnhubModels.swift */; };
 		5E9AD4482C3C993100C55741 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD4472C3C993100C55741 /* Profile.swift */; };
 		5E9AD44E2C41A46A00C55741 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5E9AD44D2C41A46A00C55741 /* Config.plist */; };
 		5E9AD4522C41E01700C55741 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9AD44F2C41A53E00C55741 /* Config.swift */; };
@@ -60,7 +63,6 @@
 		5EDC07812D1BB538002172E5 /* Overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDC07802D1BB534002172E5 /* Overlay.swift */; };
 		5EE8078D2C39F4B90070D8E9 /* Stage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE8078C2C39F4B90070D8E9 /* Stage.swift */; };
 		5EE8078F2C3A200A0070D8E9 /* Homepage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE8078E2C3A200A0070D8E9 /* Homepage.swift */; };
-		5EFA2E7A2D11F71400850417 /* TimeFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFA2E792D11F71100850417 /* TimeFrame.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -122,6 +124,9 @@
 		5E939C242D51CF2A00848B3C /* BuyUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyUI.swift; sourceTree = "<group>"; };
 		5E939C622D5A773600848B3C /* TradeNew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeNew.swift; sourceTree = "<group>"; };
 		5E939C662D5B091300848B3C /* ChartModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartModels.swift; sourceTree = "<group>"; };
+		5E939CA62D5E6B0100848B3C /* ArticleModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleModels.swift; sourceTree = "<group>"; };
+		5E939CA82D6000D200848B3C /* Finnhub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Finnhub.swift; sourceTree = "<group>"; };
+		5E939CC12D64E6C400848B3C /* FinnhubModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinnhubModels.swift; sourceTree = "<group>"; };
 		5E9AD4472C3C993100C55741 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		5E9AD44D2C41A46A00C55741 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
 		5E9AD44F2C41A53E00C55741 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
@@ -133,7 +138,6 @@
 		5EDC07802D1BB534002172E5 /* Overlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Overlay.swift; sourceTree = "<group>"; };
 		5EE8078C2C39F4B90070D8E9 /* Stage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stage.swift; sourceTree = "<group>"; };
 		5EE8078E2C3A200A0070D8E9 /* Homepage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Homepage.swift; sourceTree = "<group>"; };
-		5EFA2E792D11F71100850417 /* TimeFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFrame.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,15 +182,10 @@
 		5E11F67A2CF7AE86000E6DB9 /* Secondary */ = {
 			isa = PBXGroup;
 			children = (
-				5E939C242D51CF2A00848B3C /* BuyUI.swift */,
-				5E939C662D5B091300848B3C /* ChartModels.swift */,
-				5E11F6782CF7A4CA000E6DB9 /* CoinDetailView.swift */,
 				5E11F6762CF559F8000E6DB9 /* ImagePicker.swift */,
-				5EA8D25C2D0E7231000D5022 /* PastTrades.swift */,
+				5E939CA62D5E6B0100848B3C /* ArticleModels.swift */,
 				5E11F65E2CF47093000E6DB9 /* PrivacyPolicy.swift */,
 				5E11F6602CF47127000E6DB9 /* Review.swift */,
-				5E939C222D51C24F00848B3C /* SellUI.swift */,
-				5E84FD152D468E400093A6EA /* StockDetailView.swift */,
 				5E05DDD22D30746B00AC21C0 /* Topic.swift */,
 			);
 			path = Secondary;
@@ -195,17 +194,13 @@
 		5E11F67B2CF80222000E6DB9 /* Primary */ = {
 			isa = PBXGroup;
 			children = (
-				5E11F6742CF55376000E6DB9 /* CryptoSearch.swift */,
 				5EA1CDE32C3AF1DD00CE5AAA /* Hub.swift */,
 				5E11F67C2CF8E0E4000E6DB9 /* Learn.swift */,
 				5E9AD4472C3C993100C55741 /* Profile.swift */,
 				5E84FD172D491A240093A6EA /* Search.swift */,
 				5EA1CDE52C3AFD4C00CE5AAA /* Settings.swift */,
-				5E84FD132D468D330093A6EA /* StockSearch.swift */,
-				5E84FD192D49582D0093A6EA /* StockTrade.swift */,
-				5E7F17E62D07FC9B00CEA4F7 /* Trade.swift */,
-				5E939C622D5A773600848B3C /* TradeNew.swift */,
 				5E11F6722CF551CF000E6DB9 /* Watchlist.swift */,
+				5E7F17E62D07FC9B00CEA4F7 /* Trade.swift */,
 			);
 			path = Primary;
 			sourceTree = "<group>";
@@ -231,6 +226,8 @@
 		5E11F68C2CFD48C0000E6DB9 /* Stocks */ = {
 			isa = PBXGroup;
 			children = (
+				5E939CA82D6000D200848B3C /* Finnhub.swift */,
+				5E939CC12D64E6C400848B3C /* FinnhubModels.swift */,
 				5E84FD112D468CC10093A6EA /* StockModels.swift */,
 				5E84FCE52D3FF5EE0093A6EA /* Polygon.swift */,
 			);
@@ -270,7 +267,7 @@
 				5E1242E22C221BFA0042B089 /* Item.swift */,
 				5E9B20DA2D2528B80054EE0D /* Persistence.swift */,
 				5E11F6692CF539CE000E6DB9 /* Backend */,
-				5EA1CDE22C3AF1AE00CE5AAA /* Home */,
+				5EA1CDE22C3AF1AE00CE5AAA /* UI */,
 				5EE807892C38D2500070D8E9 /* Onboarding */,
 				5E1242E62C221BFC0042B089 /* Preview Content */,
 			);
@@ -305,21 +302,54 @@
 		5E7F17DF2D07E98B00CEA4F7 /* Trade */ = {
 			isa = PBXGroup;
 			children = (
-				5EFA2E792D11F71100850417 /* TimeFrame.swift */,
 				5EA8D27B2D1107F3000D5022 /* Environment.swift */,
 				5E7F17E02D07E99500CEA4F7 /* TradeModels.swift */,
 			);
 			path = Trade;
 			sourceTree = "<group>";
 		};
-		5EA1CDE22C3AF1AE00CE5AAA /* Home */ = {
+		5E939E782D76369F00848B3C /* Crypto */ = {
+			isa = PBXGroup;
+			children = (
+				5E11F6742CF55376000E6DB9 /* CryptoSearch.swift */,
+				5E11F6782CF7A4CA000E6DB9 /* CoinDetailView.swift */,
+			);
+			path = Crypto;
+			sourceTree = "<group>";
+		};
+		5E939E792D7636C700848B3C /* Stocks */ = {
+			isa = PBXGroup;
+			children = (
+				5E939C662D5B091300848B3C /* ChartModels.swift */,
+				5E84FD132D468D330093A6EA /* StockSearch.swift */,
+				5E84FD192D49582D0093A6EA /* StockTrade.swift */,
+				5E84FD152D468E400093A6EA /* StockDetailView.swift */,
+			);
+			path = Stocks;
+			sourceTree = "<group>";
+		};
+		5E939E7A2D76513C00848B3C /* Trade */ = {
+			isa = PBXGroup;
+			children = (
+				5E939C242D51CF2A00848B3C /* BuyUI.swift */,
+				5EA8D25C2D0E7231000D5022 /* PastTrades.swift */,
+				5E939C222D51C24F00848B3C /* SellUI.swift */,
+				5E939C622D5A773600848B3C /* TradeNew.swift */,
+			);
+			path = Trade;
+			sourceTree = "<group>";
+		};
+		5EA1CDE22C3AF1AE00CE5AAA /* UI */ = {
 			isa = PBXGroup;
 			children = (
 				5EE8078E2C3A200A0070D8E9 /* Homepage.swift */,
+				5E939E782D76369F00848B3C /* Crypto */,
 				5E11F67B2CF80222000E6DB9 /* Primary */,
 				5E11F67A2CF7AE86000E6DB9 /* Secondary */,
+				5E939E792D7636C700848B3C /* Stocks */,
+				5E939E7A2D76513C00848B3C /* Trade */,
 			);
-			path = Home;
+			path = UI;
 			sourceTree = "<group>";
 		};
 		5EE807892C38D2500070D8E9 /* Onboarding */ = {
@@ -466,6 +496,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5E939CA72D5E6B0600848B3C /* ArticleModels.swift in Sources */,
 				5E05DDD32D30746B00AC21C0 /* Topic.swift in Sources */,
 				5E84FD122D468CC10093A6EA /* StockModels.swift in Sources */,
 				5EE8078F2C3A200A0070D8E9 /* Homepage.swift in Sources */,
@@ -497,17 +528,18 @@
 				5E9AD4482C3C993100C55741 /* Profile.swift in Sources */,
 				5EE8078D2C39F4B90070D8E9 /* Stage.swift in Sources */,
 				5E7F17EB2D07FE9F00CEA4F7 /* CoreData.swift in Sources */,
+				5E939CC22D64E6C900848B3C /* FinnhubModels.swift in Sources */,
 				5E11F6502CE2DA6A000E6DB9 /* Pages.swift in Sources */,
 				5EA1CDE62C3AFD4C00CE5AAA /* Settings.swift in Sources */,
 				5E1242DF2C221BFA0042B089 /* App.swift in Sources */,
 				5E84FD182D491A280093A6EA /* Search.swift in Sources */,
+				5E939CA92D6000D600848B3C /* Finnhub.swift in Sources */,
 				5E9B20DB2D2528B80054EE0D /* Persistence.swift in Sources */,
 				5E939C252D51CF2E00848B3C /* BuyUI.swift in Sources */,
 				5E11F6832CF913BE000E6DB9 /* News.swift in Sources */,
 				5E11F6732CF551D1000E6DB9 /* Watchlist.swift in Sources */,
 				5EDC07812D1BB538002172E5 /* Overlay.swift in Sources */,
 				5E939C632D5A773900848B3C /* TradeNew.swift in Sources */,
-				5EFA2E7A2D11F71400850417 /* TimeFrame.swift in Sources */,
 				5EA8D27C2D1107F3000D5022 /* Environment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

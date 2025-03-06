@@ -14,6 +14,7 @@ struct UnivestalApp: App {
     @StateObject private var appData: AppData
     @StateObject private var tradingEnvironment = TradingEnvironment.shared
     @StateObject private var newsService = News()
+    @StateObject private var finnhub = Finnhub()
     
     init() {
         let context = persistenceController.container.viewContext
@@ -27,6 +28,7 @@ struct UnivestalApp: App {
                 .environmentObject(appData)
                 .environmentObject(tradingEnvironment)
                 .environmentObject(newsService)
+                .environmentObject(finnhub)
                 .task {
                     await tradingEnvironment.crypto.fetchCoins()
                 }
@@ -40,4 +42,5 @@ struct UnivestalApp: App {
         .environmentObject(AppData(context: PersistenceController.preview.container.viewContext))
         .environmentObject(TradingEnvironment.shared)
         .environmentObject(News())
+        .environmentObject(Finnhub())
 }
