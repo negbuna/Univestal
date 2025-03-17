@@ -2,8 +2,8 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24C101" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="CDPortfolio" representedClassName="CDPortfolio" syncable="YES" codeGenerationType="class">
         <attribute name="balance" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <relationship name="trades" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDTrade" inverseName="portfolio" inverseEntity="CDTrade"/>
         <relationship name="stockTrades" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="StockTrade" inverseName="portfolio" inverseEntity="StockTrade"/>
+        <relationship name="trades" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDTrade" inverseName="portfolio" inverseEntity="CDTrade"/>
     </entity>
     <entity name="CDTrade" representedClassName="CDTrade" syncable="YES" codeGenerationType="class">
         <attribute name="coinId" optional="YES" attributeType="String"/>
@@ -16,23 +16,23 @@
         <attribute name="quantity" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="portfolio" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDPortfolio" inverseName="trades" inverseEntity="CDPortfolio"/>
     </entity>
+    <entity name="StockTrade" representedClassName="StockTrade" syncable="YES" codeGenerationType="class">
+        <attribute name="currentPrice" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="purchaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="purchasePrice" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="quantity" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="symbol" optional="YES" attributeType="String"/>
+        <relationship name="portfolio" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDPortfolio" inverseName="stockTrades" inverseEntity="CDPortfolio"/>
+    </entity>
+    <entity name="StockWatchlistItem" representedClassName="StockWatchlistItem" syncable="YES" codeGenerationType="class">
+        <attribute name="dateAdded" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="stockSymbol" optional="YES" attributeType="String"/>
+    </entity>
     <entity name="WatchlistItem" representedClassName="Univestal.WatchlistItem" syncable="YES" codeGenerationType="class">
         <attribute name="coinId" optional="YES" attributeType="String"/>
         <attribute name="dateAdded" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-    </entity>
-    <entity name="StockWatchlistItem" representedClassName="StockWatchlistItem" syncable="YES" codeGenerationType="class">
-        <attribute name="symbol" optional="YES" attributeType="String"/>
-        <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="dateAdded" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-    </entity>
-    <entity name="StockTrade" representedClassName="StockTrade" syncable="YES" codeGenerationType="class">
-        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="symbol" optional="YES" attributeType="String"/>
-        <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="quantity" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="purchasePrice" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="currentPrice" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="purchaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="portfolio" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDPortfolio" inverseName="stockTrades" inverseEntity="CDPortfolio"/>
     </entity>
 </model>

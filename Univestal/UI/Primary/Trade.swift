@@ -22,19 +22,14 @@ struct TradingView: View {
     
     var filteredCoins: [Coin] {
         if tradedCoin.isEmpty {
-            return environment.crypto.coins
+            return environment.coins
         } else {
-            return environment.crypto.coins.filter { $0.name.lowercased().contains(tradedCoin.lowercased()) }
+            return environment.filteredCoins(matching: tradedCoin)
         }
     }
     
     @State private var tradedCoin: String = ""
     @State private var tradedQuantity: String = ""
-    
-    enum TradeAlertType: Identifiable {
-        var id: String { UUID().uuidString }
-        case confirmTrade, insufficientFunds, insufficientHoldings, tradeError
-    }
 
     var body: some View {
         NavigationStack {
@@ -74,7 +69,7 @@ struct TradingView: View {
                     .bold()
                 
                 if let change = environment.portfolioChange(for: selectedTimeFrame) {
-                    Text("\(change.amount >= 0 ? "+" : "")\(change.amount, specifier: "$%.2f") (\(change.percentage, specifier: "%.1f")%)")
+                    Text("\(change.amount >= 0 ? "+" : "")\(change.amount, specifier: "$%.2f") (\(change.amount >= 0 ? "+" : "")\(change.percentage, specifier: "%.1f")%)")
                         .font(.subheadline)
                         .foregroundColor(change.amount >= 0 ? .green : .red)
                         .padding(.horizontal, 8)
@@ -93,28 +88,31 @@ struct TradingView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             
-            tradeButtons
+            VStack(spacing: 20) {
+                WatchlistSection(
+                    title: "Cryptocurrency Holdings",
+                    isEmpty: environment.holdings.filter { $0.type == .crypto }.isEmpty
+                ) {
+                    ForEach(environment.holdings.filter { $0.type == .crypto }) { holding in
+                        TradeHoldingRow(holding: holding)  // Renamed to avoid conflict
+                    }
+                }
+                
+                WatchlistSection(
+                    title: "Stock Holdings",
+                    isEmpty: environment.holdings.filter { $0.type == .stock }.isEmpty
+                ) {
+                    ForEach(environment.holdings.filter { $0.type == .stock }) { holding in
+                        TradeHoldingRow(holding: holding)  // Renamed to avoid conflict
+                    }
+                }
+            }
+            .padding(.horizontal)
         }
     }
 
     private func calculateTotalPortfolioValue() -> Double {
-        let cashBalance = environment.portfolioBalance
-        
-        let fetchRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
-        let trades = try? environment.coreDataStack.context.fetch(fetchRequest)
-        
-        print("Found \(trades?.count ?? 0) trades")
-        
-        let holdingsValue = trades?.reduce(0.0) { total, trade in
-            let currentPrice = environment.crypto.coins.first { $0.id == trade.coinId }?.current_price ?? trade.purchasePrice
-            print("Trade: \(trade.quantity) \(String(describing: trade.coinSymbol)) at current price: \(currentPrice)")
-            return total + (currentPrice * trade.quantity)
-        } ?? 0.0
-        
-        print("Total holdings value: \(holdingsValue)")
-        print("Cash balance: \(cashBalance)")
-        
-        return cashBalance + holdingsValue
+        return environment.totalPortfolioValue
     }
 
     private var tradeMenuView: some View {
@@ -169,35 +167,11 @@ struct TradingView: View {
         }
         .padding(.horizontal)
         .alert(item: $activeAlert) { alertType in
-            switch alertType {
-            case .confirmTrade:
-                return Alert(
-                    title: Text("Confirm Trade"),
-                    message: Text("Are you sure you want to execute this trade?"),
-                    primaryButton: .default(Text("Confirm")) {
-                        executeTrade()
-                    },
-                    secondaryButton: .cancel()
-                )
-            case .insufficientFunds:
-                return Alert(
-                    title: Text("Insufficient Funds"),
-                    message: Text("You don't have enough funds to complete this trade."),
-                    dismissButton: .default(Text("OK"))
-                )
-            case .insufficientHoldings:
-                return Alert(
-                    title: Text("Insufficient Holdings"),
-                    message: Text("You don't have enough holdings to complete this trade."),
-                    dismissButton: .default(Text("OK"))
-                )
-            case .tradeError:
-                return Alert(
-                    title: Text("Trade Error"),
-                    message: Text("An error occurred while executing the trade."),
-                    dismissButton: .default(Text("OK"))
-                )
-            }
+            Alert(
+                title: Text(alertType.title),
+                message: Text(alertType.message),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
 
@@ -247,38 +221,38 @@ struct TradingView: View {
 
     private func startPeriodicFetching() {
         Task {
-            await environment.crypto.fetchCoins()
-            
-            Timer.publish(every: 20.0, on: .main, in: .common)
-                .autoconnect()
-                .sink { _ in
-                    Task {
-                        await environment.crypto.fetchCoins()
-                    }
-                }
-                .store(in: &cancellables)
+            await environment.fetchCryptoData()
         }
     }
 
     private var tradeButtons: some View {
         HStack {
-            Button("Buy") {
-                withAnimation(.easeInOut) {
-                    showMenu = true
-                    isBuying = true
+            if let coin = selectedCoin {
+                NavigationLink(destination: UnifiedTradeView(asset: coin, type: .buy)) {
+                    Text("Buy")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
                 }
-            }
-            .buttonStyle(.borderedProminent)
 
-            Button("Sell") {
-                withAnimation(.easeInOut) {
-                    showMenu = true
-                    isBuying = false
+                NavigationLink(destination: UnifiedTradeView(asset: coin, type: .sell)) {
+                    Text("Sell")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .foregroundColor(.primary)
+                        .cornerRadius(10)
                 }
+            } else {
+                Text("Select a coin to trade")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding()
             }
-            .buttonStyle(.bordered)
         }
-        .padding(.vertical)
+        .padding()
     }
 }
 
@@ -290,11 +264,9 @@ struct TradeMenuView: View {
     
     var filteredCoins: [Coin] {
         if tradedCoin.isEmpty {
-            return environment.crypto.coins
+            return environment.coins
         } else {
-            return environment.crypto.coins.filter {
-                $0.name.lowercased().contains(tradedCoin.lowercased())
-            }
+            return environment.filteredCoins(matching: tradedCoin)
         }
     }
 
@@ -341,6 +313,82 @@ struct TradeMenuView: View {
         .onAppear {
             tradedCoin = ""
             tradedQuantity = ""
+        }
+    }
+}
+
+struct TradeHoldingRow: View {
+    let holding: AssetHolding
+    @EnvironmentObject var environment: TradingEnvironment
+    
+    var body: some View {
+        if let asset = assetForHolding {
+            NavigationLink(destination: UnifiedTradeView(asset: asset, type: .sell)) {
+                HoldingRowContent(holding: holding)
+            }
+        } else {
+            HoldingRowContent(holding: holding)
+                .opacity(0.5) // Visual indication that the asset is unavailable
+        }
+    }
+    
+    private var assetForHolding: Tradeable? {
+        if holding.type == .crypto {
+            return environment.coins.first { $0.id == holding.id }
+        } else {
+            return environment.stocks.first { $0.symbol == holding.symbol }
+        }
+    }
+}
+
+struct HoldingRowContent: View {
+    let holding: AssetHolding
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(holding.symbol.uppercased())
+                    .font(.headline)
+                Text("\(holding.quantity, specifier: "%.4f") units")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            VStack(alignment: .trailing) {
+                Text(holding.totalValue, format: .currency(code: "USD"))
+                    .font(.headline)
+                Text(holding.profitLoss >= 0 ? "+" : "-")
+                    .foregroundColor(holding.profitLoss >= 0 ? .green : .red) +
+                Text(abs(holding.profitLoss), format: .currency(code: "USD"))
+                    .foregroundColor(holding.profitLoss >= 0 ? .green : .red)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+    }
+}
+
+enum TradeAlertType: Identifiable {
+    var id: String { UUID().uuidString }
+    case confirmTrade, insufficientFunds, insufficientHoldings, tradeError
+    
+    var title: String {
+        switch self {
+        case .confirmTrade: return "Confirm Trade"
+        case .insufficientFunds: return "Insufficient Funds"
+        case .insufficientHoldings: return "Insufficient Holdings"
+        case .tradeError: return "Trade Error"
+        }
+    }
+    
+    var message: String {
+        switch self {
+        case .confirmTrade: return "Are you sure you want to execute this trade?"
+        case .insufficientFunds: return "You don't have enough funds to complete this trade."
+        case .insufficientHoldings: return "You don't have enough holdings to complete this trade."
+        case .tradeError: return "An error occurred while executing the trade."
         }
     }
 }

@@ -20,20 +20,16 @@ class Crypto: ObservableObject { // Fetching Coin data
             return
         }
         
-        URLSession.shared.dataTaskPublisher(for: url) // Making the network request w/ URL
-            .map { $0.data } // Only extract data from dataTaskPublisher
-            .decode(type: [Coin].self, decoder: JSONDecoder()) // Format data into Coin struct w/ JSONDecoder; will fail if JSONDecoder doesn't match up with Coin struct
-            .receive(on: DispatchQueue.main) // Ensure UI updates are on main thread
-            .sink( // Subscribe to publisher
-                receiveCompletion: { completion in // Ensure request was received
-                if case .failure(let error) = completion {
-                    print("Error fetching coins: \(error)")
-                }
-            },  receiveValue: { [weak self] coins in // Ensures data was returned
-                    self?.coins = coins
-                }
-            )
-            .store(in: &cancellables) // Keep track of publisher subscriptions
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let decodedCoins = try JSONDecoder().decode([Coin].self, from: data)
+            
+            await MainActor.run {
+                self.coins = decodedCoins
+            }
+        } catch {
+            print("Error fetching coins: \(error)")
+        }
     }
     
     // Specific coin data for coins in Watchlist

@@ -47,7 +47,7 @@ struct StockDetailView: View {
 extension StockDetailView {
     private var detailedTradeButtons: some View {
         HStack {
-            NavigationLink(destination: BuyUI(asset: stock)) {
+            NavigationLink(destination: UnifiedTradeView(asset: stock, type: .buy)) {
                 Text("Buy")
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -56,7 +56,7 @@ extension StockDetailView {
                     .cornerRadius(15)
             }
             
-            NavigationLink(destination: SellUI(asset: stock)) {
+            NavigationLink(destination: UnifiedTradeView(asset: stock, type: .sell)) {
                 Text("Sell")
                     .frame(maxWidth: .infinity)
                     .padding()

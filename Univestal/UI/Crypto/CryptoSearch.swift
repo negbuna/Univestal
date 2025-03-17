@@ -17,35 +17,46 @@ struct CryptoSearch: View {
 
     var filteredCoins: [Coin] {
         if searchText.isEmpty {
-            return environment.crypto.coins
+            return environment.coins
         } else {
-            let results = environment.crypto.coins.filter { $0.name.lowercased().contains(searchText.lowercased()) }
-            return results.isEmpty ? [] : results // Return empty array if no results
+            return environment.filteredCoins(matching: searchText)
         }
     }
 
     var selectedCoin: Coin? {
-        environment.crypto.coins.first { $0.id == selectedCoinID }
+        guard let id = selectedCoinID else { return nil }
+        return environment.findCoin(byId: id)
     }
 
     var body: some View {
         NavigationStack {
             ZStack {
                 if isLoading {
+                    Spacer()
                     ProgressView()
-                } else if filteredCoins.isEmpty {
-                    VStack {
-                        Spacer()
-                        Text("No results")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                            .padding()
-                        Spacer()
-                    }
+                    Spacer()
                 } else {
-                    List(filteredCoins) { coin in
-                        NavigationLink(destination: CoinDetailView(coin: coin)) {
-                            CoinRow(for: coin)
+                    if environment.coins.isEmpty {
+                        VStack {
+                            Spacer()
+                            ProgressView()
+                            Spacer()
+                        }
+                        .task {
+                            await environment.fetchCryptoData()
+                            isLoading = false
+                        }
+                    } else if filteredCoins.isEmpty && !searchText.isEmpty {
+                        VStack {
+                            Text("No results")
+                                .font(.headline)
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        List(filteredCoins) { coin in
+                            NavigationLink(destination: CoinDetailView(coin: coin)) {
+                                CoinRow(for: coin)
+                            }
                         }
                     }
                 }
@@ -63,9 +74,9 @@ struct CryptoSearch: View {
                 }
             }
             .task {
-                if environment.crypto.coins.isEmpty {
+                if environment.coins.isEmpty {
                     isLoading = true
-                    await environment.crypto.fetchCoins()
+                    await environment.fetchCryptoData()
                 }
                 isLoading = false
             }
@@ -106,7 +117,7 @@ extension CryptoSearch {
                 Text(String(format: "$%.2f", coin.current_price))
                     .font(.headline)
                     .foregroundColor(.primary)
-                Text(String(format: "%.2f%%", coin.price_change_percentage_24h ?? 0.00))
+                Text("\(coin.price_change_percentage_24h ?? 0 >= 0 ? "+" : "")\(String(format: "%.2f", coin.price_change_percentage_24h ?? 0.00))%")
                     .font(.subheadline)
                     .foregroundColor(appData.percentColor(coin.price_change_percentage_24h ?? 0))
             }

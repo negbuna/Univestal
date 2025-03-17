@@ -149,7 +149,7 @@ extension CoinDetailView {
     
     private var detailedTradeButtons: some View {
         HStack {
-            NavigationLink(destination: BuyUI(asset: coin)) {
+            NavigationLink(destination: UnifiedTradeView(asset: coin, type: .buy)) {
                 Text("Buy")
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -158,7 +158,7 @@ extension CoinDetailView {
                     .cornerRadius(15)
             }
             
-            NavigationLink(destination: SellUI(asset: coin)) {
+            NavigationLink(destination: UnifiedTradeView(asset: coin, type: .sell)) {
                 Text("Sell")
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -267,11 +267,9 @@ extension CoinDetailView {
 }
 
 #Preview {
-    NavigationStack {
-        CoinDetailView(coin: Coin.example)
-            .environmentObject(AppData())
-            .environmentObject(TradingEnvironment.shared)
-    }
+    CoinDetailView(coin: Coin.example)
+        .environmentObject(AppData())
+        .environmentObject(TradingEnvironment.shared)
 }
 
 extension Coin {

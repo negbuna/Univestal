@@ -17,6 +17,14 @@ class CoreDataStack {
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
+            print("CoreData store loaded successfully at: \(storeDescription.url?.absoluteString ?? "unknown location")")
+            
+            // Print the store type
+            print("Store type: \(storeDescription.type)")
+            
+            // Print entity descriptions
+            let entities = container.managedObjectModel.entities
+            print("Loaded entities: \(entities.map { $0.name ?? "unnamed" })")
         }
         return container
     }()
@@ -33,6 +41,24 @@ class CoreDataStack {
             } catch {
                 let nserror = error as NSError
                 fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
+        }
+    }
+
+    // Add verification method
+    func verifyStoreConfiguration() {
+        let context = persistentContainer.viewContext
+        let entities = ["StockWatchlistItem", "WatchlistItem", "CDPortfolio", "CDTrade", "StockTrade"]
+        
+        for entityName in entities {
+            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entityName)
+            fetchRequest.fetchLimit = 1
+            
+            do {
+                _ = try context.fetch(fetchRequest)
+                print("✅ Successfully verified entity: \(entityName)")
+            } catch {
+                print("❌ Error verifying entity \(entityName): \(error)")
             }
         }
     }

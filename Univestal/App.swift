@@ -19,6 +19,9 @@ struct UnivestalApp: App {
     init() {
         let context = persistenceController.container.viewContext
         _appData = StateObject(wrappedValue: AppData(context: context))
+        
+        // Verify CoreData store
+        CoreDataStack.shared.verifyStoreConfiguration()
     }
 
     var body: some Scene {
@@ -29,8 +32,9 @@ struct UnivestalApp: App {
                 .environmentObject(tradingEnvironment)
                 .environmentObject(newsService)
                 .environmentObject(finnhub)
-                .task {
-                    await tradingEnvironment.crypto.fetchCoins()
+                .task(priority: .userInitiated) {
+                    // Initial data load
+                    await DataManager.shared.refreshData()
                 }
         }
     }

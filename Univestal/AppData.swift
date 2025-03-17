@@ -206,6 +206,11 @@ class AppData: ObservableObject {
         }
     }
     
+    func formatPercentChange(_ number: Double) -> String {
+        let sign = number >= 0 ? "+" : ""
+        return "\(sign)\(String(format: "%.2f", number))%"
+    }
+    
     func percentColor(_ number: Double) -> Color {
         if number > 0 {
             return .green // Positive change
@@ -218,14 +223,19 @@ class AppData: ObservableObject {
     
     func loadWatchlistFromCoreData() {
         let request = NSFetchRequest<WatchlistItem>(entityName: "WatchlistItem")
+        let stockRequest = NSFetchRequest<StockWatchlistItem>(entityName: "StockWatchlistItem")
+        
         do {
             let items = try viewContext.fetch(request)
+            let stockItems = try viewContext.fetch(stockRequest)
             watchlist = Set(items.compactMap { $0.coinId })
+            stockWatchlist = Set(stockItems.compactMap { $0.stockSymbol })  // Use correct attribute
+            print("Loaded stock watchlist: \(stockWatchlist)")  // Add debug print
         } catch {
-            print("Error loading watchlist: \(error)")
+            print("Error loading watchlists: \(error)")
         }
     }
-    
+
     func toggleWatchlist(for coinId: String) {
         if watchlist.contains(coinId) {
             removeFromWatchlist(coinId)
@@ -237,10 +247,11 @@ class AppData: ObservableObject {
     
     func toggleStockWatchlist(for symbol: String) {
         if stockWatchlist.contains(symbol) {
-            stockWatchlist.remove(symbol)
+            removeFromStockWatchlist(symbol)
         } else {
-            stockWatchlist.insert(symbol)
+            addToStockWatchlist(symbol)
         }
+        objectWillChange.send()
     }
     
     private func addToWatchlist(_ coinId: String) {
@@ -268,6 +279,34 @@ class AppData: ObservableObject {
             watchlist.remove(coinId)
         } catch {
             print("Error removing from watchlist: \(error)")
+        }
+    }
+    
+    private func addToStockWatchlist(_ symbol: String) {
+        let item = NSEntityDescription.insertNewObject(forEntityName: "StockWatchlistItem", 
+                                                    into: viewContext) as! StockWatchlistItem
+        item.stockSymbol = symbol
+        item.dateAdded = Date()
+        
+        do {
+            try viewContext.save()
+            stockWatchlist.insert(symbol)
+        } catch {
+            print("Error adding to stock watchlist: \(error)")
+        }
+    }
+    
+    private func removeFromStockWatchlist(_ symbol: String) {
+        let request = NSFetchRequest<StockWatchlistItem>(entityName: "StockWatchlistItem")
+        request.predicate = NSPredicate(format: "stockSymbol == %@", symbol)  // Match the attribute name
+        
+        do {
+            let items = try viewContext.fetch(request)
+            items.forEach { viewContext.delete($0) }
+            try viewContext.save()
+            stockWatchlist.remove(symbol)
+        } catch {
+            print("Error removing from stock watchlist: \(error)")
         }
     }
 }

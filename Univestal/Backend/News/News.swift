@@ -20,6 +20,10 @@ class News: ObservableObject {
     let apiKey = Config.newsKey
     let articlesPerPage = 3 // Match the API's default limit
 
+    private var lastSearchTime: Date?
+    private let cooldownInterval: TimeInterval = 600 // 10 minutes
+    private var isUserInitiatedSearch = false
+
     private func handleError(_ error: Error) {
     DispatchQueue.main.async {
         self.showAlert = true
@@ -55,11 +59,42 @@ class News: ObservableObject {
     }
 }
 
-    func fetchArticles(query: String, page: Int = 1) {
-        // Prevent multiple simultaneous requests
+    func fetchArticles(query: String, page: Int = 1, isUserSearch: Bool = false, completion: @escaping ([Article]) -> Void = { _ in }) {
+        // Update flag
+        isUserInitiatedSearch = isUserSearch
+        
+        let _ = query.isEmpty && page == 1 && !isUserInitiatedSearch // isInitialLoad, Might use this later
+        
+        // Only show alerts for user-initiated searches
+        if isUserInitiatedSearch {
+            if let lastSearch = lastSearchTime {
+                let timeSinceLastSearch = Date().timeIntervalSince(lastSearch)
+                if timeSinceLastSearch < cooldownInterval {
+                    let remainingTime = Int(cooldownInterval - timeSinceLastSearch)
+                    self.showAlert = true 
+                    self.alertMessage = "Due to API constraints, please wait \(remainingTime) seconds before searching again."
+                    return
+                }
+            }
+            lastSearchTime = Date()
+        }
+        
+        // Reset alert state for non-user searches
+        if !isUserInitiatedSearch {
+            showAlert = false
+            alertMessage = ""
+        }
+        
+        performFetch(query: query, page: page, showAlerts: isUserInitiatedSearch, completion: completion)
+    }
+
+    private func performFetch(query: String, page: Int, showAlerts: Bool, completion: @escaping ([Article]) -> Void) {
         guard !isLoading else { return }
         
         isLoading = true
+        if showAlerts {
+            lastSearchTime = Date()
+        }
         
         let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         
@@ -81,6 +116,7 @@ class News: ObservableObject {
             if let error = error {
                 DispatchQueue.main.async {
                     self.handleError(error)
+                    completion([])
                 }
                 return
             }
@@ -89,6 +125,7 @@ class News: ObservableObject {
                 DispatchQueue.main.async {
                     self.showAlert = true
                     self.alertMessage = "No data received from the server."
+                    completion([])
                 }
                 return
             }
@@ -118,8 +155,10 @@ class News: ObservableObject {
                     // If it's a subsequent page, append articles
                     if page == 1 {
                         self.articles = decodedResponse.data
+                        completion(decodedResponse.data)
                     } else {
                         self.articles.append(contentsOf: decodedResponse.data)
+                        completion(self.articles)
                     }
                     
                     self.totalArticlesFound = decodedResponse.meta.found
@@ -133,6 +172,7 @@ class News: ObservableObject {
             } catch {
                 DispatchQueue.main.async {
                     self.handleError(error)
+                    completion([])
                 }
             }
         }.resume()

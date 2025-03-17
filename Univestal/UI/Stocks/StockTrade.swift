@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-enum TradeAlertType: Identifiable {
-    case insufficientFunds, insufficientHoldings, tradeError
-    
-    var id: String { UUID().uuidString }
-}
-
 struct StockTradingView: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
@@ -68,6 +62,15 @@ struct StockTradingView: View {
                     Alert(title: Text("Insufficient Holdings"))
                 case .tradeError:
                     Alert(title: Text("Trade Error"))
+                case .confirmTrade:
+                    Alert(
+                        title: Text("Confirm Trade"),
+                        message: Text("Are you sure you want to execute this trade?"),
+                        primaryButton: .default(Text("Confirm")) {
+                            executeStockTrade()
+                        },
+                        secondaryButton: .cancel()
+                    )
                 }
             }
         }

@@ -14,15 +14,11 @@ struct PastTrades: View {
     @Environment(\.dismiss) private var dismiss
     
     private var trades: [CDTrade] {
-        let fetchRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \CDTrade.purchaseDate, ascending: false)]
-        return (try? environment.coreDataStack.context.fetch(fetchRequest)) ?? []
+        environment.fetchCryptoTrades()
     }
     
     private var stockTrades: [StockTrade] {
-        let fetchRequest: NSFetchRequest<StockTrade> = StockTrade.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \StockTrade.purchaseDate, ascending: false)]
-        return (try? environment.coreDataStack.context.fetch(fetchRequest)) ?? []
+        environment.fetchStockTrades()
     }
     
     private var allTrades: [TradeDisplayItem] {

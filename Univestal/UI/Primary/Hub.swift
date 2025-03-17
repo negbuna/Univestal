@@ -58,15 +58,21 @@ struct UVHubView: View {
                         await MainActor.run {
                             news.articles = [] // Clear current articles
                             news.currentPage = 1 // Reset pagination
-                            news.fetchArticles(query: searchText.isEmpty ? "stocks crypto" : searchText)
+                            // Mark as user search
+                            news.fetchArticles(
+                                query: searchText.isEmpty ? "stocks crypto" : searchText,
+                                isUserSearch: true
+                            )
                         }
                     }
                 }
             }
             .onAppear {
                 if news.articles.isEmpty {
-                    news.fetchArticles(query: "stocks crypto")
+                    // Mark as system load
+                    news.fetchArticles(query: "stocks crypto", isUserSearch: false)
                 }
+                news.showAlert = false
             }
             .alert("Error", isPresented: $news.showAlert) {
                 Button("OK", role: .cancel) { }

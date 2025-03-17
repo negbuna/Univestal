@@ -26,6 +26,7 @@ import SwiftUI
 
 @MainActor
 class Finnhub: ObservableObject {
+    static let shared = Finnhub()
     private let apiKey = Config.finnhubKey
     @Published var allStocks: [Stock] = []
     private let storage = Storage()
