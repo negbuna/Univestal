@@ -59,13 +59,16 @@
 		5EA1CDE42C3AF1DD00CE5AAA /* Hub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA1CDE32C3AF1DD00CE5AAA /* Hub.swift */; };
 		5EA1CDE62C3AFD4C00CE5AAA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA1CDE52C3AFD4C00CE5AAA /* Settings.swift */; };
 		5EA8D25D2D0E7238000D5022 /* PastTrades.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA8D25C2D0E7231000D5022 /* PastTrades.swift */; };
-		5EA8D27C2D1107F3000D5022 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA8D27B2D1107F3000D5022 /* Environment.swift */; };
 		5EDC07812D1BB538002172E5 /* Overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDC07802D1BB534002172E5 /* Overlay.swift */; };
 		5EE787D72D8795B700C19D6C /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787D62D8795B700C19D6C /* DataManager.swift */; };
 		5EE787D92D8795D900C19D6C /* TradingEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787D82D8795D900C19D6C /* TradingEnvironment.swift */; };
 		5EE787DC2D8795FB00C19D6C /* HoldingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787DA2D8795FB00C19D6C /* HoldingsView.swift */; };
 		5EE787DD2D8795FB00C19D6C /* UnifiedTradeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787DB2D8795FB00C19D6C /* UnifiedTradeView.swift */; };
 		5EE787DF2D87AE3000C19D6C /* todo.md in Resources */ = {isa = PBXBuildFile; fileRef = 5EE787DE2D87AE2C00C19D6C /* todo.md */; };
+		5EE787E32D8CB86F00C19D6C /* StockTierManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787E22D8CB86F00C19D6C /* StockTierManager.swift */; };
+		5EE787E52D8CB8A500C19D6C /* TradeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787E42D8CB8A500C19D6C /* TradeError.swift */; };
+		5EE787EA2D8D0E7100C19D6C /* InputValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787E82D8D0E7100C19D6C /* InputValidator.swift */; };
+		5EE787EB2D8D0E7100C19D6C /* RateLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787E62D8D0E7100C19D6C /* RateLimiter.swift */; };
 		5EE8078D2C39F4B90070D8E9 /* Stage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE8078C2C39F4B90070D8E9 /* Stage.swift */; };
 		5EE8078F2C3A200A0070D8E9 /* Homepage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE8078E2C3A200A0070D8E9 /* Homepage.swift */; };
 /* End PBXBuildFile section */
@@ -139,13 +142,16 @@
 		5EA1CDE32C3AF1DD00CE5AAA /* Hub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hub.swift; sourceTree = "<group>"; };
 		5EA1CDE52C3AFD4C00CE5AAA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		5EA8D25C2D0E7231000D5022 /* PastTrades.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PastTrades.swift; sourceTree = "<group>"; };
-		5EA8D27B2D1107F3000D5022 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		5EDC07802D1BB534002172E5 /* Overlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Overlay.swift; sourceTree = "<group>"; };
 		5EE787D62D8795B700C19D6C /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		5EE787D82D8795D900C19D6C /* TradingEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradingEnvironment.swift; sourceTree = "<group>"; };
 		5EE787DA2D8795FB00C19D6C /* HoldingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoldingsView.swift; sourceTree = "<group>"; };
 		5EE787DB2D8795FB00C19D6C /* UnifiedTradeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnifiedTradeView.swift; sourceTree = "<group>"; };
 		5EE787DE2D87AE2C00C19D6C /* todo.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = todo.md; sourceTree = "<group>"; };
+		5EE787E22D8CB86F00C19D6C /* StockTierManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockTierManager.swift; sourceTree = "<group>"; };
+		5EE787E42D8CB8A500C19D6C /* TradeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeError.swift; sourceTree = "<group>"; };
+		5EE787E62D8D0E7100C19D6C /* RateLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateLimiter.swift; sourceTree = "<group>"; };
+		5EE787E82D8D0E7100C19D6C /* InputValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputValidator.swift; sourceTree = "<group>"; };
 		5EE8078C2C39F4B90070D8E9 /* Stage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stage.swift; sourceTree = "<group>"; };
 		5EE8078E2C3A200A0070D8E9 /* Homepage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Homepage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -186,6 +192,8 @@
 				5E11F68C2CFD48C0000E6DB9 /* Stocks */,
 				5E11F68A2CFD41D4000E6DB9 /* Crypto */,
 				5E11F68B2CFD48AE000E6DB9 /* News */,
+				5EE787E72D8D0E7100C19D6C /* API */,
+				5EE787E92D8D0E7100C19D6C /* Validation */,
 			);
 			path = Backend;
 			sourceTree = "<group>";
@@ -241,6 +249,7 @@
 				5E939CC12D64E6C400848B3C /* FinnhubModels.swift */,
 				5E84FD112D468CC10093A6EA /* StockModels.swift */,
 				5E84FCE52D3FF5EE0093A6EA /* Polygon.swift */,
+				5EE787E22D8CB86F00C19D6C /* StockTierManager.swift */,
 			);
 			path = Stocks;
 			sourceTree = "<group>";
@@ -314,9 +323,9 @@
 		5E7F17DF2D07E98B00CEA4F7 /* Trade */ = {
 			isa = PBXGroup;
 			children = (
-				5EA8D27B2D1107F3000D5022 /* Environment.swift */,
 				5E7F17E02D07E99500CEA4F7 /* TradeModels.swift */,
 				5EE787D82D8795D900C19D6C /* TradingEnvironment.swift */,
+				5EE787E42D8CB8A500C19D6C /* TradeError.swift */,
 			);
 			path = Trade;
 			sourceTree = "<group>";
@@ -365,6 +374,22 @@
 				5E939E7A2D76513C00848B3C /* Trade */,
 			);
 			path = UI;
+			sourceTree = "<group>";
+		};
+		5EE787E72D8D0E7100C19D6C /* API */ = {
+			isa = PBXGroup;
+			children = (
+				5EE787E62D8D0E7100C19D6C /* RateLimiter.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		5EE787E92D8D0E7100C19D6C /* Validation */ = {
+			isa = PBXGroup;
+			children = (
+				5EE787E82D8D0E7100C19D6C /* InputValidator.swift */,
+			);
+			path = Validation;
 			sourceTree = "<group>";
 		};
 		5EE807892C38D2500070D8E9 /* Onboarding */ = {
@@ -512,6 +537,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EE787EA2D8D0E7100C19D6C /* InputValidator.swift in Sources */,
+				5EE787EB2D8D0E7100C19D6C /* RateLimiter.swift in Sources */,
 				5E939CA72D5E6B0600848B3C /* ArticleModels.swift in Sources */,
 				5E05DDD32D30746B00AC21C0 /* Topic.swift in Sources */,
 				5E84FD122D468CC10093A6EA /* StockModels.swift in Sources */,
@@ -554,13 +581,14 @@
 				5E1242DF2C221BFA0042B089 /* App.swift in Sources */,
 				5E84FD182D491A280093A6EA /* Search.swift in Sources */,
 				5E939CA92D6000D600848B3C /* Finnhub.swift in Sources */,
+				5EE787E32D8CB86F00C19D6C /* StockTierManager.swift in Sources */,
 				5E9B20DB2D2528B80054EE0D /* Persistence.swift in Sources */,
 				5E939C252D51CF2E00848B3C /* BuyUI.swift in Sources */,
 				5E11F6832CF913BE000E6DB9 /* News.swift in Sources */,
 				5E11F6732CF551D1000E6DB9 /* Watchlist.swift in Sources */,
 				5EDC07812D1BB538002172E5 /* Overlay.swift in Sources */,
 				5E939C632D5A773900848B3C /* TradeNew.swift in Sources */,
-				5EA8D27C2D1107F3000D5022 /* Environment.swift in Sources */,
+				5EE787E52D8CB8A500C19D6C /* TradeError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

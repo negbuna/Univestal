@@ -19,6 +19,7 @@ struct TradingView: View {
     @State private var isBuying: Bool = true
     @State private var selectedTimeFrame: TimeFrame = .day
     @State private var cancellables = Set<AnyCancellable>()
+    @State private var showResetAlert = false
     
     var filteredCoins: [Coin] {
         if tradedCoin.isEmpty {
@@ -34,15 +35,17 @@ struct TradingView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
-                VStack {
-                    Spacer()
-                    if !showMenu {
-                        portfolioView
+                ScrollView {
+                    VStack {
+                        Spacer()
+                        if !showMenu {
+                            portfolioView
+                        }
+                        tradeMenuView
+                        Spacer()
                     }
-                    tradeMenuView
-                    Spacer()
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
                 .onAppear {
                     startPeriodicFetching()
                 }
@@ -54,6 +57,22 @@ struct TradingView: View {
                             PastTrades()
                         }
                     }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(action: { showResetAlert = true }) {
+                            Image(systemName: "arrow.counterclockwise")
+                                .foregroundColor(.red)
+                        }
+                    }
+                }
+                .alert("Reset Portfolio?", isPresented: $showResetAlert) {
+                    Button("Cancel", role: .cancel) { }
+                    Button("Reset", role: .destructive) {
+                        Task {
+                            try? await environment.resetPortfolio()
+                        }
+                    }
+                } message: {
+                    Text("This will reset your portfolio balance to $100,000 and remove all trades. This action cannot be undone.")
                 }
                 .globeOverlay()
             }
@@ -89,26 +108,48 @@ struct TradingView: View {
                 .foregroundStyle(.secondary)
             
             VStack(spacing: 20) {
-                WatchlistSection(
-                    title: "Cryptocurrency Holdings",
-                    isEmpty: environment.holdings.filter { $0.type == .crypto }.isEmpty
-                ) {
-                    ForEach(environment.holdings.filter { $0.type == .crypto }) { holding in
-                        TradeHoldingRow(holding: holding)  // Renamed to avoid conflict
+                // Only show sections if they have holdings
+                let cryptoHoldings = environment.holdings.filter { $0.type == .crypto && $0.quantity > 0 }
+                let stockHoldings = environment.holdings.filter { $0.type == .stock && $0.quantity > 0 }
+                
+                if !cryptoHoldings.isEmpty {
+                    WatchlistSection(
+                        title: "Cryptocurrency Holdings",
+                        isEmpty: false
+                    ) {
+                        ForEach(cryptoHoldings) { holding in
+                            TradeHoldingRow(holding: holding)
+                        }
                     }
                 }
                 
-                WatchlistSection(
-                    title: "Stock Holdings",
-                    isEmpty: environment.holdings.filter { $0.type == .stock }.isEmpty
-                ) {
-                    ForEach(environment.holdings.filter { $0.type == .stock }) { holding in
-                        TradeHoldingRow(holding: holding)  // Renamed to avoid conflict
+                if !stockHoldings.isEmpty {
+                    WatchlistSection(
+                        title: "Stock Holdings",
+                        isEmpty: false
+                    ) {
+                        ForEach(stockHoldings) { holding in
+                            TradeHoldingRow(holding: holding)
+                        }
                     }
+                }
+                
+                if cryptoHoldings.isEmpty && stockHoldings.isEmpty {
+                    Text("No current holdings")
+                        .foregroundStyle(.secondary)
+                        .padding()
                 }
             }
             .padding(.horizontal)
         }
+    }
+
+    private func getCryptoHoldings() -> [AssetHolding] {
+        environment.holdings.filter { $0.type == .crypto }
+    }
+
+    private func getStockHoldings() -> [AssetHolding] {
+        environment.holdings.filter { $0.type == .stock }
     }
 
     private func calculateTotalPortfolioValue() -> Double {

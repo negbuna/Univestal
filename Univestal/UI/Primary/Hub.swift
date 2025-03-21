@@ -30,7 +30,7 @@ struct UVHubView: View {
                                 ArticleCard(article: article)
                             }
                             .onAppear {
-                                news.loadMoreArticlesIfNeeded(currentArticle: article, query: searchText.isEmpty ? "stocks crypto" : searchText)
+                                news.loadMoreArticlesIfNeeded(currentArticle: article, query: searchText.isEmpty ? "usa finance" : searchText)
                             }
                         }
                         
@@ -42,8 +42,8 @@ struct UVHubView: View {
                     }
                     .padding()
                 }
-                .refreshable {
-                    news.fetchArticles(query: searchText.isEmpty ? "stocks crypto" : searchText)
+                .refreshable { // Might not need this
+                    news.fetchArticles(query: searchText.isEmpty ? "usa finance" : searchText)
                 }
             }
             .searchable(text: $searchText, prompt: "Search")
@@ -60,7 +60,7 @@ struct UVHubView: View {
                             news.currentPage = 1 // Reset pagination
                             // Mark as user search
                             news.fetchArticles(
-                                query: searchText.isEmpty ? "stocks crypto" : searchText,
+                                query: searchText.isEmpty ? "usa finance" : searchText,
                                 isUserSearch: true
                             )
                         }
@@ -70,7 +70,7 @@ struct UVHubView: View {
             .onAppear {
                 if news.articles.isEmpty {
                     // Mark as system load
-                    news.fetchArticles(query: "stocks crypto", isUserSearch: false)
+                    news.fetchArticles(query: "usa finance", isUserSearch: false)
                 }
                 news.showAlert = false
             }

@@ -50,7 +50,7 @@ struct Transaction {
     let totalCost: Double
 }
 
-// MARK: SIMULATOR
+// MARK: Simulator
 class PaperTradingSimulator: ObservableObject {
     private let coreDataStack: CoreDataStack
     
@@ -206,7 +206,7 @@ class PaperTradingSimulator: ObservableObject {
     }
 }
 
-// MARK: MANAGER
+// MARK: Manager
 // Usage Example
 class PaperTradingManager: ObservableObject {
     @ObservedObject var crypto: Crypto
