@@ -1,4 +1,3 @@
-# Learn how to trade stocks and cryptocurrency
 ## Beta download
 https://testflight.apple.com/join/43RrhW8V
 
