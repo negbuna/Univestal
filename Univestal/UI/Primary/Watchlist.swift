@@ -161,11 +161,14 @@ struct CoinWatchlistRow: View {
                 Spacer()
                 
                 VStack(alignment: .trailing) {
-                    Text(String(format: "$%.2f", coin.current_price))
+                    Text(coin.current_price, format: .currency(code: "USD"))
                         .font(.headline)
-                    Text(String(format: "%.2f%%", coin.price_change_percentage_24h ?? 0.00))
-                        .font(.subheadline)
-                        .foregroundColor(appData.percentColor(coin.price_change_percentage_24h ?? 0))
+                    
+                    if let percentChange = coin.price_change_percentage_24h {
+                        Text("\(percentChange >= 0 ? "+" : "")\(percentChange, specifier: "%.2f")%")
+                            .foregroundColor(percentChange >= 0 ? .green : .red)
+                    }
+                        
                 }
             }
         }
@@ -212,8 +215,7 @@ struct StockWatchlistRow: View {
                     Text(String(format: "$%.2f", stock.quote.currentPrice))
                         .font(.headline)
                     if let change = stock.quote.percentChange {
-                        Text(String(format: "%.2f%%", change))
-                            .font(.subheadline)
+                        Text("\(change >= 0 ? "+" : "")\(change, specifier: "%.2f")%")
                             .foregroundColor(change >= 0 ? .green : .red)
                     }
                 }

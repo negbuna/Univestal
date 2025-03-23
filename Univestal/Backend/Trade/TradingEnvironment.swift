@@ -152,6 +152,37 @@ class TradingEnvironment: ObservableObject {
     func findCoin(byId id: String) -> Coin? {
         return coins.first { $0.id == id }
     }
+    
+    func resetPortfolio() throws {
+        let context = coreDataStack.context
+        
+        // Delete all trades
+        let tradeRequest: NSFetchRequest<NSFetchRequestResult> = CDTrade.fetchRequest()
+        let stockTradeRequest: NSFetchRequest<NSFetchRequestResult> = StockTrade.fetchRequest()
+        
+        let tradeBatchDelete = NSBatchDeleteRequest(fetchRequest: tradeRequest)
+        let stockBatchDelete = NSBatchDeleteRequest(fetchRequest: stockTradeRequest)
+        
+        try context.execute(tradeBatchDelete)
+        try context.execute(stockBatchDelete)
+        
+        // Reset portfolio balance
+        if let portfolio = currentPortfolio {
+            portfolio.balance = 100_000
+            try context.save()
+        }
+        
+        objectWillChange.send()
+    }
+    
+    // Add dollar amount trading support
+    func calculateQuantityFromAmount(dollars: Double, price: Double) -> Double {
+        return dollars / price
+    }
+    
+    func calculateAmountFromQuantity(quantity: Double, price: Double) -> Double {
+        return quantity * price
+    }
 }
 
 struct AssetHolding: Identifiable {
@@ -183,6 +214,8 @@ extension TradingEnvironment {
     
     private func getCryptoHoldings() -> [AssetHolding] {
         let fetchRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
+        // Only fetch trades that have coinId (crypto trades)
+        fetchRequest.predicate = NSPredicate(format: "coinId != nil")
         let trades = (try? coreDataStack.context.fetch(fetchRequest)) ?? []
         
         return trades.map { trade in

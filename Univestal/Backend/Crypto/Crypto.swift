@@ -16,6 +16,14 @@ class Crypto: ObservableObject { // Fetching Coin data
 
     // General coin data for searching
     func fetchCoins() async {
+        // Try to get cached data first
+        if let cachedCoins = await CryptoCache.shared.getCachedCoins() {
+            await MainActor.run {
+                self.coins = cachedCoins
+            }
+            return
+        }
+        
         guard let url = URL(string: "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&api_key=\(apiKey)") else {
             return
         }
@@ -23,6 +31,9 @@ class Crypto: ObservableObject { // Fetching Coin data
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
             let decodedCoins = try JSONDecoder().decode([Coin].self, from: data)
+            
+            // Cache the new data
+            await CryptoCache.shared.cacheCoins(decodedCoins)
             
             await MainActor.run {
                 self.coins = decodedCoins

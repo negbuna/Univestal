@@ -19,6 +19,13 @@ struct TradingView: View {
     @State private var isBuying: Bool = true
     @State private var selectedTimeFrame: TimeFrame = .day
     @State private var cancellables = Set<AnyCancellable>()
+    @State private var tradeMode: TradeMode = .quantity
+    @State private var dollarAmount: String = ""
+    @State private var showingResetAlert = false
+    
+    enum TradeMode {
+        case quantity, amount
+    }
     
     var filteredCoins: [Coin] {
         if tradedCoin.isEmpty {
@@ -31,32 +38,67 @@ struct TradingView: View {
     @State private var tradedCoin: String = ""
     @State private var tradedQuantity: String = ""
 
+    private var holdings: [AssetHolding] {
+        environment.holdings
+    }
+
     var body: some View {
         NavigationStack {
-            GeometryReader { geometry in
-                VStack {
-                    Spacer()
+            ScrollView {
+                VStack(spacing: 20) {
+                    portfolioView
+                    
                     if !showMenu {
-                        portfolioView
-                    }
-                    tradeMenuView
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity)
-                .onAppear {
-                    startPeriodicFetching()
-                }
-                .navigationTitle("Trading Simulator")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        NavigationLink("History") {
-                            PastTrades()
+                        VStack(alignment: .leading, spacing: 16) {
+                            if holdings.isEmpty {
+                                EmptyStateView(
+                                    message: "No assets in your portfolio yet.\nStart trading to build your portfolio!",
+                                    systemImage: "chart.line.uptrend.xyaxis"
+                                )
+                            } else {
+                                ForEach(holdings) { holding in
+                                    TradeHoldingRow(holding: holding)
+                                }
+                            }
                         }
+                        .padding()
+                    }
+                    
+                    tradeMenuView
+                }
+            }
+            .refreshable {
+                await environment.fetchCryptoData()
+                try? await environment.fetchStockData()
+            }
+            .navigationTitle("Trading Simulator")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink("History") {
+                        PastTrades()
                     }
                 }
-                .globeOverlay()
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingResetAlert = true
+                    } label: {
+                        Image(systemName: "arrow.trianglehead.counterclockwise")
+                            .foregroundStyle(.red)
+                            .font(.title3)
+                    }
+                }
             }
+            .alert("Reset Portfolio", isPresented: $showingResetAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Reset", role: .destructive) {
+                    try? environment.resetPortfolio()
+                }
+            } message: {
+                Text("This will reset your portfolio balance to $100,000 and remove all trading history. This action cannot be undone.")
+            }
+            .globeOverlay()
             .navigationBarBackButtonHidden(true)
         }
     }
@@ -89,21 +131,23 @@ struct TradingView: View {
                 .foregroundStyle(.secondary)
             
             VStack(spacing: 20) {
-                WatchlistSection(
+                HoldingsSection(
                     title: "Cryptocurrency Holdings",
-                    isEmpty: environment.holdings.filter { $0.type == .crypto }.isEmpty
+                    isEmpty: environment.holdings.filter { $0.type == .crypto }.isEmpty,
+                    type: .crypto
                 ) {
                     ForEach(environment.holdings.filter { $0.type == .crypto }) { holding in
-                        TradeHoldingRow(holding: holding)  // Renamed to avoid conflict
+                        TradeHoldingRow(holding: holding)
                     }
                 }
                 
-                WatchlistSection(
+                HoldingsSection(
                     title: "Stock Holdings",
-                    isEmpty: environment.holdings.filter { $0.type == .stock }.isEmpty
+                    isEmpty: environment.holdings.filter { $0.type == .stock }.isEmpty,
+                    type: .stock
                 ) {
                     ForEach(environment.holdings.filter { $0.type == .stock }) { holding in
-                        TradeHoldingRow(holding: holding)  // Renamed to avoid conflict
+                        TradeHoldingRow(holding: holding)
                     }
                 }
             }
@@ -349,7 +393,7 @@ struct HoldingRowContent: View {
             VStack(alignment: .leading) {
                 Text(holding.symbol.uppercased())
                     .font(.headline)
-                Text("\(holding.quantity, specifier: "%.4f") units")
+                Text("\(AssetFormatter.format(quantity: holding.quantity)) units")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }

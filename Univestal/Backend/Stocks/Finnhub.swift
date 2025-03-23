@@ -81,18 +81,32 @@ class Finnhub: ObservableObject {
     // Make a function that combines all endpoints into one.
     func fetchStocks(symbols: [String]) async throws -> [Stock] {
         var stocks: [Stock] = []
+        let cache = StockCache.shared
         
         for symbol in symbols {
             do {
+                // Check cache first
+                let cachedMetadata = await cache.getCachedMetadata()[symbol]
+                
+                // Always fetch real-time quote
                 async let quote = fetchStockQuote(symbol: symbol)
-                async let metrics = fetchStockMetrics(symbol: symbol)
-                async let lookup = lookupStock(query: symbol)
+                
+                // Fetch or use cached metadata
+                async let metrics = cachedMetadata?.metrics != nil ? 
+                    cachedMetadata?.metrics : 
+                    try await fetchStockMetrics(symbol: symbol)
+                    
+                async let lookup = cachedMetadata?.lookup != nil ? 
+                    cachedMetadata?.lookup : 
+                    try await lookupStock(query: symbol)
                 
                 let stock = try await Stock(symbol: symbol, quote: quote, metrics: metrics, lookup: lookup)
                 stocks.append(stock)
                 
-                // Add delay between requests to prevent rate limiting
-                try await Task.sleep(nanoseconds: 50_000_000) // 50ms
+                // Cache the new metadata
+                try await cache.cacheMetadata(symbol: symbol, lookup: lookup, metrics: metrics)
+                
+                try await Task.sleep(nanoseconds: 50_000_000) // 50ms delay
             } catch {
                 print("Error fetching stock data for \(symbol):", error)
             }

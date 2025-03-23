@@ -29,9 +29,18 @@ struct PastTrades: View {
     
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(allTrades) { item in
-                    TradeRowView(item: item)
+            Group {
+                if allTrades.isEmpty {
+                    EmptyStateView(
+                        message: "No trades yet.\nYour trading history will appear here once you start trading.",
+                        systemImage: "clock.arrow.circlepath"
+                    )
+                } else {
+                    List {
+                        ForEach(allTrades) { item in
+                            TradeRowView(item: item)
+                        }
+                    }
                 }
             }
             .navigationTitle("Trade History")
@@ -58,7 +67,7 @@ struct TradeRowView: View {
         HStack {
             VStack(alignment: .leading) {
                 HStack {
-                    Text("\(abs(item.quantity), specifier: "%.3f") \(item.symbol.uppercased())")
+                    Text("\(AssetFormatter.format(quantity: abs(item.quantity))) \(item.symbol.uppercased())")
                         .font(.headline)
                     
                     Spacer()

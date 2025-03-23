@@ -33,18 +33,20 @@ class DataManager: ObservableObject {
             let crypto = Crypto()
             let news = News()
             
+            // Clear expired caches
+            await StockCache.shared.clearExpiredCache()
+            await CryptoCache.shared.clearCache() // Clear expired crypto cache
+            
             // Execute all fetches concurrently
             async let stocksTask = finnhub.fetchStocks(symbols: Storage().commonStocks)
             async let cryptoTask: () = crypto.fetchCoins()
             
-            // Wait for both to complete
             let (fetchedStocks, _) = try await (stocksTask, cryptoTask)
             
             await MainActor.run {
                 self.stocks = fetchedStocks
                 self.coins = crypto.coins
                 
-                // Fetch articles without triggering alert
                 news.fetchArticles(query: "") { articles in
                     self.articles = articles
                 }
