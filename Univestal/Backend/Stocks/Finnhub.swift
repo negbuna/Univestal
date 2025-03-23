@@ -33,6 +33,10 @@ class Finnhub: ObservableObject {
     
     // Fetch real-time stock quote
     func fetchStockQuote(symbol: String) async throws -> StockQuote {
+        guard await APIRequestManager.shared.canMakeStockRequest() else {
+            throw URLError(.networkConnectionLost)
+        }
+        
         guard let url = URL(string: "https://finnhub.io/api/v1/quote?symbol=\(symbol)&token=\(apiKey)") else {
             throw URLError(.badURL)
         }
@@ -83,32 +87,35 @@ class Finnhub: ObservableObject {
         var stocks: [Stock] = []
         let cache = StockCache.shared
         
-        for symbol in symbols {
-            do {
-                // Check cache first
-                let cachedMetadata = await cache.getCachedMetadata()[symbol]
-                
-                // Always fetch real-time quote
-                async let quote = fetchStockQuote(symbol: symbol)
-                
-                // Fetch or use cached metadata
-                async let metrics = cachedMetadata?.metrics != nil ? 
-                    cachedMetadata?.metrics : 
-                    try await fetchStockMetrics(symbol: symbol)
-                    
-                async let lookup = cachedMetadata?.lookup != nil ? 
-                    cachedMetadata?.lookup : 
-                    try await lookupStock(query: symbol)
-                
-                let stock = try await Stock(symbol: symbol, quote: quote, metrics: metrics, lookup: lookup)
-                stocks.append(stock)
-                
-                // Cache the new metadata
-                try await cache.cacheMetadata(symbol: symbol, lookup: lookup, metrics: metrics)
-                
-                try await Task.sleep(nanoseconds: 50_000_000) // 50ms delay
-            } catch {
-                print("Error fetching stock data for \(symbol):", error)
+        // Batch requests in groups of 25
+        let batches = stride(from: 0, to: symbols.count, by: 25).map {
+            Array(symbols[$0..<min($0 + 25, symbols.count)])
+        }
+        
+        for batch in batches {
+            APIRequestManager.shared.enqueueRequest(
+                type: .stock,
+                priority: .medium
+            ) {
+                for symbol in batch {
+                    do {
+                        let cachedMetadata = await cache.getCachedMetadata()[symbol]
+                        async let quote = self.fetchStockQuote(symbol: symbol)
+                        async let metrics = cachedMetadata?.metrics != nil ? 
+                            cachedMetadata?.metrics : 
+                            try await self.fetchStockMetrics(symbol: symbol)
+                        async let lookup = cachedMetadata?.lookup != nil ? 
+                            cachedMetadata?.lookup : 
+                            try await self.lookupStock(query: symbol)
+                        
+                        let stock = try await Stock(symbol: symbol, quote: quote, metrics: metrics, lookup: lookup)
+                        stocks.append(stock)
+                        
+                        try await cache.cacheMetadata(symbol: symbol, lookup: lookup, metrics: metrics)
+                    } catch {
+                        print("Error fetching stock data for \(symbol):", error)
+                    }
+                }
             }
         }
         

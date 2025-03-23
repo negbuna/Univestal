@@ -16,6 +16,17 @@ class Crypto: ObservableObject { // Fetching Coin data
 
     // General coin data for searching
     func fetchCoins() async {
+        guard await APIRequestManager.shared.canMakeCryptoRequest() else {
+            // Use cached data if available
+            if let cachedCoins = await CryptoCache.shared.getCachedCoins() {
+                await MainActor.run {
+                    self.coins = cachedCoins
+                }
+                return
+            }
+            return
+        }
+        
         // Try to get cached data first
         if let cachedCoins = await CryptoCache.shared.getCachedCoins() {
             await MainActor.run {

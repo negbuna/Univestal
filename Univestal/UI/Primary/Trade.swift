@@ -48,22 +48,6 @@ struct TradingView: View {
                 VStack(spacing: 20) {
                     portfolioView
                     
-                    if !showMenu {
-                        VStack(alignment: .leading, spacing: 16) {
-                            if holdings.isEmpty {
-                                EmptyStateView(
-                                    message: "No assets in your portfolio yet.\nStart trading to build your portfolio!",
-                                    systemImage: "chart.line.uptrend.xyaxis"
-                                )
-                            } else {
-                                ForEach(holdings) { holding in
-                                    TradeHoldingRow(holding: holding)
-                                }
-                            }
-                        }
-                        .padding()
-                    }
-                    
                     tradeMenuView
                 }
             }
@@ -138,6 +122,7 @@ struct TradingView: View {
                 ) {
                     ForEach(environment.holdings.filter { $0.type == .crypto }) { holding in
                         TradeHoldingRow(holding: holding)
+                            .id(holding.id)  // Add explicit ID to ensure proper identification
                     }
                 }
                 
@@ -148,6 +133,7 @@ struct TradingView: View {
                 ) {
                     ForEach(environment.holdings.filter { $0.type == .stock }) { holding in
                         TradeHoldingRow(holding: holding)
+                            .id(holding.id)  // Add explicit ID
                     }
                 }
             }

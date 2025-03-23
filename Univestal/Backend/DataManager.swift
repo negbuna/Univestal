@@ -28,33 +28,36 @@ class DataManager: ObservableObject {
     }
     
     func refreshData() async {
-        do {
-            let finnhub = Finnhub.shared
-            let crypto = Crypto()
-            let news = News()
-            
-            // Clear expired caches
-            await StockCache.shared.clearExpiredCache()
-            await CryptoCache.shared.clearCache() // Clear expired crypto cache
-            
-            // Execute all fetches concurrently
-            async let stocksTask = finnhub.fetchStocks(symbols: Storage().commonStocks)
-            async let cryptoTask: () = crypto.fetchCoins()
-            
-            let (fetchedStocks, _) = try await (stocksTask, cryptoTask)
-            
+        let finnhub = Finnhub.shared
+        let crypto = Crypto()
+        
+        // Clear expired caches
+        await StockCache.shared.clearExpiredCache()
+        await CryptoCache.shared.clearCache()
+        
+        // Queue requests with priorities
+        APIRequestManager.shared.enqueueRequest(
+            type: .stock,
+            priority: .high
+        ) {
+            let stocks = try await finnhub.fetchStocks(symbols: Storage().commonStocks)
             await MainActor.run {
-                self.stocks = fetchedStocks
-                self.coins = crypto.coins
-                
-                news.fetchArticles(query: "") { articles in
-                    self.articles = articles
-                }
-                
-                self.lastUpdateTime = Date()
+                self.stocks = stocks
             }
-        } catch {
-            print("Error refreshing data: \(error)")
+        }
+        
+        APIRequestManager.shared.enqueueRequest(
+            type: .crypto,
+            priority: .medium
+        ) {
+            await crypto.fetchCoins()
+            await MainActor.run {
+                self.coins = crypto.coins
+            }
+        }
+        
+        await MainActor.run {
+            self.lastUpdateTime = Date()
         }
     }
     

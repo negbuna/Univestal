@@ -15,6 +15,24 @@ struct UVHubView: View {
     @EnvironmentObject var finnhub: Finnhub
     @State private var searchText = ""
     @State private var searchDebounceTask: Task<Void, Never>?
+    @State private var showRateLimitAlert = false
+    @State private var rateLimitMessage = ""
+    
+    private func handleSearch(query: String) {
+        Task {
+            do {
+                let canSearch = try await news.searchArticles(query: query)
+                if !canSearch {
+                    showRateLimitAlert = true
+                }
+            } catch News.NewsError.rateLimitExceeded(let minutesLeft) {
+                rateLimitMessage = "Due to API constraints, please try searching again in \(minutesLeft) minute\(minutesLeft == 1 ? "" : "s")."
+                showRateLimitAlert = true
+            } catch {
+                print("Search error: \(error)")
+            }
+        }
+    }
     
     var body: some View {
         NavigationStack {
@@ -59,10 +77,7 @@ struct UVHubView: View {
                             news.articles = [] // Clear current articles
                             news.currentPage = 1 // Reset pagination
                             // Mark as user search
-                            news.fetchArticles(
-                                query: searchText.isEmpty ? "stocks crypto" : searchText,
-                                isUserSearch: true
-                            )
+                            handleSearch(query: searchText.isEmpty ? "stocks crypto" : searchText)
                         }
                     }
                 }
@@ -78,6 +93,11 @@ struct UVHubView: View {
                 Button("OK", role: .cancel) { }
             } message: {
                 Text(news.alertMessage)
+            }
+            .alert("Search Limit", isPresented: $showRateLimitAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(rateLimitMessage)
             }
             .navigationTitle("Top Stories")
             .navigationBarTitleDisplayMode(.inline)

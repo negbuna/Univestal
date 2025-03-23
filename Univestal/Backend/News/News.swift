@@ -195,4 +195,33 @@ class News: ObservableObject {
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: date)
     }
+    
+    @MainActor
+    func searchArticles(query: String) async throws -> Bool {  // Remove userId parameter
+        // Check global rate limit
+        guard await NewsRequestManager.shared.canMakeRequest() else {  // Remove for parameter
+            if let timeLeft = await NewsRequestManager.shared.timeUntilNextSearch() {
+                let minutes = Int(ceil(timeLeft / 60))
+                throw NewsError.rateLimitExceeded(minutesLeft: minutes)
+            }
+            throw NewsError.rateLimitExceeded(minutesLeft: 60)
+        }
+        
+        // Make API request
+        // ...existing code...
+        
+        await NewsRequestManager.shared.trackRequest()  // Remove for parameter
+        return true
+    }
+    
+    enum NewsError: LocalizedError {
+        case rateLimitExceeded(minutesLeft: Int)
+        
+        var errorDescription: String? {
+            switch self {
+            case .rateLimitExceeded(let minutes):
+                return "Due to API constraints, please try searching again in \(minutes) minute\(minutes == 1 ? "" : "s"). This helps us maintain service for all users."
+            }
+        }
+    }
 }
