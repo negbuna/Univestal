@@ -93,62 +93,42 @@ class Finnhub: ObservableObject {
         }
         
         for batch in batches {
-            APIRequestManager.shared.enqueueRequest(
-                type: .stock,
-                priority: .medium
-            ) {
-                for symbol in batch {
-                    do {
-                        let cachedMetadata = await cache.getCachedMetadata()[symbol]
-                        async let quote = self.fetchStockQuote(symbol: symbol)
-                        async let metrics = cachedMetadata?.metrics != nil ? 
-                            cachedMetadata?.metrics : 
-                            try await self.fetchStockMetrics(symbol: symbol)
-                        async let lookup = cachedMetadata?.lookup != nil ? 
-                            cachedMetadata?.lookup : 
-                            try await self.lookupStock(query: symbol)
-                        
-                        let stock = try await Stock(symbol: symbol, quote: quote, metrics: metrics, lookup: lookup)
+            for symbol in batch {
+                do {
+                    let cachedMetadata = await cache.getCachedMetadata()[symbol]
+                    
+                    // Use async let to parallelize the requests
+                    async let quote = fetchStockQuote(symbol: symbol)
+                    async let metrics = cachedMetadata?.metrics != nil ? 
+                        cachedMetadata?.metrics : 
+                        try await fetchStockMetrics(symbol: symbol)
+                    async let lookup = cachedMetadata?.lookup != nil ? 
+                        cachedMetadata?.lookup : 
+                        try await lookupStock(query: symbol)
+                    
+                    // Wait for all async operations to complete
+                    let stock = try await Stock(
+                        symbol: symbol,
+                        quote: quote,
+                        metrics: metrics,
+                        lookup: lookup
+                    )
+                    
+                    // Update on main actor since this is a published property
+                    await MainActor.run {
                         stocks.append(stock)
-                        
-                        try await cache.cacheMetadata(symbol: symbol, lookup: lookup, metrics: metrics)
-                    } catch {
-                        print("Error fetching stock data for \(symbol):", error)
+                        allStocks.append(stock) // Update the published property
                     }
+                    
+                    // Cache the metadata
+                    try await cache.cacheMetadata(symbol: symbol, lookup: lookup, metrics: metrics)
+                } catch {
+                    print("Error fetching stock data for \(symbol):", error)
                 }
             }
         }
         
         return stocks
-    }
-    
-    func fetchDefaultStocks() async {
-        // Default symbols to load (25 common stocks)
-        let symbols = storage.commonStocks
-        
-        await withTaskGroup(of: [Stock]?.self) { group in
-                group.addTask {
-                    do {
-                        return try await self.fetchStocks(symbols: symbols)
-                    } catch {
-                        print("Failed to fetch stock for symbol: \(symbols)")
-                        return nil
-                    }
-                }
-            
-            // Mapping the stock data fetched asynchronously to the array.
-            var fetchedStocks: [Stock] = []
-            for await stock in group {
-                if let stock = stock {
-                    fetchedStocks.append(contentsOf: stock)
-                }
-            }
-            
-            // Add on main thread
-            DispatchQueue.main.async {
-                self.allStocks = fetchedStocks
-            }
-        }
     }
     
     func testFetchDefaultStocks() async {
