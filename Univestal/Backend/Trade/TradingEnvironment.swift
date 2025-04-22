@@ -13,6 +13,7 @@ class TradingEnvironment: ObservableObject {
     static let shared = TradingEnvironment()
     private let coreDataStack = CoreDataStack.shared
     private let dataManager = DataManager.shared
+    let crypto = Crypto.shared
     
     @Published var currentPortfolio: CDPortfolio?
     @Published var stocks: [Stock] = []
@@ -133,10 +134,14 @@ class TradingEnvironment: ObservableObject {
     }
     
     func fetchCryptoData() async {
-        let crypto = Crypto()
-        await crypto.fetchCoins()
-        await MainActor.run {
-            self.coins = crypto.coins
+        let crypto = Crypto.shared
+        do {
+            let response = try await crypto.fetchMarketData(page: 1)
+            await MainActor.run {
+                self.coins = response.items
+            }
+        } catch {
+            print("Error fetching crypto data: \(error)")
         }
     }
     
@@ -182,6 +187,11 @@ class TradingEnvironment: ObservableObject {
     
     func calculateAmountFromQuantity(quantity: Double, price: Double) -> Double {
         return quantity * price
+    }
+    
+    // Add this method to support crypto search with pagination
+    func searchCoins(query: String, page: Int) async throws -> PaginatedResponse<Coin> {
+        return try await crypto.searchCoins(query: query, page: page)
     }
 }
 

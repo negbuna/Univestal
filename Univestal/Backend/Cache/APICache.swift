@@ -63,7 +63,6 @@ class APICache {
     
     func value<T: Codable>(type: APIResourceType, key: String) async -> T? {
         if let cached: CacheEntry<T> = await store(for: type).value(for: key, backgroundRefresh: { _ in
-            // Default empty closure since we don't need background refresh
             throw CacheError.refreshNotAllowed
         }) {
             switch cached {
@@ -88,9 +87,20 @@ class APICache {
     }
     
     func clearExpired() async {
-        for (_, store) in cacheStores {
-            if let typedStore = store as? CacheStore<String, Codable> {
-                await typedStore.clearExpired()
+        for (type, store) in cacheStores {
+            switch type {
+            case .stockQuote:
+                await (store as? CacheStore<String, StockQuote>)?.clearExpired()
+            case .stockMetrics:
+                await (store as? CacheStore<String, StockMetricsResponse>)?.clearExpired()
+            case .stockLookup:
+                await (store as? CacheStore<String, StockLookupResponse>)?.clearExpired()
+            case .cryptoPrice:
+                await (store as? CacheStore<String, Coin>)?.clearExpired()
+            case .cryptoDetails:
+                await (store as? CacheStore<String, Coin>)?.clearExpired()
+            case .newsArticle:
+                await (store as? CacheStore<String, Article>)?.clearExpired()
             }
         }
     }
@@ -99,3 +109,4 @@ class APICache {
         case refreshNotAllowed
     }
 }
+

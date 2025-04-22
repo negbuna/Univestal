@@ -122,7 +122,9 @@ extension CacheStore {
         // Update pagination metadata
         let metaKey = "\(key)_meta" as! Key
         let meta = PaginationMeta(lastPage: response.page, totalPages: response.totalPages)
-        try await cache(meta as! Value, for: metaKey, policy: policy)
+        // Store metadata separately using a different store
+        let metaStore = CacheStore<Key, PaginationMeta>(name: "\(persistentStore)_meta")
+        try await metaStore.cache(meta, for: metaKey, policy: policy)
     }
     
     private struct PaginationMeta: Codable {
@@ -137,3 +139,4 @@ extension CacheStore {
         }
     }
 }
+

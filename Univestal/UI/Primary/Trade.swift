@@ -12,6 +12,7 @@ import CoreData
 struct TradingView: View {
     @EnvironmentObject var environment: TradingEnvironment
     @EnvironmentObject var finnhub: Finnhub
+    @EnvironmentObject var appData: AppData
     @State private var showMenu: Bool = false
     @State private var activeAlert: TradeAlertType?
     @State private var selectedCoin: Coin?
@@ -22,6 +23,8 @@ struct TradingView: View {
     @State private var tradeMode: TradeMode = .quantity
     @State private var dollarAmount: String = ""
     @State private var showingResetAlert = false
+    @State private var selectedAssetType: AssetType = .crypto
+    @State private var isLoading: Bool = false
     
     enum TradeMode {
         case quantity, amount
@@ -42,16 +45,63 @@ struct TradingView: View {
         environment.holdings
     }
 
+    private var watchlistStocks: [Stock] {
+        environment.stocks.filter { stock in
+            appData.stockWatchlist.contains(stock.symbol)
+        }
+    }
+
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    portfolioView
-                    
-                    tradeMenuView
+            VStack(spacing: 0) {
+                Picker("Asset Type", selection: $selectedAssetType) {
+                    Text("Crypto").tag(AssetType.crypto)
+                    Text("Stocks").tag(AssetType.stock)
+                }
+                .pickerStyle(.segmented)
+                .padding()
+                .background(Color(UIColor.systemBackground))
+                
+                if isLoading {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            switch selectedAssetType {
+                            case .crypto:
+                                if environment.coins.isEmpty {
+                                    ContentUnavailableView(
+                                        "No Coins Available",
+                                        systemImage: "bitcoinsign.circle",
+                                        description: Text("Check your internet connection")
+                                    )
+                                } else {
+                                    ForEach(environment.coins, id: \.id) { coin in
+                                        CoinWatchlistRow(coin: coin)
+                                    }
+                                }
+                            case .stock:
+                                if watchlistStocks.isEmpty {
+                                    ContentUnavailableView(
+                                        "No Stocks Available",
+                                        systemImage: "chart.bar.xaxis",
+                                        description: Text("Check your internet connection")
+                                    )
+                                } else {
+                                    ForEach(watchlistStocks, id: \.symbol) { stock in
+                                        StockWatchlistRow(stock: stock)
+                                    }
+                                }
+                            }
+                        }
+                        .padding()
+                    }
                 }
             }
-            .refreshable {
+            .task {
+                print("🔄 TradingView appeared, fetching data...")
                 await environment.fetchCryptoData()
                 try? await environment.fetchStockData()
             }

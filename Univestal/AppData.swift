@@ -18,7 +18,7 @@ class AppData: ObservableObject {
     @Published var showLoginButton: Bool = false
     @Published var isButtonDisabled: Bool = true
     @Published var hasAttemptedLogin: Bool = false
-    @Published var watchlist: Set<String> = []
+    @Published var watchlist: Set<String> = [] // For coins
     @Published var stockWatchlist: Set<String> = []
     private let viewContext: NSManagedObjectContext
 
@@ -316,4 +316,3 @@ class AppData: ObservableObject {
 struct ColorManager {
     static var bkgColor: Color = Color(UIColor.systemBackground)
 }
-

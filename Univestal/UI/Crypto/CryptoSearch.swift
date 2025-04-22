@@ -67,7 +67,7 @@ struct CryptoSearch: View {
                 }
             }
             .searchable(text: $searchText)
-            .onChange(of: searchText) { _ in
+            .onChange(of: searchText) {
                 searchTask?.cancel()
                 searchTask = Task {
                     try? await Task.sleep(nanoseconds: 500_000_000) // 500ms debounce
@@ -82,7 +82,7 @@ struct CryptoSearch: View {
         currentPage = 1
         coins = []
         hasMorePages = true
-        await loadNextPageIfNeeded()
+        loadNextPageIfNeeded()
     }
     
     private func loadNextPageIfNeeded() {
@@ -92,7 +92,7 @@ struct CryptoSearch: View {
             isLoading = true
             do {
                 let response = try await withRetry(maxAttempts: 3) {
-                    try await environment.searchCoins(
+                    try await environment.searchCoins(  // Use environment's method directly
                         query: searchText.isEmpty ? "" : searchText,
                         page: currentPage
                     )

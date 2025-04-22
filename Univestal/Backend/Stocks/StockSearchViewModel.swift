@@ -13,8 +13,8 @@ class StockSearchViewModel: ObservableObject {
     private var searchTask: Task<Void, Never>?
     private let finnhub: Finnhub
     
-    init(finnhub: Finnhub = .shared) {
-        self.finnhub = finnhub
+    init(finnhub: Finnhub) {
+        self.finnhub = Finnhub.shared
     }
     
     func search() {

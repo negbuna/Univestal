@@ -2,7 +2,7 @@ import Foundation
 
 enum CoinGeckoEndpoint {
     struct MarketData: PaginatedEndpoint {
-        typealias Response = PaginatedResponse<Coin>
+        typealias Response = [Coin]  // Keep as array for direct decoding
         
         let page: Int
         let itemsPerPage: Int = 50  // CoinGecko recommended page size
@@ -13,8 +13,10 @@ enum CoinGeckoEndpoint {
             [
                 .init(name: "vs_currency", value: "usd"),
                 .init(name: "sparkline", value: "true"),
-                .init(name: "order", value: "market_cap_desc")
-            ] + paginationQueryItems
+                .init(name: "order", value: "market_cap_desc"),
+                .init(name: "per_page", value: String(itemsPerPage)),
+                .init(name: "page", value: String(page))
+            ]
         }
         var resourceType: APIResourceType { .cryptoPrice }
         var cacheKey: String { "markets" }

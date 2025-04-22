@@ -25,33 +25,7 @@ struct StockSearch: View {
                 if isLoading && stocks.isEmpty {
                     ProgressView()
                 } else {
-                    List {
-                        ForEach(stocks, id: \.symbol) { stock in
-                            NavigationLink(destination: StockDetailView(stock: stock)) {
-                                StockRowView(stock: stock)
-                            }
-                            .onAppear {
-                                if stocks.last?.symbol == stock.symbol {
-                                    loadNextPageIfNeeded()
-                                }
-                            }
-                        }
-                        
-                        if isLoading {
-                            ProgressView()
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                        }
-                    }
-                    .overlay {
-                        if stocks.isEmpty && !searchText.isEmpty {
-                            ContentUnavailableView(
-                                "No Results",
-                                systemImage: "magnifyingglass",
-                                description: Text("Try searching for a company name or symbol")
-                            )
-                        }
-                    }
+                    stockListView
                 }
             }
             .task {
@@ -64,7 +38,7 @@ struct StockSearch: View {
             .navigationTitle("Stocks")
             .navigationBarBackButtonHidden(true)
             .searchable(text: $searchText)
-            .onChange(of: searchText) { _ in
+            .onChange(of: searchText) {
                 searchTask?.cancel()
                 searchTask = Task {
                     try? await Task.sleep(nanoseconds: 500_000_000) // 500ms debounce
@@ -85,11 +59,55 @@ struct StockSearch: View {
         }
     }
     
+    private var stockListView: some View {
+        List {
+            stockRows
+            loadingIndicator
+        }
+        .overlay(emptyStateOverlay)
+    }
+    
+    private var stockRows: some View {
+        ForEach(stocks, id: \.symbol) { lookup in
+            StockRowItem(lookup: lookup, onAppear: {
+                checkLoadMore(for: lookup)
+            })
+        }
+    }
+    
+    private var loadingIndicator: some View {
+        Group {
+            if isLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+                    .padding()
+            }
+        }
+    }
+    
+    private var emptyStateOverlay: some View {
+        Group {
+            if stocks.isEmpty && !searchText.isEmpty {
+                ContentUnavailableView(
+                    "No Results",
+                    systemImage: "magnifyingglass",
+                    description: Text("Try searching for a company name or symbol")
+                )
+            }
+        }
+    }
+    
+    private func checkLoadMore(for stock: StockLookup) {
+        if stocks.last?.symbol == stock.symbol {
+            loadNextPageIfNeeded()
+        }
+    }
+    
     private func resetAndSearch() async {
         currentPage = 1
         stocks = []
         hasMorePages = true
-        await loadNextPageIfNeeded()
+        loadNextPageIfNeeded()
     }
     
     private func loadNextPageIfNeeded() {
@@ -113,66 +131,88 @@ struct StockSearch: View {
     }
 }
 
+// Break out row item into separate view
+struct StockRowItem: View {
+    let lookup: StockLookup
+    let onAppear: () -> Void
+    
+    var body: some View {
+        NavigationLink {
+            StockRowDestination(lookup: lookup)
+        } label: {
+            StockRowView(lookup: lookup)
+        }
+        .onAppear(perform: onAppear)
+    }
+}
+
+// Handle async loading of full stock data
+struct StockRowDestination: View {
+    let lookup: StockLookup
+    @State private var stock: Stock?
+    @EnvironmentObject var finnhub: Finnhub
+    
+    var body: some View {
+        Group {
+            if let stock = stock {
+                StockDetailView(stock: stock)
+            } else {
+                ProgressView()
+            }
+        }
+        .task {
+            // Load full stock data
+            stock = try? await loadFullStock(from: lookup)
+        }
+    }
+    
+    private func loadFullStock(from lookup: StockLookup) async throws -> Stock {
+        async let quote = finnhub.fetchStockQuote(symbol: lookup.symbol)
+        async let metrics = finnhub.fetchStockMetrics(symbol: lookup.symbol)
+        
+        return try await Stock(
+            symbol: lookup.symbol,
+            quote: quote,
+            metrics: metrics,
+            lookup: lookup
+        )
+    }
+}
+
+// Update row view to accept StockLookup
 struct StockRowView: View {
+    let lookup: StockLookup
     @EnvironmentObject var appData: AppData
-    let stock: Stock
-    
-    private var stockName: String {
-        stock.lookup?.description ?? "Stock data cannot be retrieved at this time."
-    }
-    
-    private var formattedPrice: String {
-        String(format: "$%.2f", stock.quote.currentPrice)
-    }
-    
-    private var formattedChange: String? {
-        guard let dp = stock.quote.percentChange else { return nil }
-        return String(format: "$%.2f", dp)
-    }
-    
-    private var formattedPercentChange: (text: String, color: Color)? {
-        guard let dp = stock.quote.percentChange else { return nil }
-        let sign = dp >= 0 ? "+" : ""
-        return ("\(sign)\(String(format: "%.2f", dp))%", dp >= 0 ? .green : .red)
-    }
     
     var body: some View {
         HStack {
-            Button(action: {
-                withAnimation {
-                    appData.toggleStockWatchlist(for: stock.symbol)
-                    print("Stock watchlist after toggle: \(appData.stockWatchlist)")
-                }
-            }) {
-                Image(systemName: appData.stockWatchlist.contains(stock.symbol) ? "star.fill" : "star")
-                    .foregroundColor(appData.stockWatchlist.contains(stock.symbol) ? .yellow : .gray)
-            }
-            .buttonStyle(BorderlessButtonStyle())
-            
-            VStack(alignment: .leading) {
-                Text(stock.symbol)
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                Text(stockName)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-            
+            watchlistButton
+            stockInfo
             Spacer()
-            
-            VStack(alignment: .trailing) {
-                Text(formattedPrice)
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                
-                if let percentChange = formattedPercentChange {
-                    Text(percentChange.text)
-                        .font(.subheadline)
-                        .foregroundColor(percentChange.color)
-                }
-            }
         }
         .padding(.vertical, 4)
+    }
+    
+    private var watchlistButton: some View {
+        Button {
+            withAnimation {
+                appData.toggleStockWatchlist(for: lookup.symbol)
+            }
+        } label: {
+            Image(systemName: appData.stockWatchlist.contains(lookup.symbol) ? "star.fill" : "star")
+                .foregroundColor(appData.stockWatchlist.contains(lookup.symbol) ? .yellow : .gray)
+        }
+        .buttonStyle(BorderlessButtonStyle())
+    }
+    
+    private var stockInfo: some View {
+        VStack(alignment: .leading) {
+            Text(lookup.symbol)
+                .font(.headline)
+            Text(lookup.description)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
     }
 }
     
