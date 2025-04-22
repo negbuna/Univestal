@@ -130,6 +130,7 @@ class TradingEnvironment: ObservableObject {
         let stocks = try await Finnhub.shared.fetchStocks(symbols: symbols)
         await MainActor.run {
             self.stocks = stocks
+            objectWillChange.send()  // <-- Explicitly notify observers
         }
     }
     
@@ -139,6 +140,7 @@ class TradingEnvironment: ObservableObject {
             let response = try await crypto.fetchMarketData(page: 1)
             await MainActor.run {
                 self.coins = response.items
+                objectWillChange.send()  // <-- Explicitly notify observers
             }
         } catch {
             print("Error fetching crypto data: \(error)")

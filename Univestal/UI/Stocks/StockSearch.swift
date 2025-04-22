@@ -17,12 +17,11 @@ struct StockSearch: View {
     @State private var currentPage = 1
     @State private var hasMorePages = true
     @State private var searchTask: Task<Void, Never>?
-    @State private var stocks: [StockLookup] = []
     
     var body: some View {
         NavigationStack {
             ZStack {
-                if isLoading && stocks.isEmpty {
+                if isLoading && environment.stocks.isEmpty {
                     ProgressView()
                 } else {
                     stockListView
@@ -61,17 +60,19 @@ struct StockSearch: View {
     
     private var stockListView: some View {
         List {
-            stockRows
+            ForEach(environment.stocks, id: \.symbol) { stock in
+                StockRowItem(stock: stock)
+            }
             loadingIndicator
         }
-        .overlay(emptyStateOverlay)
-    }
-    
-    private var stockRows: some View {
-        ForEach(stocks, id: \.symbol) { lookup in
-            StockRowItem(lookup: lookup, onAppear: {
-                checkLoadMore(for: lookup)
-            })
+        .overlay {
+            if environment.stocks.isEmpty && !isLoading {
+                ContentUnavailableView(
+                    "No Results",
+                    systemImage: "magnifyingglass",
+                    description: Text("Try searching for a company name or symbol")
+                )
+            }
         }
     }
     
@@ -85,27 +86,8 @@ struct StockSearch: View {
         }
     }
     
-    private var emptyStateOverlay: some View {
-        Group {
-            if stocks.isEmpty && !searchText.isEmpty {
-                ContentUnavailableView(
-                    "No Results",
-                    systemImage: "magnifyingglass",
-                    description: Text("Try searching for a company name or symbol")
-                )
-            }
-        }
-    }
-    
-    private func checkLoadMore(for stock: StockLookup) {
-        if stocks.last?.symbol == stock.symbol {
-            loadNextPageIfNeeded()
-        }
-    }
-    
     private func resetAndSearch() async {
         currentPage = 1
-        stocks = []
         hasMorePages = true
         loadNextPageIfNeeded()
     }
@@ -120,7 +102,6 @@ struct StockSearch: View {
                     query: searchText.isEmpty ? "" : searchText,
                     page: currentPage
                 )
-                stocks.append(contentsOf: response.items)
                 currentPage += 1
                 hasMorePages = response.hasNextPage
             } catch {
@@ -131,57 +112,22 @@ struct StockSearch: View {
     }
 }
 
-// Break out row item into separate view
+// Update StockRowItem to use Stock directly instead of StockLookup
 struct StockRowItem: View {
-    let lookup: StockLookup
-    let onAppear: () -> Void
+    let stock: Stock
     
     var body: some View {
         NavigationLink {
-            StockRowDestination(lookup: lookup)
+            StockDetailView(stock: stock)
         } label: {
-            StockRowView(lookup: lookup)
+            StockRowView(stock: stock)
         }
-        .onAppear(perform: onAppear)
     }
 }
 
-// Handle async loading of full stock data
-struct StockRowDestination: View {
-    let lookup: StockLookup
-    @State private var stock: Stock?
-    @EnvironmentObject var finnhub: Finnhub
-    
-    var body: some View {
-        Group {
-            if let stock = stock {
-                StockDetailView(stock: stock)
-            } else {
-                ProgressView()
-            }
-        }
-        .task {
-            // Load full stock data
-            stock = try? await loadFullStock(from: lookup)
-        }
-    }
-    
-    private func loadFullStock(from lookup: StockLookup) async throws -> Stock {
-        async let quote = finnhub.fetchStockQuote(symbol: lookup.symbol)
-        async let metrics = finnhub.fetchStockMetrics(symbol: lookup.symbol)
-        
-        return try await Stock(
-            symbol: lookup.symbol,
-            quote: quote,
-            metrics: metrics,
-            lookup: lookup
-        )
-    }
-}
-
-// Update row view to accept StockLookup
+// Update row view to accept Stock directly
 struct StockRowView: View {
-    let lookup: StockLookup
+    let stock: Stock
     @EnvironmentObject var appData: AppData
     
     var body: some View {
@@ -196,22 +142,24 @@ struct StockRowView: View {
     private var watchlistButton: some View {
         Button {
             withAnimation {
-                appData.toggleStockWatchlist(for: lookup.symbol)
+                appData.toggleStockWatchlist(for: stock.symbol)
             }
         } label: {
-            Image(systemName: appData.stockWatchlist.contains(lookup.symbol) ? "star.fill" : "star")
-                .foregroundColor(appData.stockWatchlist.contains(lookup.symbol) ? .yellow : .gray)
+            Image(systemName: appData.stockWatchlist.contains(stock.symbol) ? "star.fill" : "star")
+                .foregroundColor(appData.stockWatchlist.contains(stock.symbol) ? .yellow : .gray)
         }
         .buttonStyle(BorderlessButtonStyle())
     }
     
     private var stockInfo: some View {
         VStack(alignment: .leading) {
-            Text(lookup.symbol)
+            Text(stock.symbol)
                 .font(.headline)
-            Text(lookup.description)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            if let desc = stock.lookup?.description {
+                Text(desc)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
         }
     }
 }
