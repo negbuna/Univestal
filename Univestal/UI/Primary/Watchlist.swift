@@ -56,40 +56,42 @@ struct Watchlist: View {
                 if isLoading {
                     ProgressView()
                 } else {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 20) {
-                            WatchlistSection(
-                                title: "Cryptocurrencies",
-                                isEmpty: watchlistCoins.isEmpty
-                            ) {
-                                if !watchlistCoins.isEmpty {
-                                    ForEach(watchlistCoins) { coin in
-                                        CoinWatchlistRow(coin: coin)
-                                            .id(coin.id) // Explicit ID
+                    VStack(alignment: .leading, spacing: 20) {
+                        WatchlistSection(
+                            title: "Cryptocurrencies",
+                            isEmpty: watchlistCoins.isEmpty
+                        ) {
+                            if !watchlistCoins.isEmpty {
+                                ScrollView {
+                                    LazyVStack(spacing: 0) {
+                                        ForEach(watchlistCoins) { coin in
+                                            CoinWatchlistRow(coin: coin)
+                                                .id(coin.id)
+                                        }
                                     }
                                 }
-                            }
-                            
-                            WatchlistSection(
-                                title: "Stocks",
-                                isEmpty: watchlistStocks.isEmpty
-                            ) {
-                                if !watchlistStocks.isEmpty {
-                                    ForEach(watchlistStocks, id: \.symbol) { stock in
-                                        StockWatchlistRow(stock: stock)
-                                            .id(stock.symbol)
-                                    }
-                                }
+                                .frame(maxHeight: 300) // Set maximum height for scroll area
                             }
                         }
-                        .padding()
-                        // Add debug prints to track watchlist state
-                        .onAppear {
-                            print("Current stock watchlist: \(appData.stockWatchlist)")
-                            print("Available stocks: \(environment.stocks.map { $0.symbol })")
+                        
+                        WatchlistSection(
+                            title: "Stocks",
+                            isEmpty: watchlistStocks.isEmpty
+                        ) {
+                            if !watchlistStocks.isEmpty {
+                                ScrollView {
+                                    LazyVStack(spacing: 0) {
+                                        ForEach(watchlistStocks, id: \.symbol) { stock in
+                                            StockWatchlistRow(stock: stock)
+                                                .id(stock.symbol)
+                                        }
+                                    }
+                                }
+                                .frame(maxHeight: 300) // Set maximum height for scroll area
+                            }
                         }
                     }
-                    .searchable(text: $searchText)
+                    .padding()
                 }
             }
             .task {
