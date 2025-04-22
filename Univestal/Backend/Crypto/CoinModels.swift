@@ -27,7 +27,3 @@ struct Coin: Codable, Identifiable, Hashable {
         let price: [Double]? // Historical prices for sparkline
     }
 }
-
-struct CoinResponse: Codable { // List of fetched Coins
-    let coins: [Coin]
-}

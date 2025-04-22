@@ -2,7 +2,7 @@ import Foundation
 
 enum CoinGeckoEndpoint {
     struct MarketData: PaginatedEndpoint {
-        typealias Response = [Coin]  // Keep as array for direct decoding
+        typealias Response = [Coin]  // Direct array response
         
         let page: Int
         let itemsPerPage: Int = 50  // CoinGecko recommended page size
