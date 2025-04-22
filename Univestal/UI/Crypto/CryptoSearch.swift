@@ -15,48 +15,24 @@ struct CryptoSearch: View {
     @State private var selectedCoinID: String? = nil
     @State private var isLoading = true
 
-    var filteredCoins: [Coin] {
-        if searchText.isEmpty {
-            return environment.coins
-        } else {
-            return environment.filteredCoins(matching: searchText)
-        }
-    }
-
-    var selectedCoin: Coin? {
-        guard let id = selectedCoinID else { return nil }
-        return environment.findCoin(byId: id)
-    }
-
     var body: some View {
         NavigationStack {
             ZStack {
-                if isLoading {
-                    Spacer()
-                    ProgressView()
-                    Spacer()
-                } else {
-                    if environment.coins.isEmpty {
-                        VStack {
-                            Spacer()
-                            ProgressView()
-                            Spacer()
-                        }
-                        .task {
-                            await environment.fetchCryptoData()
-                            isLoading = false
-                        }
-                    } else if filteredCoins.isEmpty && !searchText.isEmpty {
-                        VStack {
-                            Text("No results")
-                                .font(.headline)
-                                .foregroundStyle(.secondary)
-                        }
+                VStack {
+                    if isLoading && environment.coins.isEmpty {
+                        ProgressView()
                     } else {
-                        List(filteredCoins) { coin in
-                            NavigationLink(destination: CoinDetailView(coin: coin)) {
-                                CoinRow(for: coin)
+                        List {
+                            let _ = print("Rendering \(environment.coins.count) coins")
+                            
+                            ForEach(environment.coins) { coin in
+                                NavigationLink(destination: CoinDetailView(coin: coin)) {
+                                    CoinRow(for: coin)
+                                }
                             }
+                        }
+                        .refreshable {
+                            await environment.fetchCryptoData()
                         }
                     }
                 }
@@ -73,14 +49,19 @@ struct CryptoSearch: View {
                     }
                 }
             }
+            .searchable(text: $searchText)
+            .onChange(of: searchText) {
+                print("Search text changed to: \(searchText)")
+                Task {
+                    await environment.fetchCryptoData()
+                }
+            }
             .task {
                 if environment.coins.isEmpty {
-                    isLoading = true
                     await environment.fetchCryptoData()
                 }
                 isLoading = false
             }
-            .searchable(text: $searchText)
         }
     }
 }
@@ -100,7 +81,7 @@ extension CryptoSearch {
                 Image(systemName: appData.watchlist.contains(coin.id) ? "star.fill" : "star")
                     .foregroundColor(appData.watchlist.contains(coin.id) ? .yellow : .gray)
             }
-            .buttonStyle(BorderlessButtonStyle()) // So button taps are not intercepted
+            .buttonStyle(BorderlessButtonStyle())
             
             VStack(alignment: .leading) {
                 Text(coin.name)

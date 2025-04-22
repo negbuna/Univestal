@@ -29,7 +29,7 @@ class DataManager: ObservableObject {
     
     func refreshData() async {
         let finnhub = Finnhub.shared
-        let crypto = Crypto()
+        let crypto = Crypto.shared
         
         // Clear expired caches
         await StockCache.shared.clearExpiredCache()

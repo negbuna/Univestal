@@ -10,29 +10,21 @@ import SwiftUI
 struct StockSearch: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
+    @EnvironmentObject var finnhub: Finnhub
     @Environment(\.dismiss) private var dismiss
     @Binding var searchText: String
     @State private var isLoading = true
-
-    var filteredStocks: [Stock] {
-        if searchText.isEmpty {
-            return environment.stocks
-        } else {
-            return environment.stocks.filter { $0.symbol.lowercased().contains(searchText.lowercased()) }
-        }
-    }
-
+    @State private var currentPage = 1
+    @State private var hasMorePages = true
+    @State private var searchTask: Task<Void, Never>?
+    
     var body: some View {
         NavigationStack {
             ZStack {
-                if isLoading {
+                if isLoading && environment.stocks.isEmpty {
                     ProgressView()
                 } else {
-                    List(filteredStocks, id: \.symbol) { stock in
-                        NavigationLink(destination: StockDetailView(stock: stock)) {
-                            StockRowView(stock: stock)
-                        }
-                    }
+                    stockListView
                 }
             }
             .task {
@@ -45,6 +37,14 @@ struct StockSearch: View {
             .navigationTitle("Stocks")
             .navigationBarBackButtonHidden(true)
             .searchable(text: $searchText)
+            .onChange(of: searchText) {
+                searchTask?.cancel()
+                searchTask = Task {
+                    try? await Task.sleep(nanoseconds: 500_000_000) // 500ms debounce
+                    guard !Task.isCancelled else { return }
+                    await resetAndSearch()
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -55,76 +55,121 @@ struct StockSearch: View {
                     }
                 }
             }
-//            .alert("Error", isPresented: $showError) {
-//                Button("OK", role: .cancel) { }
-//            } message: {
-//                Text(errorMessage)
-//            }
+        }
+    }
+    
+    private var stockListView: some View {
+        List {
+            ForEach(environment.stocks, id: \.symbol) { stock in
+                StockRowItem(stock: stock)
+            }
+            loadingIndicator
+        }
+        .overlay {
+            if environment.stocks.isEmpty && !isLoading {
+                ContentUnavailableView(
+                    "No Results",
+                    systemImage: "magnifyingglass",
+                    description: Text("Try searching for a company name or symbol")
+                )
+            }
+        }
+    }
+    
+    private var loadingIndicator: some View {
+        Group {
+            if isLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+                    .padding()
+            }
+        }
+    }
+    
+    private func resetAndSearch() async {
+        currentPage = 1
+        hasMorePages = true
+        loadNextPageIfNeeded()
+    }
+    
+    private func loadNextPageIfNeeded() {
+        guard !isLoading, hasMorePages else { return }
+        
+        Task {
+            isLoading = true
+            do {
+                let response = try await finnhub.searchStocks(
+                    query: searchText.isEmpty ? "" : searchText,
+                    page: currentPage
+                )
+                currentPage += 1
+                hasMorePages = response.hasNextPage
+            } catch {
+                print("Search error: \(error)")
+            }
+            isLoading = false
         }
     }
 }
 
-struct StockRowView: View {
-    @EnvironmentObject var appData: AppData
+// Update StockRowItem to use Stock directly instead of StockLookup
+struct StockRowItem: View {
     let stock: Stock
     
-    private var stockName: String {
-        stock.lookup?.description ?? "Stock data cannot be retrieved at this time."
+    var body: some View {
+        NavigationLink {
+            StockDetailView(stock: stock)
+        } label: {
+            StockRowView(stock: stock)
+        }
     }
-    
-    private var formattedPrice: String {
-        String(format: "$%.2f", stock.quote.currentPrice)
-    }
-    
-    private var formattedChange: String? {
-        guard let dp = stock.quote.percentChange else { return nil }
-        return String(format: "$%.2f", dp)
-    }
-    
-    private var formattedPercentChange: (text: String, color: Color)? {
-        guard let dp = stock.quote.percentChange else { return nil }
-        let sign = dp >= 0 ? "+" : ""
-        return ("\(sign)\(String(format: "%.2f", dp))%", dp >= 0 ? .green : .red)
-    }
+}
+
+// Update row view to accept Stock directly
+struct StockRowView: View {
+    let stock: Stock
+    @EnvironmentObject var appData: AppData
     
     var body: some View {
         HStack {
-            Button(action: {
-                withAnimation {
-                    // Fix: Change to use toggleStockWatchlist instead of toggleWatchlist
-                    appData.toggleStockWatchlist(for: stock.symbol)
-                    print("Stock watchlist after toggle: \(appData.stockWatchlist)") // Debug print
-                }
-            }) {
-                Image(systemName: appData.stockWatchlist.contains(stock.symbol) ? "star.fill" : "star")
-                    .foregroundColor(appData.stockWatchlist.contains(stock.symbol) ? .yellow : .gray)
-            }
-            .buttonStyle(BorderlessButtonStyle()) // Prevents the button from intercepting other taps
+            watchlistButton
             
             VStack(alignment: .leading) {
                 Text(stock.symbol)
                     .font(.headline)
-                    .foregroundColor(.primary)
-                Text(stockName)
+                Text(stock.lookup?.description ?? "")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
             
             Spacer()
             
+            // Add price information to match coin display
             VStack(alignment: .trailing) {
-                Text(formattedPrice)
+                Text(String(format: "$%.2f", stock.quote.currentPrice))
                     .font(.headline)
                     .foregroundColor(.primary)
                 
-                if let percentChange = formattedPercentChange {
-                    Text(percentChange.text)
+                if let percentChange = stock.quote.percentChange {
+                    Text("\(percentChange >= 0 ? "+" : "")\(String(format: "%.2f", percentChange))%")
                         .font(.subheadline)
-                        .foregroundColor(percentChange.color)
+                        .foregroundColor(appData.percentColor(percentChange))
                 }
             }
         }
         .padding(.vertical, 4)
+    }
+    
+    private var watchlistButton: some View {
+        Button {
+            withAnimation {
+                appData.toggleStockWatchlist(for: stock.symbol)
+            }
+        } label: {
+            Image(systemName: appData.stockWatchlist.contains(stock.symbol) ? "star.fill" : "star")
+                .foregroundColor(appData.stockWatchlist.contains(stock.symbol) ? .yellow : .gray)
+        }
+        .buttonStyle(BorderlessButtonStyle())
     }
 }
     

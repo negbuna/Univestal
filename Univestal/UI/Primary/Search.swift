@@ -18,19 +18,25 @@ struct Search: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                Picker("", selection: $selectedTab) {
+                // Picker always at top
+                Picker("Asset Type", selection: $selectedTab) {
                     Text("Crypto").tag("crypto")
                     Text("Stocks").tag("stocks")
                 }
                 .pickerStyle(SegmentedPickerStyle())
-                .labelsHidden()
                 .padding(.horizontal)
-                .padding(.bottom)
+                .padding(.vertical, 8)
+                .background(Color(UIColor.systemBackground))
                 
-                if selectedTab == "crypto" {
-                    CryptoSearch(searchText: $searchText)
-                } else {
-                    StockSearch(searchText: $searchText)
+                // Content area fills remaining space
+                GeometryReader { geometry in
+                    if selectedTab == "crypto" {
+                        CryptoSearch(searchText: $searchText)
+                            .frame(width: geometry.size.width)
+                    } else {
+                        StockSearch(searchText: $searchText)
+                            .frame(width: geometry.size.width)
+                    }
                 }
             }
         }

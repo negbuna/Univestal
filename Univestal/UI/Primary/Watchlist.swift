@@ -15,8 +15,29 @@ struct Watchlist: View {
     @State private var selectedCoinID: String? = nil
     @State private var isLoading = true
 
+    // Add computed property to filter coins
+    private var watchlistCoins: [Coin] {
+        // Get coins that are in the watchlist
+        let coins = environment.coins.filter { coin in
+            appData.watchlist.contains(coin.id)
+        }
+        print("📋 Found \(coins.count) coins in watchlist")
+        print("🔍 Watchlist IDs: \(appData.watchlist)")
+        print("🎯 Matched coins: \(coins.map { $0.id })")
+        return coins
+    }
+
+    private var watchlistStocks: [Stock] {
+        let stocks = environment.stocks.filter { stock in
+            appData.stockWatchlist.contains(stock.symbol)
+        }
+        print("📈 Found \(stocks.count) stocks in watchlist")
+        print("🔍 Stock Watchlist symbols: \(appData.stockWatchlist)")
+        print("🎯 Matched stocks: \(stocks.map { $0.symbol })")
+        return stocks
+    }
+
     var filteredWatchlistCoins: [Coin] {
-        let watchlistCoins = environment.coins.filter { appData.watchlist.contains($0.id) }
         if searchText.isEmpty {
             return watchlistCoins
         } else {
@@ -39,23 +60,24 @@ struct Watchlist: View {
                         VStack(alignment: .leading, spacing: 20) {
                             WatchlistSection(
                                 title: "Cryptocurrencies",
-                                isEmpty: appData.watchlist.isEmpty
+                                isEmpty: watchlistCoins.isEmpty
                             ) {
-                                if !filteredWatchlistCoins.isEmpty {
-                                    ForEach(filteredWatchlistCoins) { coin in
+                                if !watchlistCoins.isEmpty {
+                                    ForEach(watchlistCoins) { coin in
                                         CoinWatchlistRow(coin: coin)
+                                            .id(coin.id) // Explicit ID
                                     }
                                 }
                             }
                             
                             WatchlistSection(
                                 title: "Stocks",
-                                isEmpty: appData.stockWatchlist.isEmpty
+                                isEmpty: watchlistStocks.isEmpty
                             ) {
-                                let watchlistStocks = environment.stocks.filter { appData.stockWatchlist.contains($0.symbol) }
                                 if !watchlistStocks.isEmpty {
                                     ForEach(watchlistStocks, id: \.symbol) { stock in
                                         StockWatchlistRow(stock: stock)
+                                            .id(stock.symbol)
                                     }
                                 }
                             }
@@ -71,9 +93,12 @@ struct Watchlist: View {
                 }
             }
             .task {
+                print("🔄 Loading coins...")
+                print("📱 Current watchlist: \(appData.watchlist)")
                 if environment.coins.isEmpty {
                     await environment.fetchCryptoData()
                 }
+                print("✅ Loaded \(environment.coins.count) coins")
                 isLoading = false
             }
             .toolbar {
@@ -182,6 +207,9 @@ struct CoinWatchlistRow: View {
                 .offset(y: 16),
             alignment: .bottom
         )
+        .onAppear {
+            print("🎯 Rendering coin: \(coin.id)")
+        }
     }
 }
 
