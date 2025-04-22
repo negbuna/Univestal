@@ -14,49 +14,42 @@ struct CryptoSearch: View {
     @Binding var searchText: String
     @State private var selectedCoinID: String? = nil
     @State private var isLoading = true
-
-    var filteredCoins: [Coin] {
-        if searchText.isEmpty {
-            return environment.coins
-        } else {
-            return environment.filteredCoins(matching: searchText)
-        }
-    }
-
-    var selectedCoin: Coin? {
-        guard let id = selectedCoinID else { return nil }
-        return environment.findCoin(byId: id)
-    }
+    @State private var currentPage = 1
+    @State private var hasMorePages = true
+    @State private var searchTask: Task<Void, Never>?
+    @State private var coins: [Coin] = []
 
     var body: some View {
         NavigationStack {
             ZStack {
-                if isLoading {
-                    Spacer()
+                if isLoading && coins.isEmpty {
                     ProgressView()
-                    Spacer()
                 } else {
-                    if environment.coins.isEmpty {
-                        VStack {
-                            Spacer()
-                            ProgressView()
-                            Spacer()
-                        }
-                        .task {
-                            await environment.fetchCryptoData()
-                            isLoading = false
-                        }
-                    } else if filteredCoins.isEmpty && !searchText.isEmpty {
-                        VStack {
-                            Text("No results")
-                                .font(.headline)
-                                .foregroundStyle(.secondary)
-                        }
-                    } else {
-                        List(filteredCoins) { coin in
+                    List {
+                        ForEach(coins) { coin in
                             NavigationLink(destination: CoinDetailView(coin: coin)) {
                                 CoinRow(for: coin)
                             }
+                            .onAppear {
+                                if coins.last?.id == coin.id {
+                                    loadNextPageIfNeeded()
+                                }
+                            }
+                        }
+                        
+                        if isLoading {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                        }
+                    }
+                    .overlay {
+                        if coins.isEmpty && !searchText.isEmpty {
+                            ContentUnavailableView(
+                                "No Results",
+                                systemImage: "magnifyingglass",
+                                description: Text("Try searching for a coin name or symbol")
+                            )
                         }
                     }
                 }
@@ -73,15 +66,65 @@ struct CryptoSearch: View {
                     }
                 }
             }
-            .task {
-                if environment.coins.isEmpty {
-                    isLoading = true
-                    await environment.fetchCryptoData()
-                }
-                isLoading = false
-            }
             .searchable(text: $searchText)
+            .onChange(of: searchText) { _ in
+                searchTask?.cancel()
+                searchTask = Task {
+                    try? await Task.sleep(nanoseconds: 500_000_000) // 500ms debounce
+                    guard !Task.isCancelled else { return }
+                    await resetAndSearch()
+                }
+            }
         }
+    }
+    
+    private func resetAndSearch() async {
+        currentPage = 1
+        coins = []
+        hasMorePages = true
+        await loadNextPageIfNeeded()
+    }
+    
+    private func loadNextPageIfNeeded() {
+        guard !isLoading, hasMorePages else { return }
+        
+        Task {
+            isLoading = true
+            do {
+                let response = try await withRetry(maxAttempts: 3) {
+                    try await environment.searchCoins(
+                        query: searchText.isEmpty ? "" : searchText,
+                        page: currentPage
+                    )
+                }
+                coins.append(contentsOf: response.items)
+                currentPage += 1
+                hasMorePages = response.hasNextPage
+            } catch APIError.rateLimitExceeded {
+                print("Rate limit reached, using cached data")
+            } catch {
+                print("Search error: \(error)")
+            }
+            isLoading = false
+        }
+    }
+    
+    private func withRetry<T>(maxAttempts: Int = 3, task: () async throws -> T) async throws -> T {
+        var attempts = 0
+        var lastError: Error?
+        
+        while attempts < maxAttempts {
+            do {
+                return try await task()
+            } catch {
+                attempts += 1
+                lastError = error
+                if attempts < maxAttempts {
+                    try await Task.sleep(nanoseconds: UInt64(1_000_000_000 * Double(attempts)))
+                }
+            }
+        }
+        throw lastError ?? APIError.requestFailed(URLError(.unknown))
     }
 }
 

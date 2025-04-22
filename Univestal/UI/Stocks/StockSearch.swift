@@ -10,27 +10,46 @@ import SwiftUI
 struct StockSearch: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var environment: TradingEnvironment
+    @EnvironmentObject var finnhub: Finnhub
     @Environment(\.dismiss) private var dismiss
     @Binding var searchText: String
     @State private var isLoading = true
-
-    var filteredStocks: [Stock] {
-        if searchText.isEmpty {
-            return environment.stocks
-        } else {
-            return environment.stocks.filter { $0.symbol.lowercased().contains(searchText.lowercased()) }
-        }
-    }
-
+    @State private var currentPage = 1
+    @State private var hasMorePages = true
+    @State private var searchTask: Task<Void, Never>?
+    @State private var stocks: [StockLookup] = []
+    
     var body: some View {
         NavigationStack {
             ZStack {
-                if isLoading {
+                if isLoading && stocks.isEmpty {
                     ProgressView()
                 } else {
-                    List(filteredStocks, id: \.symbol) { stock in
-                        NavigationLink(destination: StockDetailView(stock: stock)) {
-                            StockRowView(stock: stock)
+                    List {
+                        ForEach(stocks, id: \.symbol) { stock in
+                            NavigationLink(destination: StockDetailView(stock: stock)) {
+                                StockRowView(stock: stock)
+                            }
+                            .onAppear {
+                                if stocks.last?.symbol == stock.symbol {
+                                    loadNextPageIfNeeded()
+                                }
+                            }
+                        }
+                        
+                        if isLoading {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                        }
+                    }
+                    .overlay {
+                        if stocks.isEmpty && !searchText.isEmpty {
+                            ContentUnavailableView(
+                                "No Results",
+                                systemImage: "magnifyingglass",
+                                description: Text("Try searching for a company name or symbol")
+                            )
                         }
                     }
                 }
@@ -45,6 +64,14 @@ struct StockSearch: View {
             .navigationTitle("Stocks")
             .navigationBarBackButtonHidden(true)
             .searchable(text: $searchText)
+            .onChange(of: searchText) { _ in
+                searchTask?.cancel()
+                searchTask = Task {
+                    try? await Task.sleep(nanoseconds: 500_000_000) // 500ms debounce
+                    guard !Task.isCancelled else { return }
+                    await resetAndSearch()
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -55,11 +82,33 @@ struct StockSearch: View {
                     }
                 }
             }
-//            .alert("Error", isPresented: $showError) {
-//                Button("OK", role: .cancel) { }
-//            } message: {
-//                Text(errorMessage)
-//            }
+        }
+    }
+    
+    private func resetAndSearch() async {
+        currentPage = 1
+        stocks = []
+        hasMorePages = true
+        await loadNextPageIfNeeded()
+    }
+    
+    private func loadNextPageIfNeeded() {
+        guard !isLoading, hasMorePages else { return }
+        
+        Task {
+            isLoading = true
+            do {
+                let response = try await finnhub.searchStocks(
+                    query: searchText.isEmpty ? "" : searchText,
+                    page: currentPage
+                )
+                stocks.append(contentsOf: response.items)
+                currentPage += 1
+                hasMorePages = response.hasNextPage
+            } catch {
+                print("Search error: \(error)")
+            }
+            isLoading = false
         }
     }
 }
@@ -91,15 +140,14 @@ struct StockRowView: View {
         HStack {
             Button(action: {
                 withAnimation {
-                    // Fix: Change to use toggleStockWatchlist instead of toggleWatchlist
                     appData.toggleStockWatchlist(for: stock.symbol)
-                    print("Stock watchlist after toggle: \(appData.stockWatchlist)") // Debug print
+                    print("Stock watchlist after toggle: \(appData.stockWatchlist)")
                 }
             }) {
                 Image(systemName: appData.stockWatchlist.contains(stock.symbol) ? "star.fill" : "star")
                     .foregroundColor(appData.stockWatchlist.contains(stock.symbol) ? .yellow : .gray)
             }
-            .buttonStyle(BorderlessButtonStyle()) // Prevents the button from intercepting other taps
+            .buttonStyle(BorderlessButtonStyle())
             
             VStack(alignment: .leading) {
                 Text(stock.symbol)

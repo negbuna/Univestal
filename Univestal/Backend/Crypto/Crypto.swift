@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 
+@MainActor
 class Crypto: ObservableObject { // Fetching Coin data
     @Published var coins: [Coin] = []
     @Published var detailedCoins: [Coin] = []
@@ -72,5 +73,42 @@ class Crypto: ObservableObject { // Fetching Coin data
                 self?.detailedCoins = detailedCoins
             })
             .store(in: &cancellables)
+    }
+    
+    func fetchMarketData(page: Int = 1) async throws -> PaginatedResponse<Coin> {
+        let endpoint = CoinGeckoEndpoint.MarketData(page: page)
+        
+        // Try cache first with background refresh
+        if let cached = await APICache.shared.value(
+            type: endpoint.resourceType,
+            key: endpoint.paginatedCacheKey
+        ) { _ in
+            try await client.send(endpoint)
+        } {
+            switch cached {
+            case .fresh(let response), .stale(let response):
+                return response
+            }
+        }
+        
+        return try await client.send(endpoint)
+    }
+    
+    func searchCoins(query: String, page: Int = 1) async throws -> PaginatedResponse<Coin> {
+        let endpoint = CoinGeckoEndpoint.Search(query: query, page: page)
+        
+        if let cached = await APICache.shared.value(
+            type: endpoint.resourceType,
+            key: endpoint.paginatedCacheKey
+        ) { _ in
+            try await client.send(endpoint)
+        } {
+            switch cached {
+            case .fresh(let response), .stale(let response):
+                return response
+            }
+        }
+        
+        return try await client.send(endpoint)
     }
 }
