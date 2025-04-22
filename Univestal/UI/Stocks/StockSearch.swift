@@ -133,8 +133,29 @@ struct StockRowView: View {
     var body: some View {
         HStack {
             watchlistButton
-            stockInfo
+            
+            VStack(alignment: .leading) {
+                Text(stock.symbol)
+                    .font(.headline)
+                Text(stock.lookup?.description ?? "")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
             Spacer()
+            
+            // Add price information to match coin display
+            VStack(alignment: .trailing) {
+                Text(String(format: "$%.2f", stock.quote.currentPrice))
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                if let percentChange = stock.quote.percentChange {
+                    Text("\(percentChange >= 0 ? "+" : "")\(String(format: "%.2f", percentChange))%")
+                        .font(.subheadline)
+                        .foregroundColor(appData.percentColor(percentChange))
+                }
+            }
         }
         .padding(.vertical, 4)
     }
@@ -149,18 +170,6 @@ struct StockRowView: View {
                 .foregroundColor(appData.stockWatchlist.contains(stock.symbol) ? .yellow : .gray)
         }
         .buttonStyle(BorderlessButtonStyle())
-    }
-    
-    private var stockInfo: some View {
-        VStack(alignment: .leading) {
-            Text(stock.symbol)
-                .font(.headline)
-            if let desc = stock.lookup?.description {
-                Text(desc)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-        }
     }
 }
     
