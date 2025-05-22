@@ -43,7 +43,6 @@
 		5E84FD1A2D4958340093A6EA /* StockTrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84FD192D49582D0093A6EA /* StockTrade.swift */; };
 		5E939C232D51C25800848B3C /* SellUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939C222D51C24F00848B3C /* SellUI.swift */; };
 		5E939C252D51CF2E00848B3C /* BuyUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939C242D51CF2A00848B3C /* BuyUI.swift */; };
-		5E939C632D5A773900848B3C /* TradeNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939C622D5A773600848B3C /* TradeNew.swift */; };
 		5E939C672D5B091600848B3C /* ChartModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939C662D5B091300848B3C /* ChartModels.swift */; };
 		5E939CA72D5E6B0600848B3C /* ArticleModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939CA62D5E6B0100848B3C /* ArticleModels.swift */; };
 		5E939CA92D6000D600848B3C /* Finnhub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E939CA82D6000D200848B3C /* Finnhub.swift */; };
@@ -144,7 +143,6 @@
 		5E84FD192D49582D0093A6EA /* StockTrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockTrade.swift; sourceTree = "<group>"; };
 		5E939C222D51C24F00848B3C /* SellUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SellUI.swift; sourceTree = "<group>"; };
 		5E939C242D51CF2A00848B3C /* BuyUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyUI.swift; sourceTree = "<group>"; };
-		5E939C622D5A773600848B3C /* TradeNew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeNew.swift; sourceTree = "<group>"; };
 		5E939C662D5B091300848B3C /* ChartModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartModels.swift; sourceTree = "<group>"; };
 		5E939CA62D5E6B0100848B3C /* ArticleModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleModels.swift; sourceTree = "<group>"; };
 		5E939CA82D6000D200848B3C /* Finnhub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Finnhub.swift; sourceTree = "<group>"; };
@@ -388,7 +386,6 @@
 				5E939C242D51CF2A00848B3C /* BuyUI.swift */,
 				5EA8D25C2D0E7231000D5022 /* PastTrades.swift */,
 				5E939C222D51C24F00848B3C /* SellUI.swift */,
-				5E939C622D5A773600848B3C /* TradeNew.swift */,
 				5EE787DA2D8795FB00C19D6C /* HoldingsView.swift */,
 				5EE787DB2D8795FB00C19D6C /* UnifiedTradeView.swift */,
 			);
@@ -398,8 +395,8 @@
 		5EA1CDE22C3AF1AE00CE5AAA /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				5EE788542D8FC1D000C19D6C /* Components */,
 				5EE8078E2C3A200A0070D8E9 /* Homepage.swift */,
+				5EE788542D8FC1D000C19D6C /* Components */,
 				5E939E782D76369F00848B3C /* Crypto */,
 				5E11F67B2CF80222000E6DB9 /* Primary */,
 				5E11F67A2CF7AE86000E6DB9 /* Secondary */,
@@ -666,7 +663,6 @@
 				5EE7885F2D8FDE6E00C19D6C /* AssetFormatter.swift in Sources */,
 				5EE788522D8FBEB300C19D6C /* StockCache.swift in Sources */,
 				5EDC07812D1BB538002172E5 /* Overlay.swift in Sources */,
-				5E939C632D5A773900848B3C /* TradeNew.swift in Sources */,
 				5EA8D27C2D1107F3000D5022 /* Environment.swift in Sources */,
 				5E9DA1E02DB7393A00D319C4 /* CoinGeckoEndpoint.swift in Sources */,
 			);

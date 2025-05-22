@@ -170,31 +170,49 @@ struct UnifiedTradeView: View {
             qty = environment.calculateQuantityFromAmount(dollars: amount, price: asset.currentPrice)
         }
         
+        // Clear any existing alert first
+        alertType = nil
+        
         do {
             switch type {
             case .buy:
-                try environment.executeTrade(
-                    coinId: asset.assetId,
-                    symbol: asset.tradeSymbol,
-                    name: asset.tradeName,
-                    quantity: qty,
-                    currentPrice: asset.currentPrice
-                )
+                if asset is Coin {
+                    try environment.executeTrade(
+                        coinId: asset.assetId,
+                        symbol: asset.tradeSymbol,
+                        name: asset.tradeName,
+                        quantity: qty,
+                        currentPrice: asset.currentPrice
+                    )
+                } else if asset is Stock {
+                    try environment.executeStockTrade(
+                        symbol: asset.tradeSymbol,
+                        name: asset.tradeName,
+                        quantity: qty,
+                        currentPrice: asset.currentPrice
+                    )
+                }
             case .sell:
-                try environment.executeSell(
-                    coinId: asset.assetId,
-                    symbol: asset.tradeSymbol,
-                    name: asset.tradeName,
-                    quantity: qty,
-                    currentPrice: asset.currentPrice
-                )
+                if asset is Coin {
+                    try environment.executeSell(
+                        coinId: asset.assetId,
+                        symbol: asset.tradeSymbol,
+                        name: asset.tradeName,
+                        quantity: qty,
+                        currentPrice: asset.currentPrice
+                    )
+                } else if asset is Stock {
+                    try environment.executeStockSell(
+                        symbol: asset.tradeSymbol,
+                        name: asset.tradeName,
+                        quantity: qty,
+                        currentPrice: asset.currentPrice
+                    )
+                }
             }
             dismiss()
-        } catch PaperTradingError.insufficientBalance {
-            alertType = .insufficientFunds
-        } catch PaperTradingError.insufficientHoldings {
-            alertType = .insufficientHoldings
         } catch {
+            print("DEBUG: Trade error: \(error)")
             alertType = .tradeError
         }
     }

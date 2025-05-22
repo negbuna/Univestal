@@ -15,7 +15,6 @@ struct TradingView: View {
     @EnvironmentObject var appData: AppData
     @State private var showMenu: Bool = false
     @State private var activeAlert: TradeAlertType?
-    @State private var selectedCoin: Coin?
     @State private var tradeErrorAlert: Bool = false
     @State private var isBuying: Bool = true
     @State private var selectedTimeFrame: TimeFrame = .day
@@ -23,21 +22,13 @@ struct TradingView: View {
     @State private var tradeMode: TradeMode = .quantity
     @State private var dollarAmount: String = ""
     @State private var showingResetAlert = false
-    @State private var selectedAssetType: AssetType = .crypto
     @State private var isLoading: Bool = false
     
     enum TradeMode {
         case quantity, amount
     }
-    
-    var filteredCoins: [Coin] {
-        if tradedCoin.isEmpty {
-            return environment.coins
-        } else {
-            return environment.filteredCoins(matching: tradedCoin)
-        }
-    }
-    
+
+    @State private var selectedCoin: Coin?
     @State private var tradedCoin: String = ""
     @State private var tradedQuantity: String = ""
 
@@ -45,59 +36,51 @@ struct TradingView: View {
         environment.holdings
     }
 
-    private var watchlistStocks: [Stock] {
-        environment.stocks.filter { stock in
-            appData.stockWatchlist.contains(stock.symbol)
-        }
-    }
-
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                Picker("Asset Type", selection: $selectedAssetType) {
-                    Text("Crypto").tag(AssetType.crypto)
-                    Text("Stocks").tag(AssetType.stock)
-                }
-                .pickerStyle(.segmented)
-                .padding()
-                .background(Color(UIColor.systemBackground))
+                portfolioHeader
                 
-                if isLoading {
-                    Spacer()
-                    ProgressView()
-                    Spacer()
-                } else {
-                    ScrollView {
-                        LazyVStack(spacing: 0) {
-                            switch selectedAssetType {
-                            case .crypto:
-                                if environment.coins.isEmpty {
-                                    ContentUnavailableView(
-                                        "No Coins Available",
-                                        systemImage: "bitcoinsign.circle",
-                                        description: Text("Check your internet connection")
-                                    )
-                                } else {
-                                    ForEach(environment.coins, id: \.id) { coin in
-                                        CoinWatchlistRow(coin: coin)
+                ScrollView {
+                    VStack(spacing: 20) {
+                        // Crypto Holdings Section
+                        WatchlistSection(
+                            title: "Cryptocurrency Holdings",
+                            isEmpty: environment.holdings.filter { $0.type == .crypto }.isEmpty,
+                            content: {
+                                if !environment.holdings.filter({ $0.type == .crypto }).isEmpty {
+                                    ScrollView {
+                                        LazyVStack(spacing: 0) {
+                                            ForEach(environment.holdings.filter { $0.type == .crypto }) { holding in
+                                                TradeHoldingRow(holding: holding)
+                                                    .id(holding.id)
+                                            }
+                                        }
                                     }
-                                }
-                            case .stock:
-                                if watchlistStocks.isEmpty {
-                                    ContentUnavailableView(
-                                        "No Stocks Available",
-                                        systemImage: "chart.bar.xaxis",
-                                        description: Text("Check your internet connection")
-                                    )
-                                } else {
-                                    ForEach(watchlistStocks, id: \.symbol) { stock in
-                                        StockWatchlistRow(stock: stock)
-                                    }
+                                    .frame(maxHeight: 300)
                                 }
                             }
+                        )
+                        
+                        // Stock Holdings Section
+                        WatchlistSection(
+                            title: "Stock Holdings",
+                            isEmpty: environment.holdings.filter { $0.type == .stock }.isEmpty
+                        ) {
+                            if !environment.holdings.filter({ $0.type == .stock }).isEmpty {
+                                ScrollView {
+                                    LazyVStack(spacing: 0) {
+                                        ForEach(environment.holdings.filter { $0.type == .stock }) { holding in
+                                            TradeHoldingRow(holding: holding)
+                                                .id(holding.id)
+                                        }
+                                    }
+                                }
+                                .frame(maxHeight: 300)
+                            }
                         }
-                        .padding()
                     }
+                    .padding()
                 }
             }
             .task {
@@ -135,6 +118,53 @@ struct TradingView: View {
             .globeOverlay()
             .navigationBarBackButtonHidden(true)
         }
+    }
+
+    private var portfolioHeader: some View {
+        VStack(spacing: 12) {
+            VStack(spacing: 8) {
+                HStack {
+                    Text("Your Portfolio")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                    
+                    Spacer()
+                    
+                    if let change = environment.portfolioChange(for: selectedTimeFrame) {
+                        Text("\(change.amount >= 0 ? "+" : "")\(change.percentage, specifier: "%.1f")%")
+                            .font(.subheadline)
+                            .foregroundColor(change.amount >= 0 ? .green : .red)
+                    }
+                }
+                
+                HStack {
+                    Text(environment.totalPortfolioValue, format: .currency(code: "USD"))
+                        .font(.title2)
+                        .bold()
+                    
+                    Spacer()
+                    
+                    if let change = environment.portfolioChange(for: selectedTimeFrame) {
+                        Text("\(change.amount >= 0 ? "+" : "")\(change.amount, specifier: "$%.2f")")
+                            .font(.subheadline)
+                            .foregroundColor(change.amount >= 0 ? .green : .red)
+                    }
+                }
+            }
+            
+            Picker("Time Frame", selection: $selectedTimeFrame) {
+                Text("24H").tag(TimeFrame.day)
+                Text("7D").tag(TimeFrame.week)
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+            
+            Text("Cash Available: \(environment.portfolioBalance, specifier: "$%.2f")")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .padding()
+        .background(Color(UIColor.systemBackground))
     }
 
     private var portfolioView: some View {
@@ -195,116 +225,6 @@ struct TradingView: View {
         return environment.totalPortfolioValue
     }
 
-    private var tradeMenuView: some View {
-        Group {
-            if showMenu {
-                VStack {
-                    Text("Trade")
-                        .foregroundStyle(.secondary)
-                        .bold()
-
-                    Divider()
-
-                    TradeMenuView(
-                        selectedCoin: $selectedCoin,
-                        tradedCoin: $tradedCoin,
-                        tradedQuantity: $tradedQuantity
-                    )
-
-                    Divider()
-
-                    buttons
-                }
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(UIColor.secondarySystemBackground))
-                        .shadow(radius: 10)
-                )
-                .transition(.move(edge: .bottom))
-            }
-        }
-    }
-
-    private var buttons: some View {
-        HStack {
-            Button("Cancel") {
-                withAnimation(.easeInOut) {
-                    showMenu = false
-                }
-            }
-            .foregroundStyle(.red)
-            .bold()
-
-            Spacer()
-
-            Button("Confirm") {
-                executeTrade()
-            }
-            .foregroundStyle(.green)
-            .bold()
-        }
-        .padding(.horizontal)
-        .alert(item: $activeAlert) { alertType in
-            Alert(
-                title: Text(alertType.title),
-                message: Text(alertType.message),
-                dismissButton: .default(Text("OK"))
-            )
-        }
-    }
-
-    private func executeTrade() {
-        guard let coin = selectedCoin,
-              let quantity = Double(tradedQuantity) else {
-            activeAlert = .tradeError
-            return
-        }
-
-        do {
-            if isBuying {
-                try environment.executeTrade(
-                    coinId: coin.id,
-                    symbol: coin.symbol,
-                    name: coin.name,
-                    quantity: quantity,
-                    currentPrice: coin.current_price
-                )
-            } else {
-                try environment.executeSell(
-                    coinId: coin.id,
-                    symbol: coin.symbol,
-                    name: coin.name,
-                    quantity: quantity,
-                    currentPrice: coin.current_price
-                )
-            }
-            
-            withAnimation(.easeInOut) {
-                showMenu = false
-            }
-            
-            // Reset fields
-            selectedCoin = nil
-            tradedCoin = ""
-            tradedQuantity = ""
-        } catch PaperTradingError.insufficientBalance {
-            activeAlert = .insufficientFunds
-        } catch PaperTradingError.insufficientHoldings {
-            activeAlert = .insufficientHoldings
-        } catch {
-            activeAlert = .tradeError
-            print("Trade error: \(error)")
-        }
-    }
-
-    private func startPeriodicFetching() {
-        Task {
-            await environment.fetchCryptoData()
-        }
-    }
-
     private var tradeButtons: some View {
         HStack {
             if let coin = selectedCoin {
@@ -336,67 +256,6 @@ struct TradingView: View {
     }
 }
 
-struct TradeMenuView: View {
-    @EnvironmentObject var environment: TradingEnvironment
-    @Binding var selectedCoin: Coin?
-    @Binding var tradedCoin: String
-    @Binding var tradedQuantity: String
-    
-    var filteredCoins: [Coin] {
-        if tradedCoin.isEmpty {
-            return environment.coins
-        } else {
-            return environment.filteredCoins(matching: tradedCoin)
-        }
-    }
-
-    var body: some View {
-        VStack {
-            TextField("Enter Coin", text: $tradedCoin)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            
-            TextField("Quantity", text: $tradedQuantity)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            
-            if !tradedCoin.isEmpty {
-                Picker("Select a Coin", selection: $selectedCoin) {
-                    ForEach(filteredCoins, id: \.id) { coin in
-                        Text(coin.name)
-                            .tag(coin as Coin?)
-                    }
-                }
-                .pickerStyle(MenuPickerStyle())
-                .onChange(of: selectedCoin) {
-                    if let coin = selectedCoin {
-                        tradedCoin = coin.name
-                    }
-                }
-                if let coin = selectedCoin,
-                   let quantity = Double(tradedQuantity),
-                   quantity > 0 {
-                    VStack(spacing: 8) {
-                        Text("Trade Summary")
-                            .font(.headline)
-                        Text("\(quantity) \(coin.symbol.uppercased()) = \(String(format: "$%.2f", coin.current_price * quantity))")
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color(UIColor.systemGroupedBackground))
-                    )
-                }
-            }
-        }
-        .padding()
-        .onAppear {
-            tradedCoin = ""
-            tradedQuantity = ""
-        }
-    }
-}
-
 struct TradeHoldingRow: View {
     let holding: AssetHolding
     @EnvironmentObject var environment: TradingEnvironment
@@ -408,15 +267,28 @@ struct TradeHoldingRow: View {
             }
         } else {
             HoldingRowContent(holding: holding)
-                .opacity(0.5) // Visual indication that the asset is unavailable
+                .opacity(0.5)
+                .overlay(
+                    Text("Asset data unavailable")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                )
         }
     }
     
     private var assetForHolding: Tradeable? {
-        if holding.type == .crypto {
-            return environment.coins.first { $0.id == holding.id }
-        } else {
-            return environment.stocks.first { $0.symbol == holding.symbol }
+        // Add debug logging
+        print("DEBUG: Looking up asset for holding - Type: \(holding.type), ID: \(holding.id)")
+        
+        switch holding.type {
+        case .crypto:
+            let asset = environment.coins.first { $0.id == holding.id }
+            print("DEBUG: Crypto lookup result: \(asset?.id ?? "not found")")
+            return asset
+        case .stock:
+            let asset = environment.stocks.first { $0.symbol == holding.symbol }
+            print("DEBUG: Stock lookup result: \(asset?.symbol ?? "not found")")
+            return asset
         }
     }
 }
@@ -439,10 +311,23 @@ struct HoldingRowContent: View {
             VStack(alignment: .trailing) {
                 Text(holding.totalValue, format: .currency(code: "USD"))
                     .font(.headline)
-                Text(holding.profitLoss >= 0 ? "+" : "-")
-                    .foregroundColor(holding.profitLoss >= 0 ? .green : .red) +
-                Text(abs(holding.profitLoss), format: .currency(code: "USD"))
-                    .foregroundColor(holding.profitLoss >= 0 ? .green : .red)
+                
+                HStack(spacing: 2) {
+                    // Show both dollar and percentage change
+                    Text(holding.profitLoss >= 0 ? "+" : "")
+                        .foregroundColor(holding.profitLoss >= 0 ? .green : .red)
+                    Text(abs(holding.profitLoss), format: .currency(code: "USD"))
+                        .foregroundColor(holding.profitLoss >= 0 ? .green : .red)
+                    
+                    // Add percentage change
+                    if holding.purchasePrice > 0 {
+                        let percentChange = ((holding.currentPrice - holding.purchasePrice) / holding.purchasePrice) * 100
+                        Text("(\(percentChange >= 0 ? "+" : "")\(String(format: "%.1f", percentChange))%)")
+                            .foregroundColor(percentChange >= 0 ? .green : .red)
+                            .font(.subheadline)
+                    }
+                }
+                .font(.subheadline)
             }
         }
         .padding(.horizontal)

@@ -86,17 +86,17 @@ class TradingEnvironment: ObservableObject {
     }
     
     func executeSell(coinId: String, symbol: String, name: String, quantity: Double, currentPrice: Double) throws {
-        let fetchRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "coinId == %@", coinId)
+        // Get current holdings for this coin
+        let holdings = getCurrentHoldingsForCoin(coinId: coinId)
         
-        guard let trades = try? coreDataStack.context.fetch(fetchRequest),
-              let portfolio = currentPortfolio else {
-            throw PaperTradingError.generalError
+        // Check if we have enough (use a small epsilon for floating point comparison)
+        let epsilon = 0.000001
+        guard holdings >= (quantity - epsilon) else {
+            throw PaperTradingError.insufficientHoldings
         }
         
-        let totalHoldings = trades.reduce(0.0) { $0 + $1.quantity }
-        guard totalHoldings >= quantity else {
-            throw PaperTradingError.insufficientHoldings
+        guard let portfolio = currentPortfolio else {
+            throw PaperTradingError.generalError
         }
         
         let trade = CDTrade(context: coreDataStack.context)
@@ -104,7 +104,7 @@ class TradingEnvironment: ObservableObject {
         trade.coinId = coinId
         trade.coinSymbol = symbol
         trade.coinName = name
-        trade.quantity = -quantity
+        trade.quantity = -quantity  // Negative for sells
         trade.purchasePrice = currentPrice
         trade.purchaseDate = Date()
         trade.currentPrice = currentPrice
@@ -112,6 +112,20 @@ class TradingEnvironment: ObservableObject {
         
         portfolio.balance += (currentPrice * quantity)
         try coreDataStack.context.save()
+    }
+
+    // Helper method to get total holdings for a coin
+    private func getCurrentHoldingsForCoin(coinId: String) -> Double {
+        let fetchRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "coinId == %@", coinId)
+        
+        guard let trades = try? coreDataStack.context.fetch(fetchRequest) else {
+            return 0
+        }
+        
+        return trades.reduce(0.0) { total, trade in
+            total + trade.quantity
+        }
     }
 
     func portfolioChange(for timeFrame: TimeFrame) -> (amount: Double, percentage: Double)? {
@@ -163,23 +177,39 @@ class TradingEnvironment: ObservableObject {
     func resetPortfolio() throws {
         let context = coreDataStack.context
         
-        // Delete all trades
-        let tradeRequest: NSFetchRequest<NSFetchRequestResult> = CDTrade.fetchRequest()
-        let stockTradeRequest: NSFetchRequest<NSFetchRequestResult> = StockTrade.fetchRequest()
+        // 1. Delete all trades
+        let tradeRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "CDTrade")
+        let stockTradeRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "StockTrade")
+        let portfolioRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "CDPortfolio")
         
-        let tradeBatchDelete = NSBatchDeleteRequest(fetchRequest: tradeRequest)
-        let stockBatchDelete = NSBatchDeleteRequest(fetchRequest: stockTradeRequest)
+        let deletes = [
+            NSBatchDeleteRequest(fetchRequest: tradeRequest),
+            NSBatchDeleteRequest(fetchRequest: stockTradeRequest),
+            NSBatchDeleteRequest(fetchRequest: portfolioRequest)
+        ]
         
-        try context.execute(tradeBatchDelete)
-        try context.execute(stockBatchDelete)
+        // Execute batch deletes
+        try deletes.forEach { try context.execute($0) }
         
-        // Reset portfolio balance
-        if let portfolio = currentPortfolio {
-            portfolio.balance = 100_000
-            try context.save()
-        }
+        // 2. Reset in-memory state (remove the direct holdings assignment)
+        self.currentPortfolio = nil
         
+        // 3. Create new portfolio
+        let newPortfolio = CDPortfolio(context: context)
+        newPortfolio.balance = 100_000
+        try context.save()
+        
+        // 4. Update current portfolio reference
+        self.currentPortfolio = newPortfolio
+        
+        // 5. Notify observers
         objectWillChange.send()
+        
+        // Refresh market data (optional)
+        Task {
+            await fetchCryptoData()
+            try? await fetchStockData() 
+        }
     }
     
     // Add dollar amount trading support
@@ -226,14 +256,22 @@ extension TradingEnvironment {
     
     private func getCryptoHoldings() -> [AssetHolding] {
         let fetchRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
-        // Only fetch trades that have coinId (crypto trades)
-        fetchRequest.predicate = NSPredicate(format: "coinId != nil")
-        let trades = (try? coreDataStack.context.fetch(fetchRequest)) ?? []
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            NSPredicate(format: "coinId != nil"),
+            NSPredicate(format: "coinId != ''")
+        ])
         
-        return trades.map { trade in
-            let currentPrice = dataManager.coins.first { $0.id == trade.coinId }?.current_price ?? trade.currentPrice
+        let trades = (try? coreDataStack.context.fetch(fetchRequest)) ?? []
+        print("DEBUG: Found \(trades.count) crypto trades")
+        
+        return trades.compactMap { trade in
+            guard let coinId = trade.coinId,
+                  !coinId.isEmpty else { return nil }
+            
+            let currentPrice = dataManager.coins.first { $0.id == coinId }?.current_price ?? trade.currentPrice
+            
             return AssetHolding(
-                id: trade.coinId ?? UUID().uuidString,
+                id: coinId,
                 symbol: trade.coinSymbol ?? "",
                 name: trade.coinName ?? "",
                 quantity: trade.quantity,
@@ -243,16 +281,24 @@ extension TradingEnvironment {
             )
         }
     }
-    
+
     private func getStockHoldings() -> [AssetHolding] {
         let fetchRequest: NSFetchRequest<StockTrade> = StockTrade.fetchRequest()
-        let trades = (try? coreDataStack.context.fetch(fetchRequest)) ?? []
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            NSPredicate(format: "symbol != nil"),
+            NSPredicate(format: "symbol != ''")
+        ])
         
-        return trades.map { trade in
-            let currentPrice = dataManager.stocks.first { $0.symbol == trade.symbol }?.quote.currentPrice ?? trade.currentPrice
+        let trades = (try? coreDataStack.context.fetch(fetchRequest)) ?? []
+        print("DEBUG: Found \(trades.count) stock trades")
+        
+        let holdings = trades.map { trade -> AssetHolding in
+            let symbol = trade.symbol ?? ""
+            let currentPrice = dataManager.stocks.first { $0.symbol == symbol }?.quote.currentPrice ?? trade.currentPrice
+            
             return AssetHolding(
-                id: trade.symbol ?? UUID().uuidString,
-                symbol: trade.symbol ?? "",
+                id: symbol,
+                symbol: symbol,
                 name: trade.name ?? "",
                 quantity: trade.quantity,
                 currentPrice: currentPrice,
@@ -260,6 +306,23 @@ extension TradingEnvironment {
                 type: .stock
             )
         }
+        
+        // Group holdings by symbol and combine quantities
+        return Dictionary(grouping: holdings, by: { $0.symbol })
+            .values
+            .map { holdings in
+                let totalQuantity = holdings.reduce(0) { $0 + $1.quantity }
+                let first = holdings[0]
+                return AssetHolding(
+                    id: first.id,
+                    symbol: first.symbol,
+                    name: first.name,
+                    quantity: totalQuantity,
+                    currentPrice: first.currentPrice,
+                    purchasePrice: first.purchasePrice,
+                    type: .stock
+                )
+            }
     }
 }
 
@@ -331,5 +394,12 @@ extension TradingEnvironment {
         let fetchRequest: NSFetchRequest<StockTrade> = StockTrade.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \StockTrade.purchaseDate, ascending: false)]
         return (try? coreDataStack.context.fetch(fetchRequest)) ?? []
+    }
+}
+
+// Add this helper extension
+extension Optional where Wrapped == String {
+    var isNilOrEmpty: Bool {
+        self?.isEmpty ?? true
     }
 }

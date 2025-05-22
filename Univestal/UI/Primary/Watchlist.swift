@@ -144,7 +144,7 @@ struct WatchlistSection<Content: View>: View {
                 .background(Color.secondary.opacity(0.1))
             
             if isEmpty {
-                Text("No items in watchlist")
+                Text("No assets yet")
                     .font(.subheadline)
                     .foregroundColor(.gray)
                     .padding()
