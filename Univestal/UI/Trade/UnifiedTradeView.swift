@@ -52,17 +52,26 @@ struct UnifiedTradeView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var environment: TradingEnvironment
     
-    private var isValidQuantity: Bool {
-        guard let qty = Double(quantity), qty > 0 else {
-            return false
+    private var isValidInput: Bool {
+        switch tradeMode {
+        case .quantity:
+            guard let qty = Double(quantity), qty > 0 else { return false }
+            return true
+        case .amount:
+            guard let amount = Double(dollarAmount), amount > 0 else { return false }
+            // Check if amount exceeds available balance for buys
+            if type == .buy && amount > environment.portfolioBalance {
+                return false
+            }
+            return true
         }
-        return true
     }
     
     private var effectiveQuantity: Double {
-        if tradeMode == .quantity {
+        switch tradeMode {
+        case .quantity:
             return Double(quantity) ?? 0
-        } else {
+        case .amount:
             let amount = Double(dollarAmount) ?? 0
             return environment.calculateQuantityFromAmount(dollars: amount, price: asset.currentPrice)
         }
@@ -101,18 +110,30 @@ struct UnifiedTradeView: View {
                                 .multilineTextAlignment(.center)
                                 .textFieldStyle(.roundedBorder)
                                 .frame(width: 200)
+                                .onChange(of: quantity) {
+                                    updatePreview()
+                                }
                         } else {
                             TextField("Amount in USD", text: $dollarAmount)
                                 .keyboardType(.decimalPad)
                                 .multilineTextAlignment(.center)
                                 .textFieldStyle(.roundedBorder)
                                 .frame(width: 200)
+                                .onChange(of: dollarAmount) {
+                                    updatePreview()
+                                }
                         }
                         
-                        if let qty = Double(quantity) {
-                            let total = qty * asset.currentPrice
-                            Text("Total: \(total, specifier: "$%.2f")")
-                                .foregroundColor(.secondary)
+                        // Show preview of the trade
+                        if let preview = tradePreview {
+                            VStack(spacing: 4) {
+                                Text("You will \(type.title.lowercased()):")
+                                    .font(.subheadline)
+                                Text("\(AssetFormatter.format(quantity: preview.quantity)) \(asset.tradeSymbol)")
+                                    .bold()
+                                Text("Total: \(preview.total, specifier: "$%.2f")")
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     }
                     .padding()
@@ -125,8 +146,8 @@ struct UnifiedTradeView: View {
                         executeTrade()
                     }
                     .buttonStyle(.borderedProminent)
-                    .disabled(!isValidQuantity) // Disable button when quantity is invalid
-                    .opacity(isValidQuantity ? 1.0 : 0.5) // Visual feedback
+                    .disabled(!isValidInput)
+                    .opacity(isValidInput ? 1.0 : 0.5)
                 }
             }
             .padding()
@@ -160,17 +181,29 @@ struct UnifiedTradeView: View {
         }?.quantity
     }
     
-    private func executeTrade() {
-        let qty: Double
-        if tradeMode == .quantity {
-            guard let inputQty = Double(quantity), inputQty > 0 else { return }
-            qty = inputQty
-        } else {
-            guard let amount = Double(dollarAmount), amount > 0 else { return }
-            qty = environment.calculateQuantityFromAmount(dollars: amount, price: asset.currentPrice)
+    @State private var tradePreview: (quantity: Double, total: Double)?
+    
+    private func updatePreview() {
+        switch tradeMode {
+        case .quantity:
+            guard let qty = Double(quantity), qty > 0 else {
+                tradePreview = nil
+                return
+            }
+            tradePreview = (qty, qty * asset.currentPrice)
+            
+        case .amount:
+            guard let amount = Double(dollarAmount), amount > 0 else {
+                tradePreview = nil
+                return
+            }
+            let qty = environment.calculateQuantityFromAmount(dollars: amount, price: asset.currentPrice)
+            tradePreview = (qty, amount)
         }
-        
-        // Clear any existing alert first
+    }
+    
+    private func executeTrade() {
+        guard let preview = tradePreview else { return }
         alertType = nil
         
         do {
@@ -181,14 +214,14 @@ struct UnifiedTradeView: View {
                         coinId: asset.assetId,
                         symbol: asset.tradeSymbol,
                         name: asset.tradeName,
-                        quantity: qty,
+                        quantity: preview.quantity,
                         currentPrice: asset.currentPrice
                     )
                 } else if asset is Stock {
                     try environment.executeStockTrade(
                         symbol: asset.tradeSymbol,
                         name: asset.tradeName,
-                        quantity: qty,
+                        quantity: preview.quantity,
                         currentPrice: asset.currentPrice
                     )
                 }
@@ -198,14 +231,14 @@ struct UnifiedTradeView: View {
                         coinId: asset.assetId,
                         symbol: asset.tradeSymbol,
                         name: asset.tradeName,
-                        quantity: qty,
+                        quantity: preview.quantity,
                         currentPrice: asset.currentPrice
                     )
                 } else if asset is Stock {
                     try environment.executeStockSell(
                         symbol: asset.tradeSymbol,
                         name: asset.tradeName,
-                        quantity: qty,
+                        quantity: preview.quantity,
                         currentPrice: asset.currentPrice
                     )
                 }
