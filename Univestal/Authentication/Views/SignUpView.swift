@@ -93,8 +93,10 @@ struct SignUpView: View {
     
     private var isValidInput: Bool {
         !username.isEmpty && 
-        !password.isEmpty && 
+        !password.isEmpty &&
+        password.count >= 6 &&
         password == confirmPassword
+        
     }
 }
 
