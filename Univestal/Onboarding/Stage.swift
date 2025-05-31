@@ -8,23 +8,23 @@
 import SwiftUI
 
 struct Stage: View {
-    @EnvironmentObject var appData: AppData
-    @EnvironmentObject var environment: TradingEnvironment
-    @EnvironmentObject var news: News
-    @EnvironmentObject var finnhub: Finnhub
+    @EnvironmentObject private var sessionManager: SessionManager
     
     var body: some View {
-        if appData.currentUserSignedIn && !appData.currentUsername.isEmpty {
-            HomepageView()
-        } else {
-            PageViews()
+        Group {
+            if let _ = sessionManager.currentUser {
+                HomepageView()
+            } else {
+                AuthenticationView()
+            }
         }
     }
 }
 
 #Preview { 
     Stage()
-        .environmentObject(AppData())
+        .environmentObject(SessionManager())
+        .environmentObject(AuthenticationService(sessionManager: SessionManager()))
         .environmentObject(TradingEnvironment.shared)
         .environmentObject(News())
         .environmentObject(Finnhub())

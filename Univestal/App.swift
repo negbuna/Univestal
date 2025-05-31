@@ -15,27 +15,35 @@ struct UnivestalApp: App {
     @StateObject private var tradingEnvironment = TradingEnvironment.shared
     @StateObject private var newsService = News()
     @StateObject private var finnhub = Finnhub()
+    @StateObject private var sessionManager: SessionManager
+    @StateObject private var authService: AuthenticationService
     
     init() {
         let context = persistenceController.container.viewContext
         _appData = StateObject(wrappedValue: AppData(context: context))
         
-        // Verify CoreData store
+        let storage = SecureStorage()
+        let tempSessionManager = SessionManager(storage: storage)
+        _sessionManager = StateObject(wrappedValue: tempSessionManager)
+        
+        let tempAuthService = AuthenticationService(
+            storage: storage,
+            sessionManager: tempSessionManager
+        )
+        _authService = StateObject(wrappedValue: tempAuthService)
+        
         CoreDataStack.shared.verifyStoreConfiguration()
     }
-
+    
     var body: some Scene {
         WindowGroup {
             Stage()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environmentObject(appData)
+                .environmentObject(sessionManager)
+                .environmentObject(authService)
                 .environmentObject(tradingEnvironment)
                 .environmentObject(newsService)
                 .environmentObject(finnhub)
-                .task(priority: .userInitiated) {
-                    // Initial data load
-                    await DataManager.shared.refreshData()
-                }
         }
     }
 }

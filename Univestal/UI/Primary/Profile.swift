@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @EnvironmentObject var appData: AppData
+    @EnvironmentObject private var sessionManager: SessionManager
     @Environment(\.dismiss) private var dismiss
     
     @State var isEditable: Bool = true
@@ -24,7 +24,6 @@ struct ProfileView: View {
                 
                 VStack(alignment: .center) {
                     VStack(alignment: .center, spacing: 40) {
-                        
                         if let image = image {
                             Image(uiImage: image)
                                 .resizable()
@@ -43,18 +42,19 @@ struct ProfileView: View {
                         }
                         
                         if isEditable {
-                            if !appData.currentUsername.isEmpty {
-                                Text(appData.currentUsername)
+                            if let username = sessionManager.currentUser?.username {
+                                Text(username)
                                     .font(.title)
                                     .fontWeight(.semibold)
-                            } else { // This is just for previews
+                            } else {
                                 Text("User")
                                     .font(.title)
                                     .fontWeight(.semibold)
                             }
                         }
                         
-                        Text("Member since \(appData.storedJoinDateString ?? appData.formattedCurrentYear())") // Also just for previews
+                        // Use a computed property for the join date
+                        Text("Member since \(joinDate)")
                         
                         Spacer()
                     }
@@ -80,27 +80,24 @@ struct ProfileView: View {
             }
         }
     }
+    
+    private var defaultProfile: some View {
+        Image(systemName: "person.circle.fill")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 200, height: 200)
+            .foregroundColor(.gray)
+    }
+    
+    private var joinDate: String {
+        // Format current date as fallback
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        return formatter.string(from: Date())
+    }
 }
 
 #Preview {
     ProfileView()
-        .environmentObject(AppData())
-}
-
-extension ProfileView {
-    private var defaultProfile: some View {
-        ZStack {
-            Circle()
-              .fill(Color.secondary.opacity(0.5))
-              .frame(width: 200, height: 200)
-              .overlay {
-                  Image(systemName: "person.fill")
-                      .resizable()
-                      .clipShape(RoundedRectangle(cornerRadius: 47))
-                      .foregroundStyle(.tertiary)
-                      .frame(width: 140, height: 140)
-                      .offset(x: 0, y: 20)
-              }
-        }
-    }
+        .environmentObject(SessionManager())
 }

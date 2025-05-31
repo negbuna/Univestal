@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		5E05DDD32D30746B00AC21C0 /* Topic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E05DDD22D30746B00AC21C0 /* Topic.swift */; };
 		5E11F64E2CE2D1F9000E6DB9 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 5E11F64D2CE2D1F1000E6DB9 /* .gitignore */; };
-		5E11F6502CE2DA6A000E6DB9 /* Pages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F64F2CE2DA68000E6DB9 /* Pages.swift */; };
 		5E11F6522CE673CE000E6DB9 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6512CE673CB000E6DB9 /* AppData.swift */; };
 		5E11F65F2CF470F2000E6DB9 /* PrivacyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F65E2CF47093000E6DB9 /* PrivacyPolicy.swift */; };
 		5E11F6612CF47127000E6DB9 /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E11F6602CF47127000E6DB9 /* Review.swift */; };
@@ -68,6 +67,19 @@
 		5EA8D25D2D0E7238000D5022 /* PastTrades.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA8D25C2D0E7231000D5022 /* PastTrades.swift */; };
 		5EA8D27C2D1107F3000D5022 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA8D27B2D1107F3000D5022 /* Environment.swift */; };
 		5EDC07812D1BB538002172E5 /* Overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDC07802D1BB534002172E5 /* Overlay.swift */; };
+		5EE1EA432DEAE3A80026C153 /* Authentication.md in Resources */ = {isa = PBXBuildFile; fileRef = 5EE1EA412DEAE3A80026C153 /* Authentication.md */; };
+		5EE1EA542DEAE3CA0026C153 /* AuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1EA462DEAE3CA0026C153 /* AuthenticationService.swift */; };
+		5EE1EA552DEAE3CA0026C153 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1EA4A2DEAE3CA0026C153 /* SessionManager.swift */; };
+		5EE1EA562DEAE3CA0026C153 /* MigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1EA482DEAE3CA0026C153 /* MigrationService.swift */; };
+		5EE1EA572DEAE3CA0026C153 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1EA512DEAE3CA0026C153 /* WelcomeView.swift */; };
+		5EE1EA582DEAE3CA0026C153 /* SecureStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1EA492DEAE3CA0026C153 /* SecureStorage.swift */; };
+		5EE1EA592DEAE3CA0026C153 /* AuthenticationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1EA4C2DEAE3CA0026C153 /* AuthenticationViewModel.swift */; };
+		5EE1EA5A2DEAE3CA0026C153 /* AuthenticationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1EA442DEAE3CA0026C153 /* AuthenticationModels.swift */; };
+		5EE1EA5B2DEAE3CA0026C153 /* AuthLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1EA472DEAE3CA0026C153 /* AuthLogger.swift */; };
+		5EE1EA5C2DEAE3CA0026C153 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1EA4F2DEAE3CA0026C153 /* LoginView.swift */; };
+		5EE1EA5D2DEAE3CA0026C153 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1EA502DEAE3CA0026C153 /* SignUpView.swift */; };
+		5EE1EA5E2DEAE3CA0026C153 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1EA4E2DEAE3CA0026C153 /* AuthenticationView.swift */; };
+		5EE1EA602DEBAB3C0026C153 /* AuthenticationServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE1EA5F2DEBAB3C0026C153 /* AuthenticationServiceProtocol.swift */; };
 		5EE787D72D8795B700C19D6C /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787D62D8795B700C19D6C /* DataManager.swift */; };
 		5EE787D92D8795D900C19D6C /* TradingEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787D82D8795D900C19D6C /* TradingEnvironment.swift */; };
 		5EE787DC2D8795FB00C19D6C /* HoldingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787DA2D8795FB00C19D6C /* HoldingsView.swift */; };
@@ -106,7 +118,6 @@
 /* Begin PBXFileReference section */
 		5E05DDD22D30746B00AC21C0 /* Topic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Topic.swift; sourceTree = "<group>"; };
 		5E11F64D2CE2D1F1000E6DB9 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		5E11F64F2CE2DA68000E6DB9 /* Pages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pages.swift; sourceTree = "<group>"; };
 		5E11F6512CE673CB000E6DB9 /* AppData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppData.swift; sourceTree = "<group>"; };
 		5E11F65E2CF47093000E6DB9 /* PrivacyPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicy.swift; sourceTree = "<group>"; };
 		5E11F6602CF47127000E6DB9 /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
@@ -164,6 +175,19 @@
 		5EA8D25C2D0E7231000D5022 /* PastTrades.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PastTrades.swift; sourceTree = "<group>"; };
 		5EA8D27B2D1107F3000D5022 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		5EDC07802D1BB534002172E5 /* Overlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Overlay.swift; sourceTree = "<group>"; };
+		5EE1EA412DEAE3A80026C153 /* Authentication.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Authentication.md; sourceTree = "<group>"; };
+		5EE1EA442DEAE3CA0026C153 /* AuthenticationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationModels.swift; sourceTree = "<group>"; };
+		5EE1EA462DEAE3CA0026C153 /* AuthenticationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationService.swift; sourceTree = "<group>"; };
+		5EE1EA472DEAE3CA0026C153 /* AuthLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthLogger.swift; sourceTree = "<group>"; };
+		5EE1EA482DEAE3CA0026C153 /* MigrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationService.swift; sourceTree = "<group>"; };
+		5EE1EA492DEAE3CA0026C153 /* SecureStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureStorage.swift; sourceTree = "<group>"; };
+		5EE1EA4A2DEAE3CA0026C153 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
+		5EE1EA4C2DEAE3CA0026C153 /* AuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModel.swift; sourceTree = "<group>"; };
+		5EE1EA4E2DEAE3CA0026C153 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
+		5EE1EA4F2DEAE3CA0026C153 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		5EE1EA502DEAE3CA0026C153 /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
+		5EE1EA512DEAE3CA0026C153 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		5EE1EA5F2DEBAB3C0026C153 /* AuthenticationServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationServiceProtocol.swift; sourceTree = "<group>"; };
 		5EE787D62D8795B700C19D6C /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		5EE787D82D8795D900C19D6C /* TradingEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradingEnvironment.swift; sourceTree = "<group>"; };
 		5EE787DA2D8795FB00C19D6C /* HoldingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoldingsView.swift; sourceTree = "<group>"; };
@@ -284,6 +308,7 @@
 		5E1242D22C221BFA0042B089 = {
 			isa = PBXGroup;
 			children = (
+				5EE1EA422DEAE3A80026C153 /* Documentation */,
 				5E1242DD2C221BFA0042B089 /* Univestal */,
 				5E1242F02C221BFC0042B089 /* UnivestalTests */,
 				5E1242FA2C221BFC0042B089 /* UnivestalUITests */,
@@ -314,6 +339,7 @@
 				5E7F17EA2D07FE9C00CEA4F7 /* CoreData.swift */,
 				5E1242E22C221BFA0042B089 /* Item.swift */,
 				5E9B20DA2D2528B80054EE0D /* Persistence.swift */,
+				5EE1EA532DEAE3CA0026C153 /* Authentication */,
 				5E11F6692CF539CE000E6DB9 /* Backend */,
 				5EE788572D8FC67800C19D6C /* Models */,
 				5EE7885E2D8FDE6E00C19D6C /* Utils */,
@@ -406,6 +432,65 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
+		5EE1EA422DEAE3A80026C153 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				5EE1EA412DEAE3A80026C153 /* Authentication.md */,
+			);
+			path = Documentation;
+			sourceTree = "<group>";
+		};
+		5EE1EA452DEAE3CA0026C153 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5EE1EA442DEAE3CA0026C153 /* AuthenticationModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		5EE1EA4B2DEAE3CA0026C153 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				5EE1EA5F2DEBAB3C0026C153 /* AuthenticationServiceProtocol.swift */,
+				5EE1EA462DEAE3CA0026C153 /* AuthenticationService.swift */,
+				5EE1EA472DEAE3CA0026C153 /* AuthLogger.swift */,
+				5EE1EA482DEAE3CA0026C153 /* MigrationService.swift */,
+				5EE1EA492DEAE3CA0026C153 /* SecureStorage.swift */,
+				5EE1EA4A2DEAE3CA0026C153 /* SessionManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		5EE1EA4D2DEAE3CA0026C153 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				5EE1EA4C2DEAE3CA0026C153 /* AuthenticationViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		5EE1EA522DEAE3CA0026C153 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5EE1EA4E2DEAE3CA0026C153 /* AuthenticationView.swift */,
+				5EE1EA4F2DEAE3CA0026C153 /* LoginView.swift */,
+				5EE1EA502DEAE3CA0026C153 /* SignUpView.swift */,
+				5EE1EA512DEAE3CA0026C153 /* WelcomeView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5EE1EA532DEAE3CA0026C153 /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				5EE1EA452DEAE3CA0026C153 /* Models */,
+				5EE1EA4B2DEAE3CA0026C153 /* Services */,
+				5EE1EA4D2DEAE3CA0026C153 /* ViewModels */,
+				5EE1EA522DEAE3CA0026C153 /* Views */,
+			);
+			path = Authentication;
+			sourceTree = "<group>";
+		};
 		5EE788502D8FBEB300C19D6C /* Cache */ = {
 			isa = PBXGroup;
 			children = (
@@ -460,7 +545,6 @@
 			children = (
 				5EDC07802D1BB534002172E5 /* Overlay.swift */,
 				5EE8078C2C39F4B90070D8E9 /* Stage.swift */,
-				5E11F64F2CE2DA68000E6DB9 /* Pages.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -571,6 +655,7 @@
 			files = (
 				5E11F64E2CE2D1F9000E6DB9 /* .gitignore in Resources */,
 				5E1242E82C221BFC0042B089 /* Preview Assets.xcassets in Resources */,
+				5EE1EA432DEAE3A80026C153 /* Authentication.md in Resources */,
 				5E1242E52C221BFC0042B089 /* Assets.xcassets in Resources */,
 				5E9AD44E2C41A46A00C55741 /* Config.plist in Resources */,
 				5EE787DF2D87AE3000C19D6C /* todo.md in Resources */,
@@ -640,6 +725,17 @@
 				5E7F17E72D07FC9F00CEA4F7 /* Trade.swift in Sources */,
 				5E84FD162D468E400093A6EA /* StockDetailView.swift in Sources */,
 				5E7F17E32D07EDF800CEA4F7 /* Errors.swift in Sources */,
+				5EE1EA542DEAE3CA0026C153 /* AuthenticationService.swift in Sources */,
+				5EE1EA552DEAE3CA0026C153 /* SessionManager.swift in Sources */,
+				5EE1EA562DEAE3CA0026C153 /* MigrationService.swift in Sources */,
+				5EE1EA572DEAE3CA0026C153 /* WelcomeView.swift in Sources */,
+				5EE1EA582DEAE3CA0026C153 /* SecureStorage.swift in Sources */,
+				5EE1EA592DEAE3CA0026C153 /* AuthenticationViewModel.swift in Sources */,
+				5EE1EA5A2DEAE3CA0026C153 /* AuthenticationModels.swift in Sources */,
+				5EE1EA5B2DEAE3CA0026C153 /* AuthLogger.swift in Sources */,
+				5EE1EA5C2DEAE3CA0026C153 /* LoginView.swift in Sources */,
+				5EE1EA5D2DEAE3CA0026C153 /* SignUpView.swift in Sources */,
+				5EE1EA5E2DEAE3CA0026C153 /* AuthenticationView.swift in Sources */,
 				5E84FD1A2D4958340093A6EA /* StockTrade.swift in Sources */,
 				5E9AD4482C3C993100C55741 /* Profile.swift in Sources */,
 				5EE787DC2D8795FB00C19D6C /* HoldingsView.swift in Sources */,
@@ -649,7 +745,6 @@
 				5EE7885A2D8FC7F200C19D6C /* HoldingsSection.swift in Sources */,
 				5E7F17EB2D07FE9F00CEA4F7 /* CoreData.swift in Sources */,
 				5E939CC22D64E6C900848B3C /* FinnhubModels.swift in Sources */,
-				5E11F6502CE2DA6A000E6DB9 /* Pages.swift in Sources */,
 				5EA1CDE62C3AFD4C00CE5AAA /* Settings.swift in Sources */,
 				5E1242DF2C221BFA0042B089 /* App.swift in Sources */,
 				5E84FD182D491A280093A6EA /* Search.swift in Sources */,
@@ -662,6 +757,7 @@
 				5EE788512D8FBEB300C19D6C /* CryptoCache.swift in Sources */,
 				5EE7885F2D8FDE6E00C19D6C /* AssetFormatter.swift in Sources */,
 				5EE788522D8FBEB300C19D6C /* StockCache.swift in Sources */,
+				5EE1EA602DEBAB3C0026C153 /* AuthenticationServiceProtocol.swift in Sources */,
 				5EDC07812D1BB538002172E5 /* Overlay.swift in Sources */,
 				5EA8D27C2D1107F3000D5022 /* Environment.swift in Sources */,
 				5E9DA1E02DB7393A00D319C4 /* CoinGeckoEndpoint.swift in Sources */,

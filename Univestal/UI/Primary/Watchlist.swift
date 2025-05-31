@@ -92,6 +92,8 @@ struct Watchlist: View {
                         }
                     }
                     .padding()
+                    
+                    Spacer()
                 }
             }
             .task {

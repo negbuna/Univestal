@@ -8,18 +8,37 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @EnvironmentObject var appData: AppData
+    @EnvironmentObject private var sessionManager: SessionManager
+    @EnvironmentObject private var authService: AuthenticationService
     @Environment(\.dismiss) private var dismiss
+    @State private var showAlertSignout = false
+    @State private var showAlertDelete = false
+    @State private var showError = false
+    @State private var errorMessage = ""
     
-    @State private var showAlertSignout: Bool = false
-    @State private var showAlertDelete: Bool = false
-    @State private var shouldShowIntroView: Bool = false // Control navigation
-        
-    var body: some View { 
-        ZStack {
-            ColorManager.bkgColor
-                .ignoresSafeArea()
+    var body: some View {
+        NavigationStack {
             List {
+                Section("Account") {
+                    Button(role: .destructive) {
+                        showAlertSignout.toggle()
+                    } label: {
+                        HStack {
+                            Image(systemName: "rectangle.portrait.and.arrow.right")
+                            Text("Sign Out")
+                        }
+                    }
+                    .alert(isPresented: $showAlertSignout) {
+                        Alert(
+                            title: Text("Are you sure?"),
+                            primaryButton: .cancel(Text("Stay Signed In")),
+                            secondaryButton: .destructive(Text("Sign Out")) {
+                                sessionManager.clearSession()
+                            }
+                        )
+                    }
+                }
+                
                 Section(header: Text("App")) {
                     NavigationLink(destination: PrivacyPolicy()) {
                         Text("Privacy Policy")
@@ -31,23 +50,7 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section(header: Text("Profile")) {
-                    Button(action: {
-                        showAlertSignout.toggle()
-                    }) {
-                        Text("Sign Out")
-                            .foregroundColor(.red)
-                    }
-                    .alert(isPresented: $showAlertSignout) {
-                        Alert(
-                            title: Text("Are you sure?"),
-                            primaryButton: .cancel(Text("Stay Signed In")),
-                            secondaryButton: .destructive(Text("Sign Out")) {
-                                appData.signOut()
-                            }
-                        )
-                    }
-                    
+                Section(header: Text("Danger Zone")) {
                     Button(action: {
                         showAlertDelete.toggle()
                     }) {
@@ -55,14 +58,7 @@ struct SettingsView: View {
                             .foregroundColor(.red)
                     }
                     .alert(isPresented: $showAlertDelete) {
-                        Alert(
-                            title: Text("Are you sure?"),
-                            message: Text("You will lose all data. This action cannot be undone."),
-                            primaryButton: .cancel(Text("No")),
-                            secondaryButton: .destructive(Text("Delete Account")) {
-                                appData.deleteAccount()
-                            }
-                        )
+                        deleteAccountAlert
                     }
                 } // end section header
             } // end list
@@ -83,15 +79,45 @@ struct SettingsView: View {
     } // end body
     
     private func openAppStore() {
-        //let appStoreURL = URL(string: "https://apps.apple.com/app/idYOUR_APP_ID")! // Replace YOUR_APP_ID later
-        let betaURL = URL(string: "https://testflight.apple.com/join/43RrhW8V")!
-        if UIApplication.shared.canOpenURL(betaURL) {
-            UIApplication.shared.open(betaURL, options: [:], completionHandler: nil)
+        let appStoreURL = URL(string: "https://apps.apple.com/app/com.negbuna.Univestal")!
+        //let betaURL = URL(string: "https://testflight.apple.com/join/43RrhW8V")!
+        if UIApplication.shared.canOpenURL(appStoreURL) {
+            UIApplication.shared.open(appStoreURL, options: [:], completionHandler: nil)
         }
+    }
+    
+    private func handleAccountDeletion() {
+        Task {
+            do {
+                if let username = sessionManager.currentUser?.username {
+                    try await authService.deleteAccount(username: username)
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = error.localizedDescription
+                    showError = true
+                }
+            }
+        }
+    }
+    
+    var deleteAccountAlert: Alert {
+        Alert(
+            title: Text("Are you sure?"),
+            message: Text("You will lose all data. This action cannot be undone."),
+            primaryButton: .cancel(Text("No")),
+            secondaryButton: .destructive(Text("Delete Account")) {
+                handleAccountDeletion()
+            }
+        )
     }
 }
 
 #Preview {
     SettingsView()
-        .environmentObject(AppData())
+        .environmentObject(SessionManager())
+        .environmentObject(AuthenticationService(
+            storage: SecureStorage(),
+            sessionManager: SessionManager()
+        ))
 }
