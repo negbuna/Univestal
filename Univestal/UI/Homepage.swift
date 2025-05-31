@@ -24,14 +24,14 @@ struct HomepageView: View {
                 Watchlist()
             }
             .tabItem {
-                Label("Label", systemImage: "star.fill")
+                Label("Watchlist", systemImage: "star.fill")
             }
             
             NavigationStack {
                 TradingView()
             }
             .tabItem {
-                Label("Trade", systemImage: "chart.pie.fill")
+                Label("Trade", systemImage: "chart.bar.xaxis")
             }
             
             NavigationStack {
