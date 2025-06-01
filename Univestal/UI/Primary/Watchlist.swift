@@ -52,49 +52,34 @@ struct Watchlist: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                if isLoading {
-                    ProgressView()
-                } else {
-                    VStack(alignment: .leading, spacing: 20) {
-                        WatchlistSection(
-                            title: "Cryptocurrencies",
-                            isEmpty: watchlistCoins.isEmpty
-                        ) {
-                            if !watchlistCoins.isEmpty {
-                                ScrollView {
-                                    LazyVStack(spacing: 0) {
-                                        ForEach(watchlistCoins) { coin in
-                                            CoinWatchlistRow(coin: coin)
-                                                .id(coin.id)
-                                        }
-                                    }
-                                }
-                                .frame(maxHeight: 300) // Set maximum height for scroll area
-                            }
-                        }
-                        
-                        WatchlistSection(
-                            title: "Stocks",
-                            isEmpty: watchlistStocks.isEmpty
-                        ) {
-                            if !watchlistStocks.isEmpty {
-                                ScrollView {
-                                    LazyVStack(spacing: 0) {
-                                        ForEach(watchlistStocks, id: \.symbol) { stock in
-                                            StockWatchlistRow(stock: stock)
-                                                .id(stock.symbol)
-                                        }
-                                    }
-                                }
-                                .frame(maxHeight: 300) // Set maximum height for scroll area
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Crypto Section
+                    WatchlistSection(
+                        title: "Cryptocurrencies",
+                        isEmpty: watchlistCoins.isEmpty
+                    ) {
+                        LazyVStack(spacing: 0, pinnedViews: []) {
+                            ForEach(watchlistCoins) { coin in
+                                CoinWatchlistRow(coin: coin)
+                                    .id(coin.id)
                             }
                         }
                     }
-                    .padding()
                     
-                    Spacer()
+                    // Stocks Section
+                    WatchlistSection(
+                        title: "Stocks",
+                        isEmpty: watchlistStocks.isEmpty
+                    ) {
+                        LazyVStack(spacing: 0, pinnedViews: []) {
+                            ForEach(watchlistStocks, id: \.symbol) { stock in
+                                StockWatchlistRow(stock: stock)
+                            }
+                        }
+                    }
                 }
+                .padding()
             }
             .task {
                 print("🔄 Loading coins...")
@@ -120,24 +105,14 @@ struct Watchlist: View {
     }
 }
 
-// Helper Views
 struct WatchlistSection<Content: View>: View {
     let title: String
     let isEmpty: Bool
     let content: () -> Content
     
-    init(
-        title: String,
-        isEmpty: Bool,
-        @ViewBuilder content: @escaping () -> Content
-    ) {
-        self.title = title
-        self.isEmpty = isEmpty
-        self.content = content
-    }
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            // Header
             Text(title)
                 .font(.headline)
                 .padding(.horizontal)
@@ -145,15 +120,15 @@ struct WatchlistSection<Content: View>: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.secondary.opacity(0.1))
             
+            // Content
             if isEmpty {
                 Text("No assets yet")
                     .font(.subheadline)
                     .foregroundColor(.gray)
                     .padding()
             } else {
-                VStack(spacing: 0) {
-                    content()
-                }
+                content()
+                    .background(Color(UIColor.systemBackground))
             }
         }
         .background(Color(UIColor.systemBackground))

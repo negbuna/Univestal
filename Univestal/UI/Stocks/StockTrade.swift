@@ -71,6 +71,8 @@ struct StockTradingView: View {
                         },
                         secondaryButton: .cancel()
                     )
+                case .tradeSuccess:
+                    Alert(title: Text("Trade Success"))
                 }
             }
         }

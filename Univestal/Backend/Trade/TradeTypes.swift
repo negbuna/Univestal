@@ -33,3 +33,15 @@ enum TradeAction {
 enum TradeMode {
     case quantity, amount
 }
+
+enum TimeFrame: String, CaseIterable {
+    case day = "24H"
+    case week = "7D"
+    case month = "30D"
+    case year = "1Y"
+    
+    // Custom initializer for UserDefaults string
+    init?(userDefaultsString: String) {
+        self.init(rawValue: userDefaultsString)
+    }
+}

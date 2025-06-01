@@ -18,10 +18,23 @@ class TradingEnvironment: ObservableObject {
     @Published var currentPortfolio: CDPortfolio?
     @Published var stocks: [Stock] = []
     @Published var coins: [Coin] = []
+    @Published private(set) var selectedTimeFrame: TimeFrame = .day {
+        didSet {
+            UserDefaults.standard.set(selectedTimeFrame.rawValue, forKey: "selectedTimeFrame")
+        }
+    }
+    
+    private func loadStoredTimeFrame() {
+        if let storedValue = UserDefaults.standard.string(forKey: "selectedTimeFrame"),
+           let timeFrame = TimeFrame(rawValue: storedValue) {
+            selectedTimeFrame = timeFrame
+        }
+    }
     
     private init() {
         setupPortfolio()
         setupDataSubscriptions()
+        loadStoredTimeFrame()
     }
     
     private func setupDataSubscriptions() {
@@ -56,8 +69,8 @@ class TradingEnvironment: ObservableObject {
     }
 
     var totalPortfolioValue: Double {
-        let holdingsValue = holdings.reduce(0.0) { $0 + $1.totalValue }
-        return portfolioBalance + holdingsValue
+        let holdings = holdings.reduce(0.0) { $0 + $1.totalValue }
+        return portfolioBalance + holdings
     }
 
     // MARK: - Trading Methods
@@ -129,6 +142,7 @@ class TradingEnvironment: ObservableObject {
     }
 
     func portfolioChange(for timeFrame: TimeFrame) -> (amount: Double, percentage: Double)? {
+        // Use the stored timeFrame instead of parameter
         let holdings = self.holdings
         guard !holdings.isEmpty else { return nil }
         
@@ -224,6 +238,10 @@ class TradingEnvironment: ObservableObject {
     // Add this method to support crypto search with pagination
     func searchCoins(query: String, page: Int) async throws -> PaginatedResponse<Coin> {
         return try await crypto.searchCoins(query: query, page: page)
+    }
+    
+    func updateTimeFrame(_ timeFrame: TimeFrame) {
+        selectedTimeFrame = timeFrame
     }
 }
 
