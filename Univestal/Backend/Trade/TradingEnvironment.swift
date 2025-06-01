@@ -18,23 +18,10 @@ class TradingEnvironment: ObservableObject {
     @Published var currentPortfolio: CDPortfolio?
     @Published var stocks: [Stock] = []
     @Published var coins: [Coin] = []
-    @Published private(set) var selectedTimeFrame: TimeFrame = .day {
-        didSet {
-            UserDefaults.standard.set(selectedTimeFrame.rawValue, forKey: "selectedTimeFrame")
-        }
-    }
-    
-    private func loadStoredTimeFrame() {
-        if let storedValue = UserDefaults.standard.string(forKey: "selectedTimeFrame"),
-           let timeFrame = TimeFrame(rawValue: storedValue) {
-            selectedTimeFrame = timeFrame
-        }
-    }
     
     private init() {
         setupPortfolio()
         setupDataSubscriptions()
-        loadStoredTimeFrame()
     }
     
     private func setupDataSubscriptions() {
@@ -96,6 +83,7 @@ class TradingEnvironment: ObservableObject {
         portfolio.balance -= totalCost
         
         try coreDataStack.context.save()
+        objectWillChange.send()
     }
     
     func executeSell(coinId: String, symbol: String, name: String, quantity: Double, currentPrice: Double) throws {
@@ -125,6 +113,7 @@ class TradingEnvironment: ObservableObject {
         
         portfolio.balance += (currentPrice * quantity)
         try coreDataStack.context.save()
+        objectWillChange.send()
     }
 
     // Helper method to get total holdings for a coin
@@ -141,8 +130,8 @@ class TradingEnvironment: ObservableObject {
         }
     }
 
-    func portfolioChange(for timeFrame: TimeFrame) -> (amount: Double, percentage: Double)? {
-        // Use the stored timeFrame instead of parameter
+    // Simple 24h portfolio change calculation
+    func portfolioChange() -> (amount: Double, percentage: Double)? {
         let holdings = self.holdings
         guard !holdings.isEmpty else { return nil }
         
@@ -152,7 +141,7 @@ class TradingEnvironment: ObservableObject {
         
         return (totalChange, percentageChange)
     }
-
+    
     func fetchStockData() async throws {
         let symbols = Storage().commonStocks
         let stocks = try await Finnhub.shared.fetchStocks(symbols: symbols)
@@ -238,10 +227,6 @@ class TradingEnvironment: ObservableObject {
     // Add this method to support crypto search with pagination
     func searchCoins(query: String, page: Int) async throws -> PaginatedResponse<Coin> {
         return try await crypto.searchCoins(query: query, page: page)
-    }
-    
-    func updateTimeFrame(_ timeFrame: TimeFrame) {
-        selectedTimeFrame = timeFrame
     }
 }
 
@@ -398,9 +383,7 @@ extension TradingEnvironment {
         portfolio.balance += totalValue
         try coreDataStack.context.save()
     }
-}
-
-extension TradingEnvironment {
+    
     // Public methods for fetching trades
     func fetchCryptoTrades() -> [CDTrade] {
         let fetchRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
@@ -415,7 +398,6 @@ extension TradingEnvironment {
     }
 }
 
-// Add this helper extension
 extension Optional where Wrapped == String {
     var isNilOrEmpty: Bool {
         self?.isEmpty ?? true

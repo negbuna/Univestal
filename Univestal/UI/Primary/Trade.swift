@@ -25,17 +25,16 @@ struct TradingView: View {
     }
     
     private var portfolioChange: (amount: Double, percentage: Double)? {
-        environment.portfolioChange(for: environment.selectedTimeFrame)
+        environment.portfolioChange()
     }
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    // Portfolio Header
                     portfolioHeader
                     
-                    // Holdings Sections
+                    // Holdings sections with proper ID for forcing refresh
                     Group {
                         holdingsSection(
                             title: "Crypto Holdings",
@@ -53,6 +52,13 @@ struct TradingView: View {
             .navigationTitle("Trading")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink(destination: PastTrades()) {
+                        Text("History")
+                            .foregroundColor(.blue)
+                    }
+                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showingResetAlert = true }) {
                         Image(systemName: "arrow.clockwise")
@@ -63,7 +69,7 @@ struct TradingView: View {
                 Button("Cancel", role: .cancel) { }
                 Button("Reset", role: .destructive) {
                     Task {
-                        try environment.resetPortfolio()
+                            try? environment.resetPortfolio()
                     }
                 }
             } message: {
@@ -81,26 +87,28 @@ struct TradingView: View {
             Text(portfolioValue, format: .currency(code: "USD"))
                 .font(.title.bold())
             
-            if let change = portfolioChange {
+            HStack(spacing: 16) {
+                // Available Cash
                 HStack(spacing: 4) {
-                    Image(systemName: change.amount >= 0 ? "arrow.up.right" : "arrow.down.right")
-                    Text("\(change.amount, format: .currency(code: "USD"))")
-                    Text("(\(change.percentage, specifier: "%.1f")%)")
+                    Text("Available:")
+                        .foregroundColor(.secondary)
+                    Text(environment.portfolioBalance, format: .currency(code: "USD"))
                 }
-                .foregroundColor(change.amount >= 0 ? .green : .red)
-                .font(.subheadline)
-            }
-            
-            Picker("Time Frame", selection: Binding(
-                get: { environment.selectedTimeFrame },
-                set: { environment.updateTimeFrame($0) }
-            )) {
-                ForEach(TimeFrame.allCases, id: \.self) { timeFrame in
-                    Text(timeFrame.rawValue).tag(timeFrame)
+                
+                Divider()
+                    .frame(height: 16)
+                
+                // 24h Change
+                if let change = portfolioChange {
+                    HStack(spacing: 4) {
+                        Image(systemName: change.amount >= 0 ? "arrow.up.right" : "arrow.down.right")
+                        Text("\(change.amount, format: .currency(code: "USD"))")
+                        Text("(\(change.percentage, specifier: "%.1f")%)")
+                    }
+                    .foregroundColor(change.amount >= 0 ? .green : .red)
                 }
             }
-            .pickerStyle(.segmented)
-            .padding(.horizontal)
+            .font(.subheadline)
         }
         .padding()
         .background(Color(UIColor.secondarySystemBackground))
@@ -113,12 +121,9 @@ struct TradingView: View {
             isEmpty: holdings.isEmpty
         ) {
             LazyVStack(spacing: 0) {
-                if holdings.isEmpty {
-                    EmptyView()
-                } else {
-                    ForEach(holdings) { holding in
-                        TradeHoldingRow(holding: holding)
-                    }
+                ForEach(holdings) { holding in
+                    TradeHoldingRow(holding: holding)
+                        .id("\(holding.id)-\(holding.quantity)-\(holding.currentPrice)") // Force refresh on changes
                 }
             }
         }
