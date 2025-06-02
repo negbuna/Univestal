@@ -252,9 +252,41 @@ enum AssetType {
 extension TradingEnvironment {
     // Get combined holdings
     var holdings: [AssetHolding] {
-        let cryptoHoldings = getCryptoHoldings()
-        let stockHoldings = getStockHoldings()
-        return cryptoHoldings + stockHoldings
+        let context = coreDataStack.context
+        
+        // Fetch both types of trades
+        let stockRequest: NSFetchRequest<StockTrade> = StockTrade.fetchRequest()
+        let cryptoRequest: NSFetchRequest<CDTrade> = CDTrade.fetchRequest()
+        
+        let stockTrades = (try? context.fetch(stockRequest)) ?? []
+        let cryptoTrades = (try? context.fetch(cryptoRequest)) ?? []
+        
+        // Convert to holdings
+        let stockHoldings = stockTrades.map { trade in
+            AssetHolding(
+                id: trade.symbol ?? "",
+                symbol: trade.symbol ?? "",
+                name: trade.name ?? "",
+                quantity: trade.quantity,
+                currentPrice: stocks.first { $0.symbol == trade.symbol }?.quote.currentPrice ?? trade.purchasePrice,
+                purchasePrice: trade.purchasePrice,
+                type: .stock
+            )
+        }
+        
+        let cryptoHoldings = cryptoTrades.map { trade in
+            AssetHolding(
+                id: trade.coinId ?? "",
+                symbol: trade.coinSymbol ?? "",
+                name: trade.coinName ?? "",
+                quantity: trade.quantity,
+                currentPrice: coins.first { $0.id == trade.coinId }?.current_price ?? trade.purchasePrice,
+                purchasePrice: trade.purchasePrice,
+                type: .crypto
+            )
+        }
+        
+        return stockHoldings + cryptoHoldings
     }
     
     private func getCryptoHoldings() -> [AssetHolding] {

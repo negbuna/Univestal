@@ -4,9 +4,10 @@ import LocalAuthentication
 import Combine
 import CoreData
 
+@MainActor
 class AuthenticationService: ObservableObject, AuthenticationServiceProtocol {
     private let storage: SecureStorageProtocol
-    private let sessionManager: SessionManager
+    let sessionManager: SessionManager 
     
     init(storage: SecureStorageProtocol = SecureStorage(), sessionManager: SessionManager) {
         self.storage = storage
@@ -89,14 +90,34 @@ class AuthenticationService: ObservableObject, AuthenticationServiceProtocol {
             throw AuthError.invalidInput
         }
         
+        let context = PersistenceController.shared.container.viewContext
+        
+        // Delete watchlist items without using username predicate
+        let watchlistRequest = NSFetchRequest<WatchlistItem>(entityName: "WatchlistItem")
+        let stockWatchlistRequest = NSFetchRequest<StockWatchlistItem>(entityName: "StockWatchlistItem")
+        
+        // Fetch and delete all items
+        if let watchlistItems = try? context.fetch(watchlistRequest) {
+            for item in watchlistItems {
+                context.delete(item)
+            }
+        }
+        
+        if let stockWatchlistItems = try? context.fetch(stockWatchlistRequest) {
+            for item in stockWatchlistItems {
+                context.delete(item)
+            }
+        }
+        
+        try context.save()
+        
         // Delete from secure storage
         try storage.deleteUser(username)
         
-        // Clear session
-        sessionManager.clearSession()
-        
-        // Delete associated data (watchlists, settings, etc)
-        try await deleteUserData(for: username)
+        // Clear session on main thread
+        await MainActor.run {
+            sessionManager.clearSession()
+        }
     }
     
     private func deleteUserData(for username: String) async throws {

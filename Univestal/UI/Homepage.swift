@@ -35,7 +35,7 @@ struct HomepageView: View {
             }
             
             NavigationStack {
-                SettingsView()
+                Learn()
             }
             .tabItem {
                 Label("Learn", systemImage: "puzzlepiece.extension.fill")

@@ -8,7 +8,7 @@ struct AuthenticationView: View {
     init() {
         // Create temporary instances for initialization
         let tempStorage = SecureStorage()
-        let tempSessionManager = SessionManager(storage: tempStorage)
+        let tempSessionManager = SessionManager()
         let tempAuthService = AuthenticationService(
             storage: tempStorage,
             sessionManager: tempSessionManager

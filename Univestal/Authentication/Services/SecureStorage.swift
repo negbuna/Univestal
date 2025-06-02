@@ -8,42 +8,24 @@ protocol SecureStorageProtocol {
     func deleteUser(_ username: String) throws
 }
 
-struct SecureStorage: SecureStorageProtocol {
+class SecureStorage: SecureStorageProtocol {
     private let service = "com.univestal.auth"
+    private let defaults = UserDefaults.standard
     
     func saveCredentials(_ credentials: Credentials) throws {
-        let data = try JSONEncoder().encode(credentials)
-        
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: credentials.username,
-            kSecValueData as String: data
+            kSecValueData as String: credentials.password.data(using: .utf8) ?? Data()
         ]
         
-        let status = SecItemAdd(query as CFDictionary, nil)
+        // First try to delete any existing item
+        SecItemDelete(query as CFDictionary)
         
-        if status == errSecDuplicateItem {
-            // Update existing item
-            let updateQuery: [String: Any] = [
-                kSecClass as String: kSecClassGenericPassword,
-                kSecAttrService as String: service,
-                kSecAttrAccount as String: credentials.username
-            ]
-            
-            let attributes: [String: Any] = [
-                kSecValueData as String: data
-            ]
-            
-            let updateStatus = SecItemUpdate(
-                updateQuery as CFDictionary,
-                attributes as CFDictionary
-            )
-            
-            guard updateStatus == errSecSuccess else {
-                throw AuthError.storageError
-            }
-        } else if status != errSecSuccess {
+        // Then add the new item
+        let status = SecItemAdd(query as CFDictionary, nil)
+        guard status == errSecSuccess else {
             throw AuthError.storageError
         }
     }
@@ -53,7 +35,6 @@ struct SecureStorage: SecureStorageProtocol {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: username,
-            kSecMatchLimit as String: kSecMatchLimitOne,
             kSecReturnData as String: true
         ]
         
@@ -61,13 +42,13 @@ struct SecureStorage: SecureStorageProtocol {
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
         guard status == errSecSuccess,
-              let data = result as? Data,
-              let credentials = try? JSONDecoder().decode(Credentials.self, from: data)
+              let passwordData = result as? Data,
+              let password = String(data: passwordData, encoding: .utf8)
         else {
             throw AuthError.userNotFound
         }
         
-        return credentials
+        return Credentials(username: username, password: password)
     }
     
     func isUsernameTaken(_ username: String) throws -> Bool {
@@ -89,7 +70,6 @@ struct SecureStorage: SecureStorageProtocol {
         ]
         
         let status = SecItemDelete(query as CFDictionary)
-        
         guard status == errSecSuccess || status == errSecItemNotFound else {
             throw AuthError.storageError
         }

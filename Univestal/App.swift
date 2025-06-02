@@ -22,14 +22,10 @@ struct UnivestalApp: App {
         let context = persistenceController.container.viewContext
         _appData = StateObject(wrappedValue: AppData(context: context))
         
-        let storage = SecureStorage()
-        let tempSessionManager = SessionManager(storage: storage)
+        let tempSessionManager = SessionManager()
         _sessionManager = StateObject(wrappedValue: tempSessionManager)
         
-        let tempAuthService = AuthenticationService(
-            storage: storage,
-            sessionManager: tempSessionManager
-        )
+        let tempAuthService = AuthenticationService(sessionManager: tempSessionManager)
         _authService = StateObject(wrappedValue: tempAuthService)
         
         CoreDataStack.shared.verifyStoreConfiguration()

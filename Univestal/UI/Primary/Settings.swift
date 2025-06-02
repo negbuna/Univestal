@@ -89,7 +89,7 @@ struct SettingsView: View {
     private func handleAccountDeletion() {
         Task {
             do {
-                if let username = sessionManager.currentUser?.username {
+                if let username = authService.sessionManager.currentUser?.username {
                     try await authService.deleteAccount(username: username)
                 }
             } catch {
