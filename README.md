@@ -1,5 +1,5 @@
 ## Download
-[App Store](https://apps.apple.com/us/app/univestal/id6739971236)!
+[App Store](https://apps.apple.com/us/app/univestal/id6739971236)
 
 ## License  
 This project is licensed under a **Creative Commons Attribution**.  
