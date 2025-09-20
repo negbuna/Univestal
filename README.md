@@ -12,8 +12,5 @@ Univestal is a financial literacy app designed for high school students. It prov
 ## Motivation
 I originally built Univestal for my peers who lacked accessible financial education. Many of them had misconceptions or no prior exposure to investing. Univestal helps bridge that gap by combining hands-on learning with live financial data and guidance.
 
-## Installation
-Download the app from the [App Store](https://apps.apple.com/us/app/univestal/id6739971236)
-
 ## License
 This project is licensed under a **Creative Commons Attribution**. See the [LICENSE](./LICENSE) file for details.
